@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Maximize,
   MousePointer2,
@@ -9,6 +9,15 @@ import {
   X,
 } from "lucide-react";
 import type { Point, Project, Section, Selection, Tool } from "../domain/model";
+import { PointEntry } from "./PointEntry";
+import {
+  contourTarget,
+  contourPoints,
+  moveContourVertex,
+  projectOnSegment,
+  segments,
+} from "../domain/editing";
+import { snapPoint, measurePoints, type Precision } from "../domain/precision";
 import { boundary, distance, elevation } from "../domain/geometry";
 
 export type Visibility = {
@@ -32,6 +41,18 @@ export const instructions: Record<Tool, string> = {
     "Marque a linha piezométrica da esquerda para a direita. Enter conclui.",
   load: "Clique no início e no fim da faixa. Depois informe a sobrecarga nas propriedades.",
   circle: "Clique no centro e em um ponto do círculo para definir o raio.",
+  "insert-vertex":
+    "Clique no segmento do contorno selecionado para inserir um vértice.",
+  "delete-vertex":
+    "Clique em um vértice do contorno selecionado para excluí-lo.",
+  "move-contour":
+    "Marque um ponto base e o destino para mover o contorno selecionado.",
+  "copy-region":
+    "Marque um ponto base e o destino da cópia da região selecionada.",
+  "split-region":
+    "Dois pontos definem a reta que divide a região selecionada. Esc cancela.",
+  measure:
+    "Marque dois pontos para medir distância, desnível e ângulo. Esc encerra.",
 };
 export function ModelCanvas({
   project,
@@ -41,6 +62,8 @@ export function ModelCanvas({
   dark,
   grid,
   snap,
+  precision,
+  onEditVertex,
   visibility,
   fitToken,
   onSelect,
@@ -59,6 +82,12 @@ export function ModelCanvas({
   dark: boolean;
   grid: boolean;
   snap: boolean;
+  precision: Precision;
+  onEditVertex: (
+    kind: "move" | "insert" | "delete",
+    index: number,
+    point?: Point,
+  ) => void;
   visibility: Visibility;
   fitToken: number;
   onSelect: (s: Selection) => void;
@@ -83,6 +112,21 @@ export function ModelCanvas({
     | null
   >(null);
   const space = useRef(false);
+  const [snapKind, setSnapKind] = useState("Livre");
+  const twoPointTools: Tool[] = [
+    "circle",
+    "load",
+    "move-contour",
+    "copy-region",
+    "split-region",
+  ];
+  const drafting = [
+    "terrain",
+    "region",
+    "water",
+    "measure",
+    ...twoPointTools,
+  ].includes(tool);
   useEffect(() => {
     if (!host.current) return;
     const obs = new ResizeObserver(([entry]) =>
@@ -103,8 +147,8 @@ export function ModelCanvas({
     operation.current = null;
   }, [tool, section.id]);
   useEffect(() => {
-    onDrawing(points.length > 0);
-  }, [points.length, onDrawing]);
+    onDrawing(points.length > 0 && tool !== "measure");
+  }, [points.length, tool, onDrawing]);
   const fit = () => {
     const pts = boundary(section);
     if (!pts.length) {
@@ -168,37 +212,70 @@ export function ModelCanvas({
   const shownPoints = dragged
     ? selectedPoints.map((p, i) => (i === dragged.index ? dragged.p : p))
     : selectedPoints;
-  const selectedTerrain =
-    selection.kind === "terrain" && dragged ? shownPoints : section.terrain;
-  const boundaryPoints = boundary({ ...section, terrain: selectedTerrain });
+  const previewSection = useMemo(() => {
+    const target = contourTarget(selection);
+    if (!dragged || !target) return section;
+    try {
+      return moveContourVertex(
+        section,
+        target,
+        dragged.index,
+        dragged.p,
+        precision.linked,
+      );
+    } catch {
+      return section;
+    }
+  }, [section, selection, dragged, precision.linked]);
+  const selectedTerrain = previewSection.terrain;
+  const boundaryPoints = boundary(previewSection);
+  const snapContours = useMemo(
+    () => [
+      { points: section.terrain, closed: false },
+      ...section.regions.map((r) => ({ points: r.points, closed: true })),
+      { points: section.water ?? [], closed: false },
+      { points, closed: false },
+    ],
+    [section, points],
+  );
   const world = (e: { clientX: number; clientY: number }): Point => {
     const rect = host.current!.getBoundingClientRect();
-    let p = {
+    const raw = {
       x: (e.clientX - rect.left - view.x) / view.z,
       y: (view.y - e.clientY + rect.top) / view.z,
     };
-    if (snap) {
-      const candidates = [
-        ...section.terrain,
-        ...section.regions.flatMap((r) => r.points),
-        ...(section.water ?? []),
-        ...points,
-      ];
-      const nearest = candidates
-        .filter(
-          (pt) =>
-            !(
-              operation.current?.type === "vertex" &&
-              selectedPoints[operation.current.index] === pt
-            ),
-        )
-        .sort((a, b) => distance(a, p) - distance(b, p))[0];
-      if (nearest && distance(nearest, p) * view.z < 10) p = nearest;
-      else p = { x: Math.round(p.x * 2) / 2, y: Math.round(p.y * 2) / 2 };
+    const excluded =
+      operation.current?.type === "vertex"
+        ? selectedPoints[operation.current.index]
+        : null;
+    const result = snapPoint(
+      raw,
+      snap ? snapContours : [],
+      snap ? 10 / view.z : 0,
+      snap ? precision.gridStep : 0,
+      excluded ?? points.at(-1) ?? null,
+      precision.ortho,
+      excluded,
+    );
+    setSnapKind(result.kind);
+    return result.point;
+  };
+  const addPoint = (p: Point) => {
+    if (!drafting || points.length >= 500) return;
+    if (tool === "measure" && points.length === 2) {
+      setPoints([p]);
+      return;
     }
-    return p;
+    if (points.length && distance(points.at(-1)!, p) < 1e-7) return;
+    const next = [...points, p];
+    if (twoPointTools.includes(tool) && next.length === 2) {
+      onDraw(tool, next);
+      return;
+    }
+    setPoints(next);
   };
   const finish = () => {
+    if (!drafting || tool === "measure" || twoPointTools.includes(tool)) return;
     if (points.length < (tool === "region" ? 3 : 2)) return;
     onDraw(tool, points);
   };
@@ -238,7 +315,13 @@ export function ModelCanvas({
     max = screenWorld(size.w, 0);
   const rough = 80 / view.z;
   const mag = 10 ** Math.floor(Math.log10(rough));
-  const tick = [1, 2, 5, 10].map((n) => n * mag).find((n) => n >= rough)!;
+  const adaptiveTick = [1, 2, 5, 10]
+    .map((n) => n * mag)
+    .find((n) => n >= rough)!;
+  const tick = Math.max(
+    precision.gridStep,
+    Math.ceil(adaptiveTick / precision.gridStep) * precision.gridStep,
+  );
   const xs = Array.from(
     {
       length: Math.min(150, Math.max(0, Math.ceil((max.x - min.x) / tick) + 1)),
@@ -314,6 +397,28 @@ export function ModelCanvas({
             };
             return;
           }
+          if (tool === "insert-vertex") {
+            const edge = (e.target as Element).closest("[data-edge]");
+            if (edge) {
+              const index = Number(edge.getAttribute("data-edge"));
+              const pair = segments(
+                selectedPoints,
+                selection.kind === "region",
+              )[index];
+              if (pair)
+                onEditVertex("insert", index, projectOnSegment(p, ...pair));
+            }
+            return;
+          }
+          if (tool === "delete-vertex") {
+            const vertex = (e.target as Element).closest("[data-vertex]");
+            if (vertex)
+              onEditVertex(
+                "delete",
+                Number(vertex.getAttribute("data-vertex")),
+              );
+            return;
+          }
           if (tool === "select") {
             const vertex = (e.target as Element).closest("[data-vertex]");
             if (vertex) {
@@ -335,15 +440,8 @@ export function ModelCanvas({
             }
             return;
           }
-          if (points.length >= 500) return;
           if (e.detail > 1) return;
-          const next = [...points, p];
-          if ((tool === "circle" || tool === "load") && next.length === 2) {
-            onDraw(tool, next);
-            return;
-          }
-          if (points.length && distance(points.at(-1)!, p) < 1e-7) return;
-          setPoints(next);
+          addPoint(p);
         }}
         onPointerMove={(e) => {
           const op = operation.current;
@@ -422,7 +520,7 @@ export function ModelCanvas({
               vectorEffect="non-scaling-stroke"
             />
           )}
-          {section.regions.map((r) => {
+          {previewSection.regions.map((r) => {
             const pts =
               selection.kind === "region" && selection.id === r.id && dragged
                 ? shownPoints
@@ -501,14 +599,14 @@ export function ModelCanvas({
           )}
           {visibility.loads &&
             section.loads.map((l) => {
-              const a = elevation(section.terrain, l.x1),
-                b = elevation(section.terrain, l.x2);
+              const a = elevation(selectedTerrain, l.x1),
+                b = elevation(selectedTerrain, l.x2);
               if (a === null || b === null) return null;
               const top =
                 Math.max(
                   a,
                   b,
-                  ...section.terrain
+                  ...selectedTerrain
                     .filter((p) => p.x > l.x1 && p.x < l.x2)
                     .map((p) => p.y),
                 ) + 3;
@@ -530,7 +628,7 @@ export function ModelCanvas({
                   />
                   {Array.from({ length: count + 1 }, (_, i) => {
                     const x = l.x1 + (i * (l.x2 - l.x1)) / count,
-                      y = elevation(section.terrain, x)!;
+                      y = elevation(selectedTerrain, x)!;
                     return (
                       <path
                         key={i}
@@ -580,9 +678,9 @@ export function ModelCanvas({
               {label(section.circle, "+ C", "#7f70a4")}
             </g>
           )}
-          {tool === "select" &&
+          {(tool === "select" || tool === "delete-vertex") &&
             shownPoints.map((p, i) => (
-              <g key={i}>
+              <g key={i} data-transient="true">
                 <circle
                   data-vertex={i}
                   cx={p.x}
@@ -600,11 +698,34 @@ export function ModelCanvas({
                 )}
               </g>
             ))}
+          {tool === "insert-vertex" &&
+            segments(selectedPoints, selection.kind === "region").map(
+              ([a, b], i) => (
+                <line
+                  key={i}
+                  data-transient="true"
+                  data-edge={i}
+                  x1={a.x}
+                  y1={a.y}
+                  x2={b.x}
+                  y2={b.y}
+                  stroke="#b85e2a"
+                  strokeOpacity={0.3}
+                  strokeWidth={12}
+                  vectorEffect="non-scaling-stroke"
+                />
+              ),
+            )}
           {points.length > 0 && (
             <g data-transient="true">
               <path
                 d={path(
-                  [...points, ...(cursor ? [cursor] : [])],
+                  [
+                    ...points,
+                    ...(cursor && !(tool === "measure" && points.length === 2)
+                      ? [cursor]
+                      : []),
+                  ],
                   tool === "region" && points.length > 1,
                 )}
                 stroke="#ab582e"
@@ -624,6 +745,26 @@ export function ModelCanvas({
                   vectorEffect="non-scaling-stroke"
                 />
               )}
+              {["move-contour", "copy-region"].includes(tool) &&
+                cursor &&
+                contourTarget(selection) && (
+                  <path
+                    d={path(
+                      contourPoints(section, contourTarget(selection)!).map(
+                        (p) => ({
+                          x: p.x + cursor.x - points[0].x,
+                          y: p.y + cursor.y - points[0].y,
+                        }),
+                      ),
+                      selection.kind === "region",
+                    )}
+                    fill="none"
+                    stroke="#ab582e"
+                    strokeWidth={2}
+                    strokeDasharray="6 4"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                )}
               {points.map((p, i) => (
                 <circle
                   key={i}
@@ -714,10 +855,10 @@ export function ModelCanvas({
           <Maximize size={17} />
         </button>
       </div>
-      {points.length > 0 && (
+      {points.length > 0 && tool !== "measure" && (
         <div className="drawing-actions">
           <span>{points.length} pontos</span>
-          {!["load", "circle"].includes(tool) && (
+          {!twoPointTools.includes(tool) && (
             <button
               className="primary"
               disabled={points.length < (tool === "region" ? 3 : 2)}
@@ -733,7 +874,34 @@ export function ModelCanvas({
           </button>
         </div>
       )}
-      {section.terrain.length === 0 && points.length === 0 && (
+      {drafting && (
+        <PointEntry
+          key={tool}
+          anchor={points.at(-1) ?? null}
+          onPoint={addPoint}
+        />
+      )}
+      {cursor && (
+        <div className="snap-indicator">
+          {snapKind}
+          {precision.ortho ? " · ORTO" : ""}
+          {precision.linked ? " · Interfaces vinculadas" : ""}
+        </div>
+      )}
+      {tool === "measure" &&
+        points.length > 0 &&
+        (() => {
+          const end = points[1] ?? cursor;
+          if (!end) return null;
+          const m = measurePoints(points[0], end);
+          return (
+            <output className="measurement" aria-label="Medição">
+              Distância {fmt(m.distance)} m · ΔX {fmt(m.dx)} m · ΔZ {fmt(m.dz)}{" "}
+              m · {fmt(m.angle)}°
+            </output>
+          );
+        })()}
+      {section.terrain.length === 0 && points.length === 0 && !drafting && (
         <div className="empty-canvas">
           <MountainIcon />
           <h2>Desenhe sua primeira seção</h2>

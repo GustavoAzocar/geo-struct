@@ -96,7 +96,13 @@ export type Tool =
   | "region"
   | "water"
   | "load"
-  | "circle";
+  | "circle"
+  | "insert-vertex"
+  | "delete-vertex"
+  | "move-contour"
+  | "copy-region"
+  | "split-region"
+  | "measure";
 export const uid = () => crypto.randomUUID();
 export const newMaterial = (): Material => ({
   id: uid(),

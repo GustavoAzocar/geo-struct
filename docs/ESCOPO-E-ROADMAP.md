@@ -4,7 +4,11 @@
 
 Esta entrega prepara projetos e seções, materiais, terreno, regiões de solo, água, faixas de carga e círculo de tentativa. Inclui edição por desenho/coordenadas, histórico, persistência e relatório de entradas. Não calcula fator de segurança e não dimensiona contenções.
 
-Limites de modelagem: 100 seções e 100 materiais por projeto; 64 regiões e 100 cargas por seção; 500 pontos por contorno; arquivos até 8 MB. Coordenadas limitadas a ±1.000.000 m. Não há importação DXF/DWG, estágios construtivos, faces verticais, overhangs, cálculo de fluxo, água externa ou análise sísmica. O nome de uma seção não cria cenário de cálculo: cenários ainda não têm modelo próprio nesta etapa.
+Limites de modelagem: 100 seções e 100 materiais por projeto; 64 regiões e 100 cargas por seção; 500 pontos por contorno; arquivos até 8 MB. Coordenadas limitadas a ±1.000.000 m. O terreno admite faces verticais com X não decrescente e mantém base horizontal. Não há contorno externo arbitrário, importação DXF/DWG, estágios construtivos, perfis em balanço, cálculo de fluxo, água externa ou análise sísmica. O nome de uma seção não cria cenário de cálculo: cenários ainda não têm modelo próprio nesta etapa.
+
+### Geometria e edição — implementado
+
+Inserir/excluir/mover vértices, mover contornos, copiar regiões e dividir uma região em duas por uma reta. Interfaces coincidentes acompanham a edição, com opção explícita de desvincular. Captura por vértices/interseções/segmentos, grade configurável, restrição horizontal/vertical, entrada absoluta/relativa/polar e medição. Faces verticais são aceitas na modelagem; seu tratamento físico depende do contrato futuro do motor. Divisões que gerariam ilhas, furos ou mais de duas partes são recusadas. Não há importação CAD nesta entrega.
 
 ## Base técnica
 
@@ -17,11 +21,15 @@ Os testes de modelagem deste repositório não substituem os casos geotécnicos 
 
 ## Sequência proposta
 
-1. Revisar usabilidade e persistência da modelagem com usuários; conferir o aplicativo nativo nos sistemas de destino.
-2. Concluir a especificação #30 e o catálogo #31. Definir contrato do motor, perfis numéricos, materiais/água e comportamento de falhas.
-3. Implementar preparação de fatias e cálculo em superfície fixa. Validar geometria e forças, além das equações, com referências independentes.
-4. Implementar busca circular determinística, progresso, cancelamento, inspeção por fatia e memória rastreável. Vincular resultados à revisão de entrada e invalidá-los quando ela mudar.
-5. Preparar distribuição assinada no catálogo/Launcher do OpenStruct, documentação de instalação e procedimento de atualização.
-6. Especificar métodos rigorosos, superfícies não circulares e estabilidade com reforços. Especificar separadamente verificações/dimensionamento das contenções.
+1. Geometria e edição: implementadas nesta evolução; revisar o uso em modelos reais.
+2. Materiais, atribuição explícita às regiões/solo de fundo, água e cargas: completar o lançamento e as verificações dos dados necessários ao primeiro motor. O cadastro atual ainda é básico.
+3. Casos de análise: modelar cenários, direção de deslizamento, superfície fixa e limites da busca. Seções geométricas e casos de cálculo precisam ter identidades próprias.
+4. Conferência completa do lançamento: validação entre entidades, persistência/migrações e diagnóstico das pendências. Revisar usabilidade e arquivos nos sistemas de destino antes da primeira distribuição desktop.
+5. Concluir a especificação #30 e o catálogo #31. Definir contrato do motor, perfis numéricos, tratamento das faces verticais, materiais/água e comportamento de falhas.
+6. Implementar preparação de fatias e cálculo em superfície fixa. Validar geometria e forças, além das equações, com referências independentes.
+7. Implementar busca circular determinística, progresso, cancelamento, inspeção por fatia e memória rastreável. Vincular resultados à revisão de entrada e invalidá-los quando ela mudar.
+8. Especificar métodos rigorosos, superfícies não circulares e estabilidade com reforços. Especificar separadamente verificações/dimensionamento das contenções.
+
+A distribuição desktop exige revisão nativa, instaladores, notas, catálogo/Launcher e procedimento de atualização. Compilação de CI não publica uma versão e não dispensa essa revisão.
 
 Slide2 e GEO5 são referências de produto e comparação controlada. Seus padrões de tela, exemplos ou configurações não substituem decisões de engenharia nem servem, isoladamente, como fonte governante das equações. Critérios normativos de aceitação têm etapa própria.

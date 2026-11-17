@@ -620,6 +620,101 @@ button svg {
   padding: 5px 10px;
   min-height: 30px;
 }
+.point-entry {
+  position: absolute;
+  left: 12px;
+  bottom: 92px;
+  max-width: calc(100% - 65px);
+  width: 450px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 11px;
+  box-shadow: var(--shadow);
+}
+.point-entry summary {
+  cursor: pointer;
+}
+.point-entry form {
+  display: flex;
+  align-items: end;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+}
+.point-entry label {
+  display: grid;
+  gap: 4px;
+  flex: 1;
+  min-width: 70px;
+}
+.point-entry input,
+.point-entry select {
+  min-width: 0;
+  width: 100%;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel);
+  color: var(--text);
+}
+.point-entry small {
+  flex-basis: 100%;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.point-entry p {
+  margin: 0;
+  color: var(--accent);
+}
+.point-entry button {
+  min-height: 29px;
+  font-size: 11px;
+}
+.snap-indicator {
+  position: absolute;
+  bottom: 29px;
+  left: 14px;
+  color: var(--muted);
+  background: var(--surface);
+  padding: 2px 5px;
+  font-size: 10px;
+  pointer-events: none;
+}
+.measurement {
+  position: absolute;
+  left: 12px;
+  right: 60px;
+  bottom: 50px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--surface);
+  font-size: 12px;
+  pointer-events: none;
+}
+.precision-option {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 14px 0;
+  font-size: 13px;
+}
+.model-canvas:is(
+  .tool-insert-vertex,
+  .tool-delete-vertex,
+  .tool-split-region,
+  .tool-measure,
+  .tool-move-contour,
+  .tool-copy-region
+) {
+  cursor: crosshair;
+}
+.model-canvas.tool-delete-vertex [data-vertex] {
+  cursor: pointer;
+}
 .empty-canvas {
   position: absolute;
   left: 50%;

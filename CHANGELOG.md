@@ -1,5 +1,16 @@
 # Histórico
 
+## Em desenvolvimento — geometria e edição
+
+- Inserir/excluir vértices, mover contornos, copiar e dividir regiões por reta.
+- Edição de interfaces coincidentes com propagação aos contornos vizinhos, inclusive pela tabela, e histórico por operação.
+- Captura de vértices/interseções/segmentos, grade configurável e restrição horizontal/vertical.
+- Entrada absoluta, relativa e por distância/ângulo; medição sem modificar o projeto.
+- Faces verticais no terreno, com rejeição de retorno, balanço e trechos sem área nas extremidades.
+- Compatibilidade com arquivos `geostruct/1`, testes de geometria/precisão e fluxos de interface.
+
+Esta evolução não publica instaladores, não adiciona solver e mantém a arte personalizada adiada.
+
 ## 0.1.0 — 2026-11-17
 
 Primeira entrega de código: modelagem geotécnica 2D.

@@ -7,10 +7,15 @@ export const distance = (a: Point, b: Point) =>
 export const cross = (a: Point, b: Point, c: Point) =>
   (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
 export function signedArea(points: Point[]): number {
+  const origin = points[0] ?? { x: 0, y: 0 };
   return (
     points.reduce((a, p, i) => {
       const q = points[(i + 1) % points.length];
-      return a + p.x * q.y - q.x * p.y;
+      return (
+        a +
+        (p.x - origin.x) * (q.y - origin.y) -
+        (q.x - origin.x) * (p.y - origin.y)
+      );
     }, 0) / 2
   );
 }
@@ -44,6 +49,10 @@ export function segmentsIntersect(
 export function polygonError(p: Point[]): string | null {
   if (p.length < 3) return "Uma região precisa de ao menos três vértices.";
   for (let i = 0; i < p.length; i++) {
+    const prev = p[(i + p.length - 1) % p.length];
+    const next = p[(i + 1) % p.length];
+    if (onSegment(next, prev, p[i]) || onSegment(prev, p[i], next))
+      return "O contorno retorna sobre um segmento existente.";
     if (distance(p[i], p[(i + 1) % p.length]) <= EPS)
       return "Há vértices consecutivos coincidentes.";
     for (let j = i + 1; j < p.length; j++) {
@@ -66,19 +75,56 @@ export function lineError(points: Point[]): string | null {
   if (points.length < 2)
     return "Informe ao menos dois pontos, da esquerda para a direita.";
   if (points.some((p, i) => i > 0 && p.x - points[i - 1].x <= EPS))
-    return "As coordenadas X devem crescer. Faces verticais e perfis em balanço ficam para uma próxima etapa.";
+    return "As coordenadas X devem crescer na linha piezométrica.";
   return null;
 }
-export function elevation(points: Point[], x: number): number | null {
+export function terrainError(points: Point[]): string | null {
+  if (points.length < 2) return "Informe ao menos dois pontos do terreno.";
+  for (let i = 1; i < points.length; i++) {
+    if (points[i].x < points[i - 1].x)
+      return "As coordenadas X devem crescer ou permanecer iguais nas faces verticais. Perfis em balanço não são admitidos.";
+    if (distance(points[i], points[i - 1]) <= EPS)
+      return "Há pontos consecutivos coincidentes no terreno.";
+    if (
+      (points[i].x === points[0].x && points[i].y < points[i - 1].y) ||
+      (points[i - 1].x === points.at(-1)!.x && points[i].y > points[i - 1].y)
+    )
+      return "A face vertical na extremidade se sobrepõe ao fechamento da seção. Remova o trecho sem área.";
+    if (
+      i > 1 &&
+      (onSegment(points[i], points[i - 2], points[i - 1]) ||
+        onSegment(points[i - 2], points[i - 1], points[i]))
+    )
+      return "O terreno retorna sobre um segmento existente.";
+  }
+  if (points.at(-1)!.x - points[0].x <= EPS)
+    return "O terreno precisa ter extensão horizontal.";
+  return null;
+}
+// Envelope para desenho/diagnóstico; não define forças do futuro motor.
+export function elevation(
+  points: Point[],
+  x: number,
+  side: "upper" | "lower" = "upper",
+): number | null {
   if (points.length < 2 || x < points[0].x - EPS || x > points.at(-1)!.x + EPS)
     return null;
+  const values: number[] = [];
   for (let i = 1; i < points.length; i++)
-    if (x <= points[i].x + EPS) {
+    if (x >= points[i - 1].x - EPS && x <= points[i].x + EPS) {
       const a = points[i - 1],
         b = points[i];
-      return a.y + ((b.y - a.y) * (x - a.x)) / (b.x - a.x);
+      if (Math.abs(b.x - a.x) <= EPS) values.push(a.y, b.y);
+      else
+        values.push(
+          a.y + (b.y - a.y) * Math.max(0, Math.min(1, (x - a.x) / (b.x - a.x))),
+        );
     }
-  return null;
+  return values.length
+    ? side === "upper"
+      ? Math.max(...values)
+      : Math.min(...values)
+    : null;
 }
 export function boundary(s: Section): Point[] {
   return s.terrain.length < 2
@@ -113,7 +159,7 @@ export function regionError(
 ): string | null {
   const err = polygonError(points);
   if (err) return err;
-  if (lineError(s.terrain))
+  if (terrainError(s.terrain))
     return "Defina primeiro um perfil de terreno válido.";
   if (s.terrain.some((p) => p.y <= s.base + EPS))
     return "A base deve ficar abaixo de todo o terreno.";
@@ -168,7 +214,7 @@ export function diagnose(p: Project): Diagnostic[] {
         target,
         sectionId: s.id,
       });
-    const err = lineError(s.terrain);
+    const err = terrainError(s.terrain);
     if (err) {
       push("error", err);
       continue;
@@ -195,7 +241,7 @@ export function diagnose(p: Project): Diagnostic[] {
         const xs = [...s.terrain, ...s.water].map((v) => v.x);
         if (
           xs.some((x) => {
-            const g = elevation(s.terrain, x),
+            const g = elevation(s.terrain, x, "lower"),
               w = elevation(s.water!, x);
             return g !== null && w !== null && w > g + EPS;
           })

@@ -20,8 +20,11 @@ Abra http://127.0.0.1:1420. Na tela inicial, escolha **Explorar um exemplo** ou 
 
 - Interface em português, ribbon, árvore de projeto, propriedades laterais, temas claro/escuro e painéis redimensionáveis.
 - Projetos com múltiplas seções; criação e duplicação de seções e materiais compartilhados.
-- Edição gráfica e por tabela de coordenadas, movimentação de vértices, captura de pontos/grade de 0,5 m, pan e zoom no cursor.
-- Perfil do terreno, cota da base e regiões poligonais sem sobreposição, com material de fundo no restante do domínio.
+- Edição gráfica e por tabela: mover, inserir e excluir vértices, mover contornos, copiar e dividir regiões por uma reta.
+- Interfaces coincidentes de solo acompanham a edição em uma única operação de desfazer/refazer, inclusive com subdivisões distintas nos contornos vizinhos.
+- Captura de vértices, interseções e segmentos; grade configurável (inicialmente 0,5 m), restrição horizontal/vertical, pan e zoom no cursor.
+- Entrada precisa por X/Z, deslocamento relativo ou distância/ângulo, além de medição de distância, desnível e ângulo.
+- Perfil do terreno com faces verticais, base horizontal e regiões poligonais sem sobreposição, com material de fundo no restante do domínio. Perfis em balanço ainda não são admitidos.
 - Materiais Mohr–Coulomb: peso específico total, coesão, atrito, modo de resistência e origem dos parâmetros.
 - Linha piezométrica prescrita, sobrecargas verticais uniformes e círculo de tentativa.
 - Validação geométrica, diagnósticos, desfazer/refazer, proteção de propriedades em edição e de alterações não salvas.
@@ -44,7 +47,7 @@ Na primeira preparação desktop é necessário acesso à internet para baixar o
 
 O aplicativo usa `br.com.openstruct.geostruct`, janela mínima de 960 × 640 e diálogo nativo de arquivos. O acesso ao sistema de arquivos fica limitado aos arquivos escolhidos pelo usuário. No navegador, Abrir usa o seletor de arquivo e Salvar gera um download. Conserve o arquivo exportado: a cópia de recuperação no navegador não substitui um backup.
 
-Este primeiro commit entrega os fontes; instaladores e integração no catálogo/Launcher serão tratados após a validação da distribuição. Não há atualização automática ativa nesta versão.
+Os fontes continuam em evolução antes da distribuição desktop. Instaladores e integração no catálogo/Launcher serão tratados após a validação da modelagem e da distribuição. Não há atualização automática ativa nesta versão.
 
 ## Desenvolvimento
 

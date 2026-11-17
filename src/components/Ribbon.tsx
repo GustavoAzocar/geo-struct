@@ -26,6 +26,11 @@ import {
   FolderClosed,
   ListChecks,
   PencilRuler,
+  ScanLine,
+  Move,
+  Scissors,
+  Ruler,
+  Settings2,
   type LucideIcon,
 } from "lucide-react";
 import type { Tool } from "../domain/model";
@@ -59,6 +64,7 @@ export type Action =
   | "help"
   | "diagnostics"
   | "properties"
+  | "precision"
   | Tool;
 type Item = { action: Action; label: string; icon: LucideIcon; tip?: string };
 const groups: Record<Tab, { label: string; items: Item[] }[]> = {
@@ -116,6 +122,23 @@ const groups: Record<Tab, { label: string; items: Item[] }[]> = {
       ],
     },
     {
+      label: "Contornos e camadas",
+      items: [
+        { action: "insert-vertex", label: "Inserir vértice", icon: Plus },
+        { action: "delete-vertex", label: "Excluir vértice", icon: ScanLine },
+        { action: "move-contour", label: "Mover contorno", icon: Move },
+        { action: "copy-region", label: "Copiar região", icon: Copy },
+        { action: "split-region", label: "Dividir região", icon: Scissors },
+      ],
+    },
+    {
+      label: "Precisão",
+      items: [
+        { action: "measure", label: "Medir", icon: Ruler },
+        { action: "precision", label: "Precisão", icon: Settings2 },
+      ],
+    },
+    {
       label: "Seções",
       items: [
         { action: "section", label: "Nova seção", icon: Plus },
@@ -170,7 +193,7 @@ const groups: Record<Tab, { label: string; items: Item[] }[]> = {
           action: "snap",
           label: "Captura de pontos",
           icon: Magnet,
-          tip: "Vértices próximos e grade de 0,5 m · F3",
+          tip: "Vértices, segmentos, interseções e grade configurável · F3",
         },
       ],
     },
@@ -262,6 +285,12 @@ export function Ribbon({
                         "water",
                         "load",
                         "circle",
+                        "insert-vertex",
+                        "delete-vertex",
+                        "move-contour",
+                        "copy-region",
+                        "split-region",
+                        "measure",
                         "grid",
                         "snap",
                       ].includes(item.action)

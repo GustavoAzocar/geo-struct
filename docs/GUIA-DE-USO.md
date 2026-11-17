@@ -31,11 +31,27 @@ Para uma sobrecarga, clique nos limites inicial/final da faixa horizontal. Depoi
 
 - Roda: zoom no cursor. Botão do meio ou Espaço + arrastar: mover vista.
 - V: selecionar; H: mover vista; F: enquadrar; F3: captura.
-- Captura procura vértices próximos e depois grade de 0,5 m. Desative-a para posicionamento livre.
+- Captura procura vértices próximos, interseções, segmentos e depois a grade. Em **Geometria → Precisão**, configure o passo (inicialmente 0,5 m) e a restrição horizontal/vertical. F3 desliga a captura; a restrição ortogonal é uma opção separada.
 - Selecione terreno, região ou água para exibir seus vértices. Arrastar um vértice gera um passo de histórico; alterações inválidas são recusadas com mensagem.
 - Ctrl+Z desfaz e Ctrl+Shift+Z/Ctrl+Y refaz. Em campos de texto, esses atalhos conservam a edição nativa do campo.
 - Arraste os divisores dos painéis ou use setas após focá-los com Tab.
 - A faixa **Mostrar** controla solos, água, cargas e círculo. Temas claro/escuro ficam no topo.
+
+### Editar contornos e interfaces
+
+Selecione o terreno, uma região ou a linha piezométrica antes de escolher **Inserir vértice**, **Excluir vértice** ou **Mover contorno**. Inserir usa um clique no interior de um segmento. Excluir usa um clique no vértice e mantém o mínimo de dois pontos no perfil ou três na região. Mover usa um ponto base e um destino, que definem o deslocamento.
+
+Por padrão, **Editar interfaces de solo vinculadas** mantém juntas as fronteiras coincidentes entre terreno e regiões, inclusive quando os dois lados têm números diferentes de vértices. Desfazer reverte a operação completa. A água é independente. Desligue a vinculação em **Precisão** para editar só o contorno selecionado; a validação continua recusando sobreposição e saída do domínio. A edição pela tabela também acompanha as interfaces. Colar uma lista substitui apenas o contorno selecionado e não infere quais pontos antigos correspondem aos novos.
+
+**Copiar região** exige uma região selecionada e dois pontos de deslocamento. Cria um novo ID e mantém o material original. **Dividir região** usa dois pontos para definir uma reta infinita de corte e cria duas regiões adjacentes com o mesmo material. Selecione cada parte para ajustar nome e material. Reta tangente/exterior ou corte que gera mais de duas partes é recusado. Copiar/dividir atua em regiões explícitas; o solo de fundo continua preenchendo o restante da seção.
+
+O perfil pode conter faces verticais: use pontos consecutivos com o mesmo X e Z diferente. Continue avançando da esquerda para a direita; retornos e perfis em balanço não são aceitos. Uma face na extremidade não pode retornar sobre o fechamento lateral automático. A admissão geométrica não significa que o futuro motor já aceite o caso.
+
+### Entrada precisa e medição
+
+Durante o desenho ou comandos de dois pontos, abra **Entrada precisa** no canto inferior esquerdo. Escolha **X/Z**, **ΔX/ΔZ** a partir do último ponto, ou **Distância/ângulo**. O primeiro ponto precisa de X/Z ou clique. Ângulos são medidos a partir de +X, positivos em direção a +Z. Valores digitados são preservados, sem arredondamento pela grade ou restrição ortogonal. A tabela das propriedades continua disponível para coordenadas existentes.
+
+**Medir** mostra distância, ΔX, ΔZ e ângulo entre dois pontos; não modifica o projeto. Um terceiro ponto inicia outra medição. Escape encerra. As preferências de precisão valem para a sessão e não são gravadas como parâmetros físicos no `.geo.json`.
 
 ## Arquivos e recuperação
 

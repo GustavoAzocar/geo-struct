@@ -7,6 +7,7 @@ import {
   type Selection,
   type Point,
 } from "../domain/model";
+import { contourTarget, replaceContourCoordinates } from "../domain/editing";
 import { diagnose, parseCoordinates, parseNumber } from "../domain/geometry";
 
 const labels: Record<Selection["kind"], string> = {
@@ -25,12 +26,14 @@ export function Inspector({
   selection,
   onApply,
   onDirty,
+  linked,
 }: {
   project: Project;
   section: Section;
   selection: Selection;
   onApply: (p: Project) => void;
   onDirty: (b: boolean) => void;
+  linked: boolean;
 }) {
   const source =
     selection.kind === "material"
@@ -63,6 +66,9 @@ export function Inspector({
   const [coordinates, setCoordinates] = useState<string[][]>(
     initialPoints.map((p) => [String(p.x), String(p.y)]),
   );
+  const [originalRows, setOriginalRows] = useState<(number | null)[]>(
+    initialPoints.map((_, i) => i),
+  );
   const [paste, setPaste] = useState("");
   const [error, setError] = useState("");
   const [dirty, setDirty] = useState(false);
@@ -82,6 +88,7 @@ export function Inspector({
   const reset = () => {
     setValues(initial);
     setCoordinates(initialPoints.map((p) => [String(p.x), String(p.y)]));
+    setOriginalRows(initialPoints.map((_, i) => i));
     setError("");
     setDirty(false);
     setPaste("");
@@ -144,6 +151,18 @@ export function Inspector({
         s = p.sections.find((x) => x.id === section.id)!;
       const points = () =>
         parseCoordinates(coordinates.map((row) => row.join(" ; ")).join("\n"));
+      const target = contourTarget(selection);
+      if (target)
+        Object.assign(
+          s,
+          replaceContourCoordinates(
+            section,
+            target,
+            points(),
+            originalRows,
+            linked,
+          ),
+        );
       switch (selection.kind) {
         case "project":
           p.name = values.name;
@@ -156,7 +175,6 @@ export function Inspector({
           s.backgroundMaterialId = values.backgroundMaterialId;
           break;
         case "terrain":
-          s.terrain = points();
           s.base = number("base", "Cota da base")!;
           s.backgroundMaterialId = values.backgroundMaterialId;
           break;
@@ -164,11 +182,9 @@ export function Inspector({
           const r = s.regions.find((x) => x.id === selection.id)!;
           r.name = values.name;
           r.materialId = values.materialId;
-          r.points = points();
           break;
         }
         case "water":
-          s.water = points();
           break;
         case "material": {
           const m = p.materials.find((x) => x.id === selection.id)!;
@@ -373,9 +389,12 @@ export function Inspector({
                       type="button"
                       className="icon-button"
                       aria-label={`Remover ponto ${i + 1}`}
-                      onClick={() =>
-                        editCoordinates(coordinates.filter((_, j) => i !== j))
-                      }
+                      onClick={() => {
+                        editCoordinates(coordinates.filter((_, j) => i !== j));
+                        setOriginalRows((rows) =>
+                          rows.filter((_, j) => i !== j),
+                        );
+                      }}
                     >
                       <Trash2 size={13} />
                     </button>
@@ -386,7 +405,10 @@ export function Inspector({
                 className="text-button"
                 type="button"
                 disabled={coordinates.length >= 500}
-                onClick={() => editCoordinates([...coordinates, ["", ""]])}
+                onClick={() => {
+                  editCoordinates([...coordinates, ["", ""]]);
+                  setOriginalRows((rows) => [...rows, null]);
+                }}
               >
                 <Plus size={14} />
                 Adicionar ponto
@@ -394,8 +416,9 @@ export function Inspector({
               <details className="coordinate-paste">
                 <summary>Colar lista de coordenadas</summary>
                 <p className="hint">
-                  Uma linha por ponto: X ; Z. Aceita tabulação e vírgula
-                  decimal.
+                  Uma linha por ponto: X ; Z. A lista substitui o contorno;
+                  vínculos entre vértices antigos e novos não são inferidos.
+                  Aceita tabulação e vírgula decimal.
                 </p>
                 <textarea
                   aria-label="Lista de coordenadas"
@@ -409,11 +432,10 @@ export function Inspector({
                   className="secondary"
                   onClick={() => {
                     try {
+                      const parsed = parseCoordinates(paste);
+                      setOriginalRows(parsed.map(() => null));
                       editCoordinates(
-                        parseCoordinates(paste).map((pt) => [
-                          String(pt.x),
-                          String(pt.y),
-                        ]),
+                        parsed.map((pt) => [String(pt.x), String(pt.y)]),
                       );
                     } catch (e) {
                       setError((e as Error).message);

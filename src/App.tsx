@@ -29,8 +29,26 @@ import {
   type Tool,
   type Point,
 } from "./domain/model";
+import {
+  contourTarget,
+  contourPoints,
+  moveContourVertex,
+  insertContourVertex,
+  deleteContourVertex,
+  translateContour,
+  copyRegion,
+  splitRegion,
+} from "./domain/editing";
+import type { Precision } from "./domain/precision";
 import { history, commit, undo, redo, type History } from "./domain/history";
-import { diagnose, distance, lineError, regionError } from "./domain/geometry";
+import {
+  diagnose,
+  distance,
+  lineError,
+  terrainError,
+  regionError,
+  parseNumber,
+} from "./domain/geometry";
 import {
   desktop,
   getRecovery,
@@ -85,6 +103,14 @@ export default function App() {
       loads: true,
       circle: true,
     });
+  const [precision, setPrecision] = useState<Precision>({
+    gridStep: 0.5,
+    ortho: false,
+    linked: true,
+  });
+  const [gridInput, setGridInput] = useState("0,5");
+  const [precisionDraft, setPrecisionDraft] = useState(precision);
+  const [precisionError, setPrecisionError] = useState("");
   const [fitToken, setFitToken] = useState(0),
     [cursor, setCursor] = useState<Point>({ x: 0, y: 0 });
   const [draftDirty, setDraftDirty] = useState(false),
@@ -95,7 +121,9 @@ export default function App() {
     [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState(""),
     [question, setQuestion] = useState<Question | null>(null),
-    [dialog, setDialog] = useState<"new" | "help" | "report" | null>(null);
+    [dialog, setDialog] = useState<
+      "new" | "help" | "report" | "precision" | null
+    >(null);
   const [newName, setNewName] = useState("Novo projeto"),
     [newAuthor, setNewAuthor] = useState("");
   const [left, setLeft] = useState(235),
@@ -318,11 +346,31 @@ export default function App() {
       );
       if (ok !== "replace") return;
     }
-    if (["region", "water", "load"].includes(t) && lineError(section.terrain)) {
+    if (
+      ["region", "water", "load"].includes(t) &&
+      terrainError(section.terrain)
+    ) {
       notify("Defina primeiro um perfil de terreno válido.");
       return;
     }
     if (t === "terrain") setSelection({ kind: "terrain" });
+    const target = contourTarget(selection);
+    if (
+      ["insert-vertex", "delete-vertex", "move-contour"].includes(t) &&
+      (!target || contourPoints(section, target).length < 2)
+    ) {
+      notify(
+        "Selecione primeiro o terreno, uma região ou a linha piezométrica.",
+      );
+      return;
+    }
+    if (
+      ["copy-region", "split-region"].includes(t) &&
+      selection.kind !== "region"
+    ) {
+      notify("Selecione primeiro uma região de solo na árvore ou no desenho.");
+      return;
+    }
     setTool(t);
     setInspectorEpoch((n) => n + 1);
   };
@@ -349,11 +397,46 @@ export default function App() {
   };
   const draw = (t: Tool, points: Point[]) => {
     if (!project || !section) return;
+    if (["move-contour", "copy-region", "split-region"].includes(t)) {
+      try {
+        const p = structuredClone(project),
+          delta = {
+            x: points[1].x - points[0].x,
+            y: points[1].y - points[0].y,
+          };
+        const target = contourTarget(selection);
+        const newId = uid();
+        const next =
+          t === "move-contour" && target
+            ? translateContour(section, target, delta, precision.linked)
+            : selection.kind === "region"
+              ? t === "copy-region"
+                ? copyRegion(section, selection.id, delta, newId)
+                : splitRegion(
+                    section,
+                    selection.id,
+                    points[0],
+                    points[1],
+                    newId,
+                  )
+              : null;
+        if (!next) return;
+        p.sections[p.sections.findIndex((s) => s.id === section.id)] = next;
+        if (acceptGeometry(p)) {
+          setTool("select");
+          setDrawing(false);
+          if (t !== "move-contour") setSelection({ kind: "region", id: newId });
+        }
+      } catch (e) {
+        notify((e as Error).message);
+      }
+      return;
+    }
     const p = structuredClone(project),
       s = p.sections.find((x) => x.id === section.id)!;
     let selected: Selection = { kind: "terrain" };
     if (t === "terrain") {
-      const e = lineError(points);
+      const e = terrainError(points);
       if (e) {
         notify(e);
         return;
@@ -411,21 +494,36 @@ export default function App() {
         );
     }
   };
-  const moveVertex = async (index: number, point: Point) => {
+  const editVertex = async (
+    kind: "move" | "insert" | "delete",
+    index: number,
+    point?: Point,
+  ) => {
     if (!project || !section || !(await guardDraft())) return;
-    const p = structuredClone(project),
-      s = p.sections.find((x) => x.id === section.id)!;
-    const pts =
-      selection.kind === "terrain"
-        ? s.terrain
-        : selection.kind === "water"
-          ? s.water
-          : selection.kind === "region"
-            ? s.regions.find((r) => r.id === selection.id)?.points
-            : null;
-    if (!pts) return;
-    pts[index] = point;
-    acceptGeometry(p);
+    const target = contourTarget(selection);
+    if (!target) return;
+    try {
+      const p = structuredClone(project);
+      const next =
+        kind === "move"
+          ? moveContourVertex(section, target, index, point!, precision.linked)
+          : kind === "insert"
+            ? insertContourVertex(
+                section,
+                target,
+                index,
+                point!,
+                precision.linked,
+              )
+            : deleteContourVertex(section, target, index, precision.linked);
+      p.sections[p.sections.findIndex((s) => s.id === section.id)] = next;
+      acceptGeometry(p);
+    } catch (e) {
+      notify((e as Error).message);
+    }
+  };
+  const moveVertex = async (index: number, point: Point) => {
+    await editVertex("move", index, point);
   };
   const removeSelected = async () => {
     if (!project || !section || !(await guardDraft())) return;
@@ -523,6 +621,12 @@ export default function App() {
         "water",
         "load",
         "circle",
+        "insert-vertex",
+        "delete-vertex",
+        "move-contour",
+        "copy-region",
+        "split-region",
+        "measure",
       ].includes(a)
     ) {
       await selectTool(a as Tool);
@@ -542,6 +646,13 @@ export default function App() {
     }
     if (a === "theme") {
       setDark((v) => !v);
+      return;
+    }
+    if (a === "precision") {
+      setGridInput(String(precision.gridStep));
+      setPrecisionDraft(precision);
+      setPrecisionError("");
+      setDialog("precision");
       return;
     }
     if (a === "help") {
@@ -869,6 +980,8 @@ export default function App() {
                   dark={dark}
                   grid={grid}
                   snap={snap}
+                  precision={precision}
+                  onEditVertex={editVertex}
                   visibility={visibility}
                   fitToken={fitToken}
                   onSelect={select}
@@ -975,6 +1088,7 @@ export default function App() {
                 section={section}
                 selection={selection}
                 onApply={apply}
+                linked={precision.linked}
                 onDirty={setDraftDirty}
               />
             </div>
@@ -994,7 +1108,10 @@ export default function App() {
                 className={snap ? "active" : ""}
                 onClick={() => setSnap((s) => !s)}
               >
-                CAPTURA {snap ? "0,5 m" : "DESLIGADA"}
+                CAPTURA{" "}
+                {snap
+                  ? `${precision.gridStep.toLocaleString("pt-BR")} m`
+                  : "DESLIGADA"}
               </button>
               <button
                 className={grid ? "active" : ""}
@@ -1088,6 +1205,63 @@ export default function App() {
                 disabled={!newName.trim()}
               >
                 Criar projeto
+              </button>
+            </div>
+          </form>
+        </Dialog>
+      )}
+      {dialog === "precision" && (
+        <Dialog title="Precisão do desenho" onClose={() => setDialog(null)}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const value = parseNumber(gridInput);
+              if (value === null || value < 0.001 || value > 10000) {
+                setPrecisionError("Use um passo entre 0,001 e 10.000 m.");
+                return;
+              }
+              setPrecision({ ...precisionDraft, gridStep: value });
+              setDialog(null);
+            }}
+          >
+            <label className="field">
+              <span>Passo da grade de captura (m)</span>
+              <input
+                aria-label="Passo da grade de captura (m)"
+                inputMode="decimal"
+                value={gridInput}
+                onChange={(e) => setGridInput(e.target.value)}
+              />
+            </label>
+            <label className="precision-option">
+              <input
+                type="checkbox"
+                checked={precisionDraft.ortho}
+                onChange={(e) =>
+                  setPrecisionDraft((v) => ({ ...v, ortho: e.target.checked }))
+                }
+              />{" "}
+              Restringir a horizontal/vertical
+            </label>
+            <label className="precision-option">
+              <input
+                type="checkbox"
+                checked={precisionDraft.linked}
+                onChange={(e) =>
+                  setPrecisionDraft((v) => ({ ...v, linked: e.target.checked }))
+                }
+              />{" "}
+              Editar interfaces de solo vinculadas
+            </label>
+            <p className="hint">
+              Interfaces coincidentes entre terreno e regiões acompanham a
+              edição. A linha piezométrica permanece independente. As opções de
+              desenho não alteram os parâmetros físicos do projeto.
+            </p>
+            {precisionError && <p role="alert">{precisionError}</p>}
+            <div className="dialog-actions">
+              <button className="primary" type="submit">
+                Aplicar precisão
               </button>
             </div>
           </form>
