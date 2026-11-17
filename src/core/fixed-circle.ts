@@ -1,12 +1,17 @@
 import type { Immutable, InputPreparation, PointXZ } from "./input";
 import { freeze } from "./immutable";
 import {
+  partitionMaterialAreas,
+  type SliceMaterialAreas,
+} from "./material-areas";
+import {
   arcAngle,
   circularSegmentArea,
   fail,
   GeometryError,
   lowerArc,
   pointInRegion,
+  sameSupportingLine,
   segmentCircleIntersections,
   terrainElevation,
   type Circle,
@@ -33,7 +38,7 @@ export type CircleIntersection = {
   kind: "unclassified" | "transverse" | "contact";
 };
 export type SliceCut = { x: number; baseZ: number; reasons: CutReason[] };
-export type GeometricSlice = {
+export type GeometricSlice = SliceMaterialAreas & {
   number: number;
   left: { x: number; topZ: number; baseZ: number };
   right: { x: number; topZ: number; baseZ: number };
@@ -51,10 +56,12 @@ export type FixedCircleGeometry = Immutable<{
   cuts: SliceCut[];
   slices: GeometricSlice[];
   areaM2: number;
+  materialAreas: SliceMaterialAreas["materialAreas"];
+  areaBalance: SliceMaterialAreas["areaBalance"];
 }>;
 export type FixedCirclePreparation = Immutable<
   {
-    contract: "geostruct-fixed-geometry/1";
+    contract: "geostruct-fixed-geometry/2";
     stage: "geometry-only";
     inputRevision: string | null;
     profile: GeometryProfile;
@@ -72,7 +79,7 @@ export function prepareFixedCircleGeometry(
 ): FixedCirclePreparation {
   const intersections: CircleIntersection[] = [];
   const common = {
-    contract: "geostruct-fixed-geometry/1" as const,
+    contract: "geostruct-fixed-geometry/2" as const,
     stage: "geometry-only" as const,
     inputRevision: preparation.snapshot?.revision ?? null,
     profile: { ...profile },
@@ -152,6 +159,10 @@ export function prepareFixedCircleGeometry(
       );
     // Reaproveita raízes de arestas iguais, inclusive orientadas em sentidos opostos.
     const cache = new Map<string, PointXZ[]>();
+    const lineRoots = new Map<
+      string,
+      { a: PointXZ; b: PointXZ; points: PointXZ[] }[]
+    >();
     const roots = (a: PointXZ, b: PointXZ) => {
       const ordered =
         a.x < b.x || (a.x === b.x && a.z <= b.z) ? [a, b] : [b, a];
@@ -159,6 +170,35 @@ export function prepareFixedCircleGeometry(
       let found = cache.get(key);
       if (!found) {
         found = segmentCircleIntersections(c, a, b, eps);
+        // A mesma interface pode ter subdivisões distintas em regiões vizinhas.
+        // Só reutiliza a raiz quando a reta coincide, nunca por proximidade isolada.
+        const slope = (b.z - a.z) / (b.x - a.x);
+        const lineKey =
+          a.x === b.x
+            ? `vertical:${a.x}`
+            : JSON.stringify([slope, a.z - c.z - slope * (a.x - c.x)]);
+        const candidates = lineRoots.get(lineKey) ?? [];
+        let shared = candidates.find((item) =>
+          sameSupportingLine(item.a, item.b, a, b),
+        );
+        if (!shared) {
+          shared = { a, b, points: [] };
+          candidates.push(shared);
+          lineRoots.set(lineKey, candidates);
+        }
+        found = found.map((point) => {
+          const canonical = shared!.points.find(
+            (other) => Math.hypot(other.x - point.x, other.z - point.z) <= eps,
+          );
+          if (canonical) return canonical;
+          shared!.points.push(point);
+          return point;
+        });
+        if (new Set(found).size !== found.length)
+          fail(
+            "unresolved-contact",
+            "Duas raízes da mesma interface não podem ser distinguidas com a tolerância informada.",
+          );
         cache.set(key, found);
       }
       return found;
@@ -341,7 +381,7 @@ export function prepareFixedCircleGeometry(
         "angular-resolution",
         "O refinamento gerou coordenadas indistinguíveis. Reveja o perfil geométrico.",
       );
-    const slices: GeometricSlice[] = [];
+    const slices: Omit<GeometricSlice, keyof SliceMaterialAreas>[] = [];
     let area = 0,
       compensation = 0;
     for (let i = 0; i < cutList.length - 1; i++) {
@@ -424,10 +464,18 @@ export function prepareFixedCircleGeometry(
         areaM2,
       });
     }
+    const parts = partitionMaterialAreas(input.geometry, c, slices, eps);
     return freeze({
       ...common,
       status: "prepared" as const,
-      geometry: { circle: c, cuts: cutList, slices, areaM2: area },
+      geometry: {
+        circle: c,
+        cuts: cutList,
+        slices: slices.map((s, i) => ({ ...s, ...parts.slices[i] })),
+        areaM2: area,
+        materialAreas: parts.materialAreas,
+        areaBalance: parts.areaBalance,
+      },
       diagnostics: [] as [],
     });
   } catch (error) {

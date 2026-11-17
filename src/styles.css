@@ -1139,6 +1139,17 @@ select {
   max-height: 40vh;
   overflow: auto;
 }
+.slice-material-inspection {
+  margin: 16px 0;
+}
+.slice-material-inspection summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.slice-material-inspection td ul {
+  margin: 0;
+  padding-left: 16px;
+}
 .inspector-actions {
   display: flex;
   gap: 7px;

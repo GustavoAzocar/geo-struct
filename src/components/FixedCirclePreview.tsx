@@ -7,6 +7,7 @@ import {
 } from "../core/fixed-circle";
 import { parseNumber } from "../domain/geometry";
 import { Dialog } from "./Dialog";
+import { MaterialAreaInspection } from "./MaterialAreaInspection";
 
 export type GeometryFields = { tolerance: string; angle: string };
 export type FixedCirclePreviewProps = {
@@ -216,6 +217,12 @@ export function FixedCirclePreview({
                 </tbody>
               </table>
             </div>
+            {input && (
+              <MaterialAreaInspection
+                geometry={result.geometry}
+                input={input}
+              />
+            )}
             <details>
               <summary>Origem dos cortes</summary>
               <div className="materials-table-wrap slice-table-wrap">

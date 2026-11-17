@@ -1,4 +1,4 @@
-# Geometria de um círculo fixo — contrato 1
+# Geometria de um círculo fixo — contrato 2
 
 Esta entrega consolida o recorte geométrico de R1/R3 da especificação candidata #30, sob a autorização de implementação do mantenedor nesta etapa. Não registra aceite de engenharia da especificação integral, não fecha a PR #37 e não implementa forças, pressões, FS, busca ou critérios normativos.
 
@@ -29,6 +29,8 @@ A tolerância geométrica em metros é obrigatória e informada pelo usuário, s
 
 Os diagnósticos de erro do cadastro impedem a preparação. Pendências de parâmetros resistentes não impedem a geometria, mas continuam visíveis e não são preenchidas. Atribuições usadas na base precisam ser inequívocas.
 
+Na versão 2, o resultado também inclui [áreas por material e origem](AREAS-POR-MATERIAL.md), com conferência de conservação por fatia e global. Uma atribuição ausente em qualquer parcela positiva bloqueia a preparação, inclusive acima da base. Raízes da mesma reta compartilhada entre regiões são reaproveitadas mesmo quando a interface possui subdivisões diferentes; isso exige coincidência da reta, não apenas proximidade dos cortes.
+
 ## Grandezas e casos independentes
 
 Para cada fatia, guardar limites X, cotas de topo e arco nos dois lados, largura, abertura angular, comprimento do arco, comprimento e inclinação geométrica da corda, ponto médio angular, material da base e área geométrica total. A área é a do trapézio entre terreno e corda acrescida do segmento circular entre corda e arco; não aproximar o arco por uma polilinha no cálculo da área. A avaliação do segmento usa a expansão de `θ − sin θ` para evitar cancelamento em aberturas pequenas. A soma das áreas usa compensação de arredondamento.
@@ -41,4 +43,4 @@ Selecionar o caso, abrir **Geometria do círculo fixo**, informar a tolerância 
 
 O arquivo permanece `geostruct/4`. Perfil de prévia e resultados são dados da sessão, não são gravados no projeto. O resultado registra a revisão exata de entrada, a versão do contrato geométrico e o perfil usado. A geometria preparada não constitui admissibilidade mecânica ou aprovação de estabilidade.
 
-O próximo passo é consolidar a subdivisão por material e a preparação de pesos, água e cargas conforme a especificação aprovada, antes de implementar Fellenius/Bishop e os casos independentes de FS.
+As subáreas por material estão implementadas no contrato 2. O próximo passo é consolidar e preparar pesos, água e cargas conforme a especificação aprovada, antes de implementar Fellenius/Bishop e os casos independentes de FS.

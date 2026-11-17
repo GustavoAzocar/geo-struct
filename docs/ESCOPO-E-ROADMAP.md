@@ -32,6 +32,10 @@ Arco inferior, interseções transversais com o terreno, faces verticais com cot
 
 Contrato `geostruct-input/1`, adaptador de casos, cópia imutável, origem dos dados, unidades explícitas e revisão determinística das entradas efetivas. Conferência no inspetor do caso, atualizada após aplicar alterações e desfazer/refazer. Preserva nulos, zeros, referências, escolhas próprias/herdadas e coordenadas originais. O arquivo permanece v4. Sem normalização pelo sentido, perfil numérico, fatias ou equações; ver [Entradas do núcleo](ENTRADAS-DO-NUCLEO.md).
 
+### Áreas por material — implementadas
+
+Decomposição de cada fatia em subáreas até o arco, incluindo regiões côncavas, inclusões que não tocam a base, interfaces compartilhadas e solo de fundo. Agregação por ID com origem das parcelas, conservação por fatia e global, limites de capacidade e inspeção na interface. O contrato geométrico passa a `geostruct-fixed-geometry/2`, sem alterar o projeto v4. Sem pesos ou propriedades equivalentes. Ver [Áreas por material](AREAS-POR-MATERIAL.md).
+
 ### Referências e decisões
 
 - [#28 — Roadmap](https://github.com/ricardocorsini/openstruct-front/issues/28): primeiro motor determinístico 2D, superfícies circulares, Mohr–Coulomb, Fellenius e Bishop Simplificado.
@@ -48,7 +52,7 @@ Os testes de modelagem deste repositório não substituem os casos geotécnicos 
 3. Casos de análise: implementados no recorte de cadastro e prévia, com identidade própria e vínculo à seção.
 4. **Conferência integrada e distribuição 0.1.0 — implementadas:** escopos por seção/caso, dependências compartilhadas, navegação, relatório, limite de arquivo simétrico e instaladores Windows/Linux disponíveis no Launcher. A homologação manual nativa completa continua pendente.
 5. **Contrato de transferência de entradas — implementado.** Concluir a especificação #30 e o catálogo #31 antes de avançar nas regras físicas: perfis numéricos, tratamento das faces verticais, materiais/água e comportamento de falhas.
-6. **Interseções e fatias geométricas — implementadas**, com casos analíticos próprios. Próxima entrega: consolidar as regras e preparar subáreas por material, pesos, água e cargas; depois implementar cálculo em superfície fixa com referências independentes. A validação de geometria não substitui a validação das forças ou das equações.
+6. **Interseções, fatias e subáreas por material — implementadas**, com casos analíticos próprios e conservação da área. Próxima entrega: consolidar as regras e preparar pesos por material; depois água, cargas e cálculo em superfície fixa com referências independentes. A validação de geometria não substitui a validação das forças ou das equações.
 7. Implementar busca circular determinística, progresso, cancelamento, inspeção por fatia e memória rastreável. Vincular resultados à revisão de entrada e invalidá-los quando ela mudar.
 8. Especificar métodos rigorosos, superfícies não circulares e estabilidade com reforços. Especificar separadamente verificações/dimensionamento das contenções.
 

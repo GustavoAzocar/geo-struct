@@ -36,6 +36,10 @@ Os fluxos Chromium verificam criação, edição, rascunhos, desenho/cancelament
 
 ## Limites
 
+### Áreas por material
+
+Os casos próprios comparam estratos horizontais e inclinados com áreas analíticas de segmentos circulares, divisões verticais com meias áreas e inclusões retangulares, triangulares e côncavas com áreas conhecidas. Conferem composição por fatia e global, fundo, origens, materiais distintos de mesmo nome, material compartilhado entre regiões, falta de atribuição acima da base, regiões sem contribuição, áreas finas positivas, interfaces subdivididas e limites antes da expansão. Refinamento, ordem, orientação dos contornos, escala, translação e espelhamento preservam as áreas esperadas. Uma discrepância deliberada não é corrigida por redistribuição. Os fluxos de interface verificam consulta por material/fatia, rascunhos/revisão, atribuição, desfazer/refazer e arquivo preservado. Não há validação de pesos, pressões ou FS. Ver [Áreas por material](AREAS-POR-MATERIAL.md).
+
 ### Geometria do círculo fixo
 
 Os testes conferem interseções e área total contra o segmento circular analítico de raio 5 m e centro (0, 4), translação, escala, refinamento, ramo inferior, vértices compartilhados, faces verticais, material na base e cortes efetivos de água/cargas. Casos negativos cobrem tangência, domínio truncado, contato com a base, cruzamentos adicionais, cobertura da água, seleção vazia, campos/perfil inválidos, interfaces ambíguas e capacidade antes da expansão. A tabela e o desenho são testados por dados/DOM, sem capturas de imagem; os fluxos incluem rascunhos, alteração compartilhada, troca de caso, histórico e preservação do arquivo v4. São testes de geometria, sem benchmark de forças ou FS.

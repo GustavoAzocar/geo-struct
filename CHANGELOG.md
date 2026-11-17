@@ -1,5 +1,12 @@
 # Histórico
 
+## Em desenvolvimento — áreas por material
+
+- Partição geométrica das fatias por material, com integração até o arco, regiões côncavas, inclusões acima da base e fundo integrado nos intervalos livres.
+- Totais por material e parcelas por origem, conferência de conservação por fatia e global, sem corrigir resíduos ou inferir pesos.
+- Inspeção dos totais e da fatia selecionada; atribuições ausentes em parcelas positivas impedem a preparação. Histórico, revisão e formato v4 preservados.
+- Reaproveitamento das raízes de interfaces coincidentes com subdivisões diferentes, sem juntar interfaces apenas próximas. Contrato geométrico 2 e casos analíticos de áreas; distribuição em uma próxima versão.
+
 ## Em desenvolvimento — geometria do círculo fixo
 
 - Preparação independente de interseções e fatias no arco inferior, com tolerância explícita, cortes rastreáveis e refinamento angular de até 3°.

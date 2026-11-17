@@ -52,7 +52,9 @@ Os diálogos nativos ampliam o escopo apenas para caminhos selecionados pelo usu
 
 O App mantém apenas uma prévia em memória e a apresenta quando sua revisão corresponde ao caso aplicado; rascunhos ocultam o desenho. Mudar o perfil remove a prévia. Preparar geometria não modifica o projeto ou o histórico. O referencial original é conservado; não há normalização motriz ou interpretação mecânica de faces verticais. Veja [Geometria do círculo](GEOMETRIA-DO-CIRCULO.md).
 
-O arquivo permanece v4; snapshots, perfil geométrico e fatias não são persistidos. Normalização para os métodos, perfil de convergência, subáreas por material, forças e equações dependem do fechamento das regras das issues #30/#31. A busca futura deverá executar em Worker com progresso e cancelamento. Não há solver simulado, regra de FS mínimo ou sinalização de aprovação de estabilidade.
+`src/core/material-areas.ts` decompõe as fatias por varredura vertical das regiões em coordenadas locais. Integra os intervalos de cada origem e os intervalos livres de fundo, preservando o arco analítico. Agrupa materiais por ID, mantém as parcelas por região/fundo e confere a soma contra a área geométrica, sem ajustar resíduos. Limites internos não alteram as fatias existentes. O contrato `geostruct-fixed-geometry/2` inclui essa composição e seu balanço; `MaterialAreaInspection` apresenta totais e a fatia selecionada. Falhas de atribuição, topologia, conservação ou capacidade retornam diagnóstico sem geometria parcial. Veja [Áreas por material](AREAS-POR-MATERIAL.md).
+
+O arquivo permanece v4; snapshots, perfil geométrico e fatias não são persistidos. Normalização para os métodos, perfil de convergência, pesos, pressões, forças e equações dependem do fechamento das regras das issues #30/#31. A busca futura deverá executar em Worker com progresso e cancelamento. Não há solver simulado, regra de FS mínimo ou sinalização de aprovação de estabilidade.
 
 ## Conferência integrada dos lançamentos
 

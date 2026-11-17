@@ -89,6 +89,8 @@ Na versão em desenvolvimento, selecione um caso e abra **Entradas para o núcle
 
 Em **Geometria do círculo fixo**, informe a tolerância em metros e use **Preparar fatias**. A prévia mostra cortes, arco e tabela de áreas/comprimentos, com refinamento angular de até 3°. Alterações nas entradas ocultam a geometria anterior. O [contrato geométrico](docs/GEOMETRIA-DO-CIRCULO.md) documenta interseções, faces verticais, cortes obrigatórios, limitações e casos analíticos. O arquivo permanece v4; perfil e prévia ficam apenas na sessão. Ainda não há forças ou FS. Estas alterações serão distribuídas em uma próxima versão.
 
+Na inspeção, abra **Áreas por material** para consultar os totais e a composição de uma fatia. As parcelas preservam suas regiões de origem e o solo de fundo, incluindo materiais acima da base. A soma é conferida contra a área até o arco, sem ajustes para forçar o fechamento. Consulte o [contrato das subáreas](docs/AREAS-POR-MATERIAL.md). O cálculo de pesos será uma próxima etapa.
+
 ## Origem e referências
 
 Criado por **Ricardo Corsini**, no ecossistema **OpenStruct**. A base de pesquisa e especificação de estabilidade foi organizada pelo **Eng. Gustavo Azocar**, nas issues [#28](https://github.com/ricardocorsini/openstruct-front/issues/28), [#29](https://github.com/ricardocorsini/openstruct-front/issues/29), [#30](https://github.com/ricardocorsini/openstruct-front/issues/30) e [#31](https://github.com/ricardocorsini/openstruct-front/issues/31) do frontend.

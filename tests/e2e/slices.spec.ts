@@ -93,7 +93,10 @@ test("prepara, desenha e inspeciona o segmento circular sem alterar o arquivo", 
       .getByRole("table", { name: "Fatias geométricas", exact: true })
       .getByRole("row"),
   ).toHaveCount(26);
-  await dialog.locator("summary").click();
+  await dialog
+    .locator("summary")
+    .filter({ hasText: "Origem dos cortes" })
+    .click();
   await expect(
     dialog.getByRole("table", { name: "Origem dos cortes", exact: true }),
   ).toContainText("Encontro com terreno");
@@ -202,4 +205,155 @@ test("perfil inválido e limite operacional produzem diagnóstico sem truncar fa
   );
   await expect(page.locator("[data-slice-preview]")).toHaveCount(0);
   expect(await save(page)).toEqual(p);
+});
+
+function inclusionFixture(assigned = true) {
+  const { p } = fixture();
+  p.materials.push({
+    ...p.materials[0],
+    id: "inclusion",
+    name: "Solo da inclusão",
+  });
+  p.sections[0].regions.push({
+    id: "internal-region",
+    name: "Região interna",
+    materialId: assigned ? "inclusion" : null,
+    points: [
+      { x: -1, y: -0.4 },
+      { x: 1, y: -0.4 },
+      { x: 1, y: -0.2 },
+      { x: -1, y: -0.2 },
+    ],
+  });
+  return p;
+}
+
+async function inspectMaterials(page: Page) {
+  await page
+    .getByRole("button", { name: "Inspecionar fatias", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog", {
+    name: "Inspeção das fatias",
+    exact: true,
+  });
+  await dialog
+    .locator("summary")
+    .filter({ hasText: "Áreas por material" })
+    .click();
+  return dialog;
+}
+
+test("inspeciona áreas e origens por material, preservando o arquivo e os totais sob refinamento", async ({
+  page,
+}) => {
+  const p = inclusionFixture();
+  await page.setViewportSize({ width: 960, height: 640 });
+  await open(page, p);
+  await prepare(page);
+  let dialog = await inspectMaterials(page);
+  const totals = dialog.getByRole("table", {
+    name: "Áreas totais por material",
+    exact: true,
+  });
+  await expect(totals.getByRole("row")).toHaveCount(3);
+  const inclusion = totals
+    .getByRole("row")
+    .filter({ hasText: "Solo da inclusão" });
+  await expect(inclusion.getByRole("cell").nth(1)).toHaveText("0,4");
+  await expect(inclusion).toContainText("Região interna: 0,4 m²");
+  await expect(totals).toContainText("Solo de fundo");
+  await expect(
+    dialog.getByLabel("Conservação da área total", { exact: true }),
+  ).toContainText("soma das subáreas: 4,0875277 m²");
+  await dialog
+    .getByLabel("Fatia para inspecionar materiais", { exact: true })
+    .selectOption("12");
+  const slice = dialog.getByRole("table", {
+    name: "Áreas por material da fatia 13",
+    exact: true,
+  });
+  await expect(slice.getByRole("row")).toHaveCount(3);
+  await expect(slice).toContainText("Região interna");
+  await expect(dialog).toContainText("Material na base da fatia 13: Solo 1");
+  await dialog
+    .getByRole("button", { name: "Fechar janela", exact: true })
+    .click();
+  expect(await save(page)).toEqual(p);
+  await page
+    .getByLabel("Abertura máxima por fatia (°)", { exact: true })
+    .fill("1,5");
+  await expect(page.locator("[data-slice-preview]")).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Preparar fatias", exact: true })
+    .click();
+  dialog = await inspectMaterials(page);
+  await expect(
+    dialog
+      .getByRole("table", { name: "Áreas totais por material", exact: true })
+      .getByRole("row")
+      .filter({ hasText: "Solo da inclusão" })
+      .getByRole("cell")
+      .nth(1),
+  ).toHaveText("0,4");
+  await dialog
+    .getByRole("button", { name: "Fechar janela", exact: true })
+    .click();
+  expect(await save(page)).toEqual(p);
+});
+
+test("atribuição acima da base é obrigatória e acompanha aplicar, desfazer e refazer", async ({
+  page,
+}) => {
+  const p = inclusionFixture(false);
+  const panel = await open(page, p);
+  await prepare(page);
+  await expect(panel.getByLabel("Diagnósticos da geometria")).toContainText(
+    "Atribua material a Região interna",
+  );
+  await expect(page.locator("[data-slice-preview]")).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Região interna", exact: true })
+    .click();
+  await page
+    .getByLabel("Material da região", { exact: true })
+    .selectOption("inclusion");
+  await page.getByRole("button", { name: "Aplicar", exact: true }).click();
+  await selectCase(page);
+  await page
+    .getByRole("button", { name: "Preparar fatias", exact: true })
+    .click();
+  let dialog = await inspectMaterials(page);
+  await expect(
+    dialog.getByRole("table", {
+      name: "Áreas totais por material",
+      exact: true,
+    }),
+  ).toContainText("Região interna: 0,4 m²");
+  await dialog
+    .getByRole("button", { name: "Fechar janela", exact: true })
+    .click();
+  await page.getByRole("tab", { name: "Geometria", exact: true }).click();
+  await page.getByRole("button", { name: "Desfazer", exact: true }).click();
+  await selectCase(page);
+  await page
+    .getByRole("button", { name: "Preparar fatias", exact: true })
+    .click();
+  await expect(panel.getByLabel("Diagnósticos da geometria")).toContainText(
+    "Atribua material a Região interna",
+  );
+  await expect(page.locator("[data-slice-preview]")).toHaveCount(0);
+  expect(await save(page)).toEqual(p);
+  await page.getByRole("tab", { name: "Geometria", exact: true }).click();
+  await page.getByRole("button", { name: "Refazer", exact: true }).click();
+  await selectCase(page);
+  await page
+    .getByRole("button", { name: "Preparar fatias", exact: true })
+    .click();
+  dialog = await inspectMaterials(page);
+  await expect(
+    dialog.getByRole("table", {
+      name: "Áreas totais por material",
+      exact: true,
+    }),
+  ).toContainText("Região interna: 0,4 m²");
 });

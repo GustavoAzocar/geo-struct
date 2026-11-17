@@ -20,6 +20,18 @@ export function lowerArc(c: Circle, x: number): PointXZ {
 export const arcAngle = (c: Circle, x: number) =>
   Math.asin((x - c.x) / c.radius);
 
+/** Coincidência da reta por determinantes, sem aproximar interfaces próximas. */
+export function sameSupportingLine(
+  a: PointXZ,
+  b: PointXZ,
+  first: PointXZ,
+  last: PointXZ,
+): boolean {
+  const onLine = (p: PointXZ) =>
+    (b.x - a.x) * (p.z - a.z) === (b.z - a.z) * (p.x - a.x);
+  return onLine(first) && onLine(last);
+}
+
 /** Raízes analíticas em coordenadas locais; orientação canônica de arestas compartilhadas. */
 export function segmentCircleIntersections(
   c: Circle,
