@@ -464,10 +464,13 @@ test("entrada do núcleo usa dados aplicados e acompanha condições, arquivo e 
 
   await page.getByRole("tab", { name: "Geometria", exact: true }).click();
   await page.getByRole("button", { name: "Desfazer", exact: true }).click();
-  // O histórico remonta o inspetor para descartar rascunhos antigos.
+  // Desfazer/refazer retorna à seção base; reabrir o caso confere a revisão atual.
+  await selectCase(page);
   await page.locator(".core-input-preview summary").click();
   await expect(input).toContainText("q = 20 kPa");
+  await page.getByRole("tab", { name: "Geometria", exact: true }).click();
   await page.getByRole("button", { name: "Refazer", exact: true }).click();
+  await selectCase(page);
   await page.locator(".core-input-preview summary").click();
   await expect(input).toContainText("0 faixas ativas");
   expect(await save(page)).toEqual(saved);
