@@ -1,5 +1,12 @@
 # Histórico
 
+## Em desenvolvimento — resultantes das sobrecargas
+
+- Recorte de D3: forças verticais por largura horizontal carregada, pontos no terreno e braços próprios em relação ao círculo. Momentos com sinal CCW e orientados ao movimento, sem confundir força nula com momento nulo.
+- Inspeção por faixa/fatia com IDs, origens, intervalos, intensidades e totais; sobreposições aditivas, carga zero distinta de q ausente e faixas sem contribuição identificadas.
+- Contrato imutável `geostruct-slice-loads/1`, mesma revisão/perfil da geometria. Falhas bloqueiam sobrecargas sem remover pesos/pressões; sentido ausente mantém momento CCW e deixa orientação pendente.
+- Integração analítica independente, conservação com refinamento, escala, translação e espelhamento, sinais/cancelamento, arquivo, rascunhos e histórico. Projeto continua v4, sem equilíbrio ou FS. Distribuição em uma próxima versão.
+
 ## Em desenvolvimento — pressões de água nas bases
 
 - Preparação de `u = γw max(0, zp − zbase)` em kPa, no ponto médio angular do arco, com condição seca explícita e pressão zero na linha/acima dela.

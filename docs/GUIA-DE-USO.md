@@ -97,7 +97,9 @@ Selecione um caso com círculo fixo e abra **Geometria do círculo fixo** nas pr
 
 Se faltar γ, complete o material indicado e prepare novamente; as áreas continuam disponíveis durante a pendência. Rascunhos precisam ser aplicados ou descartados. Alterações aplicadas nas entradas exigem nova preparação. As prévias ficam na sessão e não alteram o arquivo do projeto.
 
-Abra **Pressões de água** para consultar u em kPa, ponto do arco, cotas, altura vertical e origem por fatia. O cálculo usa o γw informado na condição de água e a linha precisa cobrir todo o círculo. Na condição seca explícita, a pressão é zero e a linha guardada permanece inativa. γw ausente ou linha acima do terreno produzem diagnóstico, sem remover as áreas/pesos disponíveis. A pressão prescrita ainda não é aplicada a forças de água, resistência ou equilíbrio. Sobrecargas e FS continuam etapas posteriores.
+Abra **Pressões de água** para consultar u em kPa, ponto do arco, cotas, altura vertical e origem por fatia. O cálculo usa o γw informado na condição de água e a linha precisa cobrir todo o círculo. Na condição seca explícita, a pressão é zero e a linha guardada permanece inativa. γw ausente ou linha acima do terreno produzem diagnóstico, sem remover as áreas/pesos disponíveis. A pressão prescrita ainda não é aplicada a forças de água, resistência ou equilíbrio.
+
+Abra **Sobrecargas por fatia** para conferir totais por faixa, selecionar uma fatia e consultar cada trecho carregado, q, ponto X/Z, força e braço próprio. Q está em kN/m e o momento em kN·m/m. CCW positivo significa anti-horário no desenho X/Z; as colunas orientadas ao movimento seguem o sentido escolhido no caso. Sem sentido definido, essas colunas ficam pendentes e os valores CCW continuam disponíveis. Faixas sobrepostas são somadas; uma faixa fora da massa tem contribuição zero. q ausente em faixa contribuinte bloqueia as resultantes, preservando as outras inspeções. Zero informado continua identificado. Momentos opostos podem se anular sem eliminar a força. Veja [Sobrecargas nas fatias](SOBRECARGAS-NAS-FATIAS.md). Sem equilíbrio ou FS.
 
 ## Documentar
 

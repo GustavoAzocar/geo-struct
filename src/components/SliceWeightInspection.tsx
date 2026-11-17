@@ -133,8 +133,8 @@ export function SliceWeightInspection({
         </>
       )}
       <p className="hint">
-        Forças de água, resultantes de sobrecarga, momentos, equilíbrio e fator
-        de segurança ainda não calculados.
+        Peso próprio separado das sobrecargas e das pressões. Forças de água,
+        equilíbrio e fator de segurança ainda não calculados.
       </p>
     </details>
   );

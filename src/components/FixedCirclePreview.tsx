@@ -12,6 +12,8 @@ import { prepareSliceWeights } from "../core/slice-weights";
 import { SliceWeightInspection } from "./SliceWeightInspection";
 import { prepareSlicePressures } from "../core/slice-pressures";
 import { SlicePressureInspection } from "./SlicePressureInspection";
+import { prepareSliceLoads } from "../core/slice-loads";
+import { SliceLoadInspection } from "./SliceLoadInspection";
 
 export type GeometryFields = { tolerance: string; angle: string };
 export type FixedCirclePreviewProps = {
@@ -71,6 +73,13 @@ export function FixedCirclePreview({
       : [],
   );
   const input = preparation.snapshot?.input;
+  const loads = useMemo(
+    () =>
+      result?.status === "prepared"
+        ? prepareSliceLoads(preparation, result)
+        : null,
+    [preparation, result],
+  );
   const allowed =
     !!input &&
     input.surface.mode === "fixed" &&
@@ -206,6 +215,21 @@ export function FixedCirclePreview({
                 ))}
               </ul>
             )}
+            {!dirty && loads?.status === "prepared" && (
+              <p aria-label="Sobrecargas preparadas">
+                Resultante das sobrecargas:{" "}
+                <strong>{number(loads.loads.forceKNPerM)} kN/m</strong>. Momento
+                CCW (anti-horário positivo):{" "}
+                {number(loads.loads.momentCCWKNmPerM)} kN·m/m.
+              </p>
+            )}
+            {!dirty && loads?.status === "blocked" && (
+              <ul aria-label="Diagnósticos das sobrecargas">
+                {loads.diagnostics.map((d, i) => (
+                  <li key={i}>{d.message}</li>
+                ))}
+              </ul>
+            )}
             <button
               className="secondary"
               type="button"
@@ -222,8 +246,9 @@ export function FixedCirclePreview({
           </p>
         )}
         <p className="hint">
-          Preparação de geometria, peso próprio e pressões prescritas. Forças de
-          água, sobrecargas e fator de segurança ainda não calculados.
+          Preparação de geometria, peso próprio, pressões prescritas e
+          resultantes de sobrecargas. Forças de água, equilíbrio e fator de
+          segurança ainda não calculados.
         </p>
       </section>
       {table && !dirty && result?.status === "prepared" && (
@@ -231,7 +256,7 @@ export function FixedCirclePreview({
           title="Inspeção das fatias"
           wide
           onClose={() => setTable(false)}
-          description="Coordenadas originais X/Z. Áreas até o arco, pesos por material e pressões prescritas. Inclinação geométrica da corda em relação a +X. Sem equações de equilíbrio ou FS."
+          description="Coordenadas originais X/Z. Áreas, pesos, pressões e resultantes de sobrecargas. Inclinação geométrica da corda em relação a +X. Sem equações de equilíbrio ou FS."
         >
           <div className="slice-inspection">
             <p>
@@ -311,6 +336,7 @@ export function FixedCirclePreview({
             {input && weights && (
               <SliceWeightInspection result={weights} input={input} />
             )}
+            {loads && <SliceLoadInspection result={loads} />}
             <details>
               <summary>Origem dos cortes</summary>
               <div className="materials-table-wrap slice-table-wrap">

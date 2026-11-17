@@ -1141,12 +1141,14 @@ select {
 }
 .slice-material-inspection,
 .slice-weight-inspection,
-.slice-pressure-inspection {
+.slice-pressure-inspection,
+.slice-load-inspection {
   margin: 16px 0;
 }
 .slice-material-inspection summary,
 .slice-weight-inspection summary,
-.slice-pressure-inspection summary {
+.slice-pressure-inspection summary,
+.slice-load-inspection summary {
   cursor: pointer;
   font-weight: 600;
 }

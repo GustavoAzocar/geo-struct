@@ -36,6 +36,12 @@ Os fluxos Chromium verificam criação, edição, rascunhos, desenho/cancelament
 
 ## Limites
 
+### Resultantes das sobrecargas nas fatias
+
+Integrais analíticas independentes conferem 20 kPa em [−2,0] como 40 kN/m e +40 kN·m/m sobre xc = 0; cargas espelhadas mudam o sinal CCW e conservam o momento orientado ao inverter o sentido. Conferem recorte parcial, ponto próprio do trecho carregado, terreno inclinado, sobreposição por ID, força positiva com momento zero, contribuições negativas, contato sem largura, faixa fora da massa, q zero/nulo, condições próprias/herdadas e sentido pendente. Escala, translação e refinamento preservam os balanços. Há verificações de revisão, imutabilidade, independência de pesos/pressões, entrada inválida, overflow/underflow e cancelamento numérico.
+
+Fluxos Chromium cobrem inspeção na janela mínima, origens, pontos e braços, rascunhos, refinamento, arquivo sem resultados, reabertura, q ausente/zero, edição e desfazer/refazer com reseleção do caso, faixas desabilitadas selecionadas por caso próprio e ausência explícita. Ver [Sobrecargas nas fatias](SOBRECARGAS-NAS-FATIAS.md). Essas verificações não validam equilíbrio, FS ou critérios normativos.
+
 ### Pressões de água nas fatias
 
 Os casos independentes verificam 5 kPa para h = 0,5 m e γw = 10 kN/m³, a lei linear de uma linha inclinada e o uso do ponto angular do arco em vez do centro da corda/largura. Conferem pressão zero na linha/acima dela, condição seca explícita, origem por segmento, cobertura nas extremidades e cobertura parcial da seção suficiente para o candidato. Incluem nós de água/terreno e face vertical na conferência de carga acima do terreno, γw ausente/inválido, produto não finito/subfluxo, pressão pequena positiva, modos de resistência, independência dos pesos, revisão e imutabilidade. Escala, translação, espelhamento e refinamento são comparados com a lei de pressão, sem somar pressões como forças. A regressão das raízes confere segmentos horizontais longos e evita falso corte próximo nas extremidades da linha de água.

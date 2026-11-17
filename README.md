@@ -69,7 +69,7 @@ Testes de domínio verificam geometrias, limites dos parâmetros, arquivos, refe
 | Caminho           | Responsabilidade                                             |
 | ----------------- | ------------------------------------------------------------ |
 | `src/domain/`     | Modelo, validação geométrica e histórico, sem React ou Tauri |
-| `src/core/`       | Entradas, fatias, subáreas, pesos e pressões de água         |
+| `src/core/`       | Entradas, fatias, subáreas, pesos, pressões e sobrecargas    |
 | `src/components/` | Ribbon, navegador, editor gráfico, propriedades e relatório  |
 | `src/lib/`        | Entrada e saída local, com adaptadores web e desktop         |
 | `src-tauri/`      | Janela nativa, permissões, identidade e empacotamento        |
@@ -93,7 +93,9 @@ Na inspeção, abra **Áreas por material** para consultar os totais e a composi
 
 **Preparar fatias** também calcula o peso próprio como a soma de γ total × área de cada material, em kN/m. Abra **Pesos por fatia** para conferir áreas, γ, origem e parcelas. Um γ ausente bloqueia os pesos, preservando a inspeção geométrica; não há preenchimento automático. Água e sobrecargas não são adicionadas ao peso próprio. O [contrato de pesos](docs/PESOS-DAS-FATIAS.md) documenta o recorte aprovado de D2, as fontes e os casos independentes.
 
-Em **Pressões de água**, confira `u = γw max(0, zp − zbase)` nos pontos médios angulares do arco, em kPa, com cotas, alturas e origem da interpolação. Condição seca explícita fornece zero. Linha ativa deve cobrir todo o candidato e γw precisa ser informado. Carga acima do terreno sinaliza a distinção ainda pendente entre água confinada e lâmina externa, mantendo geometria/pesos disponíveis. Veja [Pressões nas fatias](docs/PRESSOES-NAS-FATIAS.md). Forças de água, resultantes de sobrecarga e equilíbrio ainda não são calculados.
+Em **Pressões de água**, confira `u = γw max(0, zp − zbase)` nos pontos médios angulares do arco, em kPa, com cotas, alturas e origem da interpolação. Condição seca explícita fornece zero. Linha ativa deve cobrir todo o candidato e γw precisa ser informado. Carga acima do terreno sinaliza a distinção ainda pendente entre água confinada e lâmina externa, mantendo geometria/pesos disponíveis. Veja [Pressões nas fatias](docs/PRESSOES-NAS-FATIAS.md). Forças de água e equilíbrio ainda não são calculados.
+
+Em **Sobrecargas por fatia**, confira `Q = q × L` no trecho horizontal carregado, seu ponto de aplicação no terreno e braço em relação ao círculo. A inspeção conserva IDs/origens, sobreposições e momentos positivos/negativos, com totais por faixa e por fatia. Intensidade ausente em faixa contribuinte bloqueia a preparação, sem assumir zero; momento nulo não elimina a força. Veja [Sobrecargas nas fatias](docs/SOBRECARGAS-NAS-FATIAS.md) para sinais, unidades e casos independentes. Equações de estabilidade e FS permanecem pendentes.
 
 ## Origem e referências
 
