@@ -1,4 +1,3 @@
-<p align="center"><img src="public/brand/geostruct.png" width="108" alt="Hércules sustentando o solo: identidade do GeoStruct" /></p>
 <h1 align="center">GeoStruct</h1>
 <p align="center">Modelagem geotécnica 2D para taludes e contenções.<br/>Um aplicativo livre do <strong>OpenStruct</strong>.</p>
 
@@ -27,10 +26,10 @@ Abra http://127.0.0.1:1420. Na tela inicial, escolha **Explorar um exemplo** ou 
 - Linha piezométrica prescrita, sobrecargas verticais uniformes e círculo de tentativa.
 - Validação geométrica, diagnósticos, desfazer/refazer, proteção de propriedades em edição e de alterações não salvas.
 - Projeto `.geo.json` com esquema versionado; cópia local de recuperação; importação inválida preserva o projeto aberto.
-- Relatório de dados de entrada com impressão/PDF pelo navegador e exportação SVG da vista atual.
-- Estrutura desktop Tauri 2 com identidade própria e ícones derivados da arte fornecida pelo mantenedor.
+- Relatório de dados de entrada com impressão/PDF pelo navegador, HTML portátil e exportação SVG da vista atual.
+- Estrutura desktop Tauri 2 com ícones padrão provisórios; a arte personalizada será incorporada em uma etapa posterior.
 
-O cálculo e a edição usam unidades SI: **m, kN e kPa**, ângulos em graus na entrada. A edição aceita ponto ou vírgula decimal. Não há backend, login ou chamadas remotas durante o uso do aplicativo.
+O modelo e a edição usam unidades SI: **m, kN e kPa**, ângulos em graus na entrada. A edição aceita ponto ou vírgula decimal. Não há backend, login ou chamadas remotas durante o uso do aplicativo.
 
 ## Uso desktop
 
@@ -40,6 +39,8 @@ Instale Rust estável e os [pré-requisitos do Tauri 2](https://v2.tauri.app/sta
 npm run desktop:dev
 npm run desktop:build
 ```
+
+Na primeira preparação desktop é necessário acesso à internet para baixar os ícones padrão do template oficial do Tauri. O script `npm run desktop:prepare` verifica a integridade dos arquivos e reutiliza a cópia local nas execuções seguintes. Os binários dos ícones não são versionados; o build web não depende desse download.
 
 O aplicativo usa `br.com.openstruct.geostruct`, janela mínima de 960 × 640 e diálogo nativo de arquivos. O acesso ao sistema de arquivos fica limitado aos arquivos escolhidos pelo usuário. No navegador, Abrir usa o seletor de arquivo e Salvar gera um download. Conserve o arquivo exportado: a cópia de recuperação no navegador não substitui um backup.
 
@@ -71,7 +72,7 @@ Consulte [Guia de uso](docs/GUIA-DE-USO.md), [Arquitetura](docs/ARQUITETURA.md),
 
 ## Origem e referências
 
-Criado por **Ricardo Corsini**, no ecossistema **OpenStruct**. A arte de Hércules foi fornecida pelo mantenedor. A base de pesquisa e especificação de estabilidade foi organizada pelo **Eng. Gustavo Azocar**, nas issues [#28](https://github.com/ricardocorsini/openstruct-front/issues/28), [#29](https://github.com/ricardocorsini/openstruct-front/issues/29), [#30](https://github.com/ricardocorsini/openstruct-front/issues/30) e [#31](https://github.com/ricardocorsini/openstruct-front/issues/31) do frontend.
+Criado por **Ricardo Corsini**, no ecossistema **OpenStruct**. A base de pesquisa e especificação de estabilidade foi organizada pelo **Eng. Gustavo Azocar**, nas issues [#28](https://github.com/ricardocorsini/openstruct-front/issues/28), [#29](https://github.com/ricardocorsini/openstruct-front/issues/29), [#30](https://github.com/ricardocorsini/openstruct-front/issues/30) e [#31](https://github.com/ricardocorsini/openstruct-front/issues/31) do frontend.
 
 A experiência segue convenções observadas nos aplicativos OpenStruct e na documentação oficial do Slide2 e GEO5. A implementação é própria. As referências e a situação do futuro motor estão em [ESCOPO-E-ROADMAP.md](docs/ESCOPO-E-ROADMAP.md).
 
