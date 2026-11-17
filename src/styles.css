@@ -652,7 +652,8 @@ button svg {
   .tool-region,
   .tool-water,
   .tool-load,
-  .tool-circle
+  .tool-circle,
+  .tool-case-circle
 ) {
   cursor: crosshair;
 }
@@ -663,6 +664,7 @@ button svg {
   position: absolute;
   left: 22px;
   top: 20px;
+  max-width: calc(100% - 80px);
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -1505,4 +1507,33 @@ kbd {
     size: A4;
     margin: 18mm;
   }
+}
+
+.case-fields {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px;
+  margin: 8px 0;
+}
+.case-fields legend {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 4px;
+}
+.case-fields h3 {
+  font-size: 12px;
+  margin: 8px 0;
+}
+.case-fields .field-row {
+  align-items: end;
+}
+.case-preview-note {
+  max-width: 420px;
+  font-size: 11px;
+  padding: 8px 10px;
+  border-radius: 5px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  pointer-events: none;
 }
