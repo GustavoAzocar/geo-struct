@@ -1,0 +1,126 @@
+{
+  "format": "geostruct",
+  "version": 1,
+  "id": "689d1f8b-3169-4991-aea1-17b6fcab8d38",
+  "name": "Talude em duas camadas",
+  "author": "",
+  "description": "Exemplo ilustrativo próprio para explorar a modelagem. Não é um caso de validação de estabilidade.",
+  "units": "m-kN-kPa",
+  "materials": [
+    {
+      "id": "56031ee2-12fd-4aff-bcb9-c60a219aebd8",
+      "name": "Solo residual",
+      "color": "#d5b68c",
+      "gamma": 19,
+      "cohesion": 12,
+      "friction": 28,
+      "mode": "effective",
+      "source": "Dados ilustrativos para demonstração; sem investigação de campo."
+    },
+    {
+      "id": "cc792b07-7089-4c9d-a630-98febb0e271f",
+      "name": "Aterro compactado",
+      "color": "#bc8150",
+      "gamma": 18,
+      "cohesion": 5,
+      "friction": 30,
+      "mode": "effective",
+      "source": "Dados ilustrativos para demonstração; sem investigação de campo."
+    }
+  ],
+  "sections": [
+    {
+      "id": "22e07879-c317-4862-b0ca-0863ce2cd457",
+      "name": "Seção A–A",
+      "terrain": [
+        {
+          "x": 0,
+          "y": 22
+        },
+        {
+          "x": 18,
+          "y": 22
+        },
+        {
+          "x": 38,
+          "y": 10
+        },
+        {
+          "x": 60,
+          "y": 10
+        }
+      ],
+      "base": 0,
+      "backgroundMaterialId": "56031ee2-12fd-4aff-bcb9-c60a219aebd8",
+      "regions": [
+        {
+          "id": "48d75267-61cf-45ac-b709-77b004d55fce",
+          "name": "Camada de aterro",
+          "materialId": "cc792b07-7089-4c9d-a630-98febb0e271f",
+          "points": [
+            {
+              "x": 0,
+              "y": 15
+            },
+            {
+              "x": 0,
+              "y": 22
+            },
+            {
+              "x": 18,
+              "y": 22
+            },
+            {
+              "x": 38,
+              "y": 10
+            },
+            {
+              "x": 60,
+              "y": 10
+            },
+            {
+              "x": 60,
+              "y": 6
+            },
+            {
+              "x": 38,
+              "y": 6
+            },
+            {
+              "x": 18,
+              "y": 15
+            }
+          ]
+        }
+      ],
+      "water": [
+        {
+          "x": 0,
+          "y": 12
+        },
+        {
+          "x": 18,
+          "y": 12
+        },
+        {
+          "x": 38,
+          "y": 7
+        },
+        {
+          "x": 60,
+          "y": 7
+        }
+      ],
+      "loads": [
+        {
+          "id": "0bdbf192-db85-4544-9f2f-2980dbe2606f",
+          "name": "Sobrecarga de crista",
+          "x1": 5,
+          "x2": 14,
+          "q": 20
+        }
+      ],
+      "circle": null
+    }
+  ]
+}
