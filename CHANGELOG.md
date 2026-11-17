@@ -1,5 +1,13 @@
 # Histórico
 
+## Em desenvolvimento — pressões de água nas bases
+
+- Preparação de `u = γw max(0, zp − zbase)` em kPa, no ponto médio angular do arco, com condição seca explícita e pressão zero na linha/acima dela.
+- Conferência de cobertura de todo o candidato, sem extrapolar; γw ausente e carga acima do terreno produzem diagnósticos. A distinção entre água confinada/lâmina externa permanece fora deste recorte.
+- Inspeção por fatia com cotas, altura vertical, γw, condição/origem e segmento da linha; pressões independentes dos pesos e do modo de resistência. Rascunhos, revisão, histórico e arquivo v4 preservados.
+- Cálculo das interseções pela normal à reta evita cancelamento entre extremo e projeção, corrigindo uma falsa proximidade entre o nó de água e a extremidade do candidato. Mesma geometria/contrato, com regressão para segmentos longos e cobertura nas extremidades.
+- Casos analíticos, integridade e fluxos de interface. Sem forças de água, equilíbrio ou FS; distribuição em uma próxima versão.
+
 ## Em desenvolvimento — peso próprio das fatias
 
 - Preparação de `Wi = Σ γj Aij`, em kN/m, pelo peso específico total informado de cada material; recorte de D2 documentado com fontes e casos independentes.

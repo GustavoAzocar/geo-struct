@@ -36,6 +36,12 @@ Os fluxos Chromium verificam criação, edição, rascunhos, desenho/cancelament
 
 ## Limites
 
+### Pressões de água nas fatias
+
+Os casos independentes verificam 5 kPa para h = 0,5 m e γw = 10 kN/m³, a lei linear de uma linha inclinada e o uso do ponto angular do arco em vez do centro da corda/largura. Conferem pressão zero na linha/acima dela, condição seca explícita, origem por segmento, cobertura nas extremidades e cobertura parcial da seção suficiente para o candidato. Incluem nós de água/terreno e face vertical na conferência de carga acima do terreno, γw ausente/inválido, produto não finito/subfluxo, pressão pequena positiva, modos de resistência, independência dos pesos, revisão e imutabilidade. Escala, translação, espelhamento e refinamento são comparados com a lei de pressão, sem somar pressões como forças. A regressão das raízes confere segmentos horizontais longos e evita falso corte próximo nas extremidades da linha de água.
+
+Os fluxos Chromium verificam inspeção na janela mínima, rascunhos, edição de γw, desfazer/refazer, isolamento de caso seco, carga acima do terreno, cobertura incompleta e recuperação após completar os dados. O arquivo permanece sem resultados. Essas verificações não validam u usado na resistência, forças de água, equilíbrio ou FS. Ver [Pressões nas fatias](PRESSOES-NAS-FATIAS.md).
+
 ### Peso próprio das fatias
 
 Os casos independentes verificam `2 × 18 + 3 × 20 = 96 kN/m`, área analítica de segmento circular homogêneo, estratos horizontais e inclusão de área conhecida acima da base. Conferem γ por material/ID, parcelas por região/fundo, totais, precisão sem arredondamento intermediário, refinamento, escala, translação e espelhamento. Cobrem γ nulo/inválido, material sem contribuição, perda de representação, somas não finitas, origem inconsistente, revisão, imutabilidade e arquivo preservado. Água, sobrecargas e modos de resistência não alteram o peso específico informado ou acrescentam forças ao peso próprio.

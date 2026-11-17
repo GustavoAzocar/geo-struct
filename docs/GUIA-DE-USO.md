@@ -95,7 +95,9 @@ O salvamento usa `geostruct/4`. Arquivos e recuperações das versões 1, 2 e 3 
 
 Selecione um caso com círculo fixo e abra **Geometria do círculo fixo** nas propriedades. Informe a tolerância geométrica e use **Preparar fatias**. Em **Inspecionar fatias**, consulte **Áreas por material** e **Pesos por fatia**. O peso próprio é a soma de γ total × área, em kN/m, por metro de largura fora do plano. Os painéis apresentam totais, composição e origem por material; a tabela geral mostra cada peso de fatia.
 
-Se faltar γ, complete o material indicado e prepare novamente; as áreas continuam disponíveis durante a pendência. Rascunhos precisam ser aplicados ou descartados. Alterações aplicadas nas entradas exigem nova preparação. As prévias ficam na sessão e não alteram o arquivo do projeto. Pressões, sobrecargas, equilíbrio e FS ainda não são calculados.
+Se faltar γ, complete o material indicado e prepare novamente; as áreas continuam disponíveis durante a pendência. Rascunhos precisam ser aplicados ou descartados. Alterações aplicadas nas entradas exigem nova preparação. As prévias ficam na sessão e não alteram o arquivo do projeto.
+
+Abra **Pressões de água** para consultar u em kPa, ponto do arco, cotas, altura vertical e origem por fatia. O cálculo usa o γw informado na condição de água e a linha precisa cobrir todo o círculo. Na condição seca explícita, a pressão é zero e a linha guardada permanece inativa. γw ausente ou linha acima do terreno produzem diagnóstico, sem remover as áreas/pesos disponíveis. A pressão prescrita ainda não é aplicada a forças de água, resistência ou equilíbrio. Sobrecargas e FS continuam etapas posteriores.
 
 ## Documentar
 

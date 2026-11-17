@@ -40,6 +40,10 @@ Decomposição de cada fatia em subáreas até o arco, incluindo regiões cônca
 
 Aplicação do recorte aprovado de D2: soma de peso específico total × subárea, em kN/m, sem usar apenas o material da base ou inferir γ seco/saturado/submerso. Contrato independente `geostruct-slice-weights/1`, com revisão/perfil, totais e origem de cada parcela. γ ausente preserva as áreas e bloqueia os pesos, sem total parcial. Inspeção, rascunhos, histórico e arquivo v4 preservados. Ver [Pesos das fatias](PESOS-DAS-FATIAS.md). Pressões, sobrecargas e equilíbrio permanecem pendentes.
 
+### Pressões prescritas nas bases — implementadas
+
+Recorte de D2 com altura vertical no ponto médio angular do arco, γw informado e u em kPa; zero por condição seca explícita ou na linha/acima dela. Cobertura de todo o candidato sem extrapolação, diagnóstico de carga acima do terreno e preservação de geometria/pesos. Inspeção de pontos, alturas, segmento e origem; resultados somente na sessão, sem pressão usada na resistência, resultantes de água ou FS. Ver [Pressões nas fatias](PRESSOES-NAS-FATIAS.md), inclusive as limitações enquanto R1/R2 seguem em revisão.
+
 ### Referências e decisões
 
 - [#28 — Roadmap](https://github.com/ricardocorsini/openstruct-front/issues/28): primeiro motor determinístico 2D, superfícies circulares, Mohr–Coulomb, Fellenius e Bishop Simplificado.
@@ -56,7 +60,7 @@ Os testes de modelagem deste repositório não substituem os casos geotécnicos 
 3. Casos de análise: implementados no recorte de cadastro e prévia, com identidade própria e vínculo à seção.
 4. **Conferência integrada e distribuição 0.1.0 — implementadas:** escopos por seção/caso, dependências compartilhadas, navegação, relatório, limite de arquivo simétrico e instaladores Windows/Linux disponíveis no Launcher. A homologação manual nativa completa continua pendente.
 5. **Contrato de transferência de entradas — implementado.** O recorte aprovado de D2 já sustenta o peso próprio. Concluir as regras restantes da especificação #30 e o catálogo #31 para os próximos cálculos: perfis numéricos, tratamento das faces verticais, água e comportamento de falhas.
-6. **Interseções, fatias, subáreas e peso próprio — implementados**, com casos independentes e rastreabilidade. Próxima entrega: consolidar e preparar pressões da linha piezométrica nas bases, incluindo cobertura e hipóteses de água; depois resultantes de sobrecarga e cálculo em superfície fixa. A verificação dessas preparações não substitui a validação das equações de estabilidade.
+6. **Interseções, fatias, subáreas, peso próprio e pressões prescritas — implementados**, com casos independentes e rastreabilidade. Próxima entrega: preparar resultantes das faixas de sobrecarga e seus pontos de aplicação, consolidando sinais e braços de momento antes das equações em superfície fixa. A verificação dessas preparações não substitui a validação das equações de estabilidade.
 7. Implementar busca circular determinística, progresso, cancelamento, inspeção por fatia e memória rastreável. Vincular resultados à revisão de entrada e invalidá-los quando ela mudar.
 8. Especificar métodos rigorosos, superfícies não circulares e estabilidade com reforços. Especificar separadamente verificações/dimensionamento das contenções.
 

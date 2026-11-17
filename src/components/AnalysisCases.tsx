@@ -477,8 +477,8 @@ export function CaseInspector({
             </p>
           </fieldset>
           <div className="info-card">
-            Entradas aplicadas para preparar as fatias e o peso próprio. Não há
-            fator de segurança ou resultado de busca.
+            Entradas aplicadas para preparar fatias, peso próprio e pressões.
+            Não há fator de segurança ou resultado de busca.
           </div>
           <CoreInputPreview
             prepared={geometryPreview.preparation}

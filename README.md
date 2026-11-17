@@ -69,7 +69,7 @@ Testes de domínio verificam geometrias, limites dos parâmetros, arquivos, refe
 | Caminho           | Responsabilidade                                             |
 | ----------------- | ------------------------------------------------------------ |
 | `src/domain/`     | Modelo, validação geométrica e histórico, sem React ou Tauri |
-| `src/core/`       | Entradas, geometria das fatias, subáreas e peso próprio      |
+| `src/core/`       | Entradas, fatias, subáreas, pesos e pressões de água         |
 | `src/components/` | Ribbon, navegador, editor gráfico, propriedades e relatório  |
 | `src/lib/`        | Entrada e saída local, com adaptadores web e desktop         |
 | `src-tauri/`      | Janela nativa, permissões, identidade e empacotamento        |
@@ -91,7 +91,9 @@ Em **Geometria do círculo fixo**, informe a tolerância em metros e use **Prepa
 
 Na inspeção, abra **Áreas por material** para consultar os totais e a composição de uma fatia. As parcelas preservam suas regiões de origem e o solo de fundo, incluindo materiais acima da base. A soma é conferida contra a área até o arco, sem ajustes para forçar o fechamento. Consulte o [contrato das subáreas](docs/AREAS-POR-MATERIAL.md).
 
-**Preparar fatias** também calcula o peso próprio como a soma de γ total × área de cada material, em kN/m. Abra **Pesos por fatia** para conferir áreas, γ, origem e parcelas. Um γ ausente bloqueia os pesos, preservando a inspeção geométrica; não há preenchimento automático. Água e sobrecargas não são adicionadas ao peso próprio. O [contrato de pesos](docs/PESOS-DAS-FATIAS.md) documenta o recorte aprovado de D2, as fontes e os casos independentes. Pressões, resultantes de sobrecarga e equações de estabilidade são etapas posteriores.
+**Preparar fatias** também calcula o peso próprio como a soma de γ total × área de cada material, em kN/m. Abra **Pesos por fatia** para conferir áreas, γ, origem e parcelas. Um γ ausente bloqueia os pesos, preservando a inspeção geométrica; não há preenchimento automático. Água e sobrecargas não são adicionadas ao peso próprio. O [contrato de pesos](docs/PESOS-DAS-FATIAS.md) documenta o recorte aprovado de D2, as fontes e os casos independentes.
+
+Em **Pressões de água**, confira `u = γw max(0, zp − zbase)` nos pontos médios angulares do arco, em kPa, com cotas, alturas e origem da interpolação. Condição seca explícita fornece zero. Linha ativa deve cobrir todo o candidato e γw precisa ser informado. Carga acima do terreno sinaliza a distinção ainda pendente entre água confinada e lâmina externa, mantendo geometria/pesos disponíveis. Veja [Pressões nas fatias](docs/PRESSOES-NAS-FATIAS.md). Forças de água, resultantes de sobrecarga e equilíbrio ainda não são calculados.
 
 ## Origem e referências
 

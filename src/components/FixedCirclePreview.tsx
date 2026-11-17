@@ -10,6 +10,8 @@ import { Dialog } from "./Dialog";
 import { MaterialAreaInspection } from "./MaterialAreaInspection";
 import { prepareSliceWeights } from "../core/slice-weights";
 import { SliceWeightInspection } from "./SliceWeightInspection";
+import { prepareSlicePressures } from "../core/slice-pressures";
+import { SlicePressureInspection } from "./SlicePressureInspection";
 
 export type GeometryFields = { tolerance: string; angle: string };
 export type FixedCirclePreviewProps = {
@@ -21,7 +23,10 @@ export type FixedCirclePreviewProps = {
   onPrepare: (result: FixedCirclePreparation) => void;
 };
 const number = (n: number) =>
-  n.toLocaleString("pt-BR", { maximumSignificantDigits: 8 });
+  n.toLocaleString("pt-BR", {
+    maximumSignificantDigits: 8,
+    notation: n !== 0 && Math.abs(n) < 1e-6 ? "scientific" : "standard",
+  });
 const reasonLabel: Record<CutReason["kind"], string> = {
   "terrain-intersection": "Encontro com terreno",
   "terrain-vertex": "Vértice do terreno",
@@ -51,6 +56,18 @@ export function FixedCirclePreview({
   const weightsBySlice = new Map(
     !dirty && weights?.status === "prepared"
       ? weights.weights.slices.map((s) => [s.number, s.weightKNPerM])
+      : [],
+  );
+  const pressures = useMemo(
+    () =>
+      result?.status === "prepared"
+        ? prepareSlicePressures(preparation, result)
+        : null,
+    [preparation, result],
+  );
+  const pressuresBySlice = new Map(
+    !dirty && pressures?.status === "prepared"
+      ? pressures.pressures.slices.map((s) => [s.number, s.pressureKPa])
       : [],
   );
   const input = preparation.snapshot?.input;
@@ -169,6 +186,26 @@ export function FixedCirclePreview({
                 </ul>
               </>
             )}
+            {!dirty && pressures?.status === "prepared" && (
+              <p aria-label="Pressões de água preparadas">
+                Pressões nos pontos de base:{" "}
+                <strong>
+                  {number(pressures.pressures.minPressureKPa)} a{" "}
+                  {number(pressures.pressures.maxPressureKPa)} kPa
+                </strong>
+                .
+              </p>
+            )}
+            {!dirty && pressures?.status === "blocked" && (
+              <ul aria-label="Diagnósticos das pressões">
+                {pressures.diagnostics.map((d, i) => (
+                  <li key={i}>
+                    {d.message}
+                    {d.x !== undefined && <> X = {number(d.x)} m.</>}
+                  </li>
+                ))}
+              </ul>
+            )}
             <button
               className="secondary"
               type="button"
@@ -185,8 +222,8 @@ export function FixedCirclePreview({
           </p>
         )}
         <p className="hint">
-          Preparação de geometria e peso próprio. Pressões, sobrecargas e fator
-          de segurança ainda não calculados.
+          Preparação de geometria, peso próprio e pressões prescritas. Forças de
+          água, sobrecargas e fator de segurança ainda não calculados.
         </p>
       </section>
       {table && !dirty && result?.status === "prepared" && (
@@ -194,7 +231,7 @@ export function FixedCirclePreview({
           title="Inspeção das fatias"
           wide
           onClose={() => setTable(false)}
-          description="Coordenadas originais X/Z. Áreas até o arco circular e peso próprio pelos materiais. Inclinação geométrica da corda em relação a +X. Sem equações de equilíbrio ou FS."
+          description="Coordenadas originais X/Z. Áreas até o arco, pesos por material e pressões prescritas. Inclinação geométrica da corda em relação a +X. Sem equações de equilíbrio ou FS."
         >
           <div className="slice-inspection">
             <p>
@@ -231,6 +268,7 @@ export function FixedCirclePreview({
                     <th>Corda (m)</th>
                     <th>Inclinação +X (°)</th>
                     <th>Material na base</th>
+                    <th>u (kPa)</th>
                     <th>Peso próprio (kN/m)</th>
                   </tr>
                 </thead>
@@ -247,6 +285,11 @@ export function FixedCirclePreview({
                       <td>{number((s.chordAngleRadians * 180) / Math.PI)}</td>
                       <td>{material(s.baseMaterialId)}</td>
                       <td>
+                        {pressuresBySlice.has(s.number)
+                          ? number(pressuresBySlice.get(s.number)!)
+                          : "Pendente"}
+                      </td>
+                      <td>
                         {weightsBySlice.has(s.number)
                           ? number(weightsBySlice.get(s.number)!)
                           : "Pendente"}
@@ -261,6 +304,9 @@ export function FixedCirclePreview({
                 geometry={result.geometry}
                 input={input}
               />
+            )}
+            {input && pressures && (
+              <SlicePressureInspection result={pressures} input={input} />
             )}
             {input && weights && (
               <SliceWeightInspection result={weights} input={input} />

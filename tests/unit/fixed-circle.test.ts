@@ -14,6 +14,23 @@ import {
 import { segmentCircleIntersections } from "../../src/core/circle-geometry";
 
 const profile: GeometryProfile = { toleranceM: 1e-8, maxArcDegrees: 3 };
+
+it("resolve raízes horizontais sem perder precisão ao alongar o segmento", () => {
+  const c = { x: 0, z: 4, radius: 5 };
+  for (const extent of [10, 1_000_000]) {
+    const points = segmentCircleIntersections(
+      c,
+      { x: -extent, z: 0 },
+      { x: extent, z: 0 },
+      profile.toleranceM,
+    );
+    expect(points).toHaveLength(2);
+    expect(points[0].x).toBeCloseTo(-3, 12);
+    expect(points[1].x).toBeCloseTo(3, 12);
+    expect(points.every((p) => p.z === 0)).toBe(true);
+  }
+});
+
 function fixture() {
   const base = newProject("Segmento circular analítico");
   const s = base.sections[0];

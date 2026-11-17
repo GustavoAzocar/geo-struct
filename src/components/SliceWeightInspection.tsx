@@ -133,8 +133,8 @@ export function SliceWeightInspection({
         </>
       )}
       <p className="hint">
-        Pressões, resultantes de sobrecarga, momentos, equilíbrio e fator de
-        segurança ainda não calculados.
+        Forças de água, resultantes de sobrecarga, momentos, equilíbrio e fator
+        de segurança ainda não calculados.
       </p>
     </details>
   );

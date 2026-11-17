@@ -65,15 +65,16 @@ export function segmentCircleIntersections(
     Math.abs(1 - Math.abs(distance)) <= eps
       ? 0
       : Math.sqrt((1 - Math.abs(distance)) * (1 + Math.abs(distance)));
-  const roots =
-    offset === 0 ? [projection] : [projection - offset, projection + offset];
+  const sides = offset === 0 ? [0] : [-1, 1];
   const points: PointXZ[] = [];
-  for (const root of roots) {
-    const along = root * c.radius;
+  for (const side of sides) {
+    const along = (projection + side * offset) * c.radius;
     if (along < -tolerance || along > length + tolerance) continue;
+    // Centro da corda pela normal à reta, evitando cancelar a coordenada
+    // do extremo com sua projeção antes de somar o deslocamento até a raiz.
     let p = {
-      x: c.x + c.radius * (ax + root * ux),
-      z: c.z + c.radius * (az + root * uz),
+      x: c.x + c.radius * (distance * uz + side * offset * ux),
+      z: c.z + c.radius * (-distance * ux + side * offset * uz),
     };
     if (
       Math.abs(along) <= tolerance &&

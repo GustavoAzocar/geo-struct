@@ -43,4 +43,6 @@ Selecionar o caso, abrir **Geometria do círculo fixo**, informar a tolerância 
 
 O arquivo permanece `geostruct/4`. Perfil de prévia e resultados são dados da sessão, não são gravados no projeto. O resultado registra a revisão exata de entrada, a versão do contrato geométrico e o perfil usado. A geometria preparada não constitui admissibilidade mecânica ou aprovação de estabilidade.
 
-As subáreas por material estão implementadas no contrato 2 e alimentam o [contrato independente de peso próprio](PESOS-DAS-FATIAS.md). O próximo passo é consolidar e preparar pressões de água, depois resultantes de sobrecarga conforme as regras aprovadas, antes de implementar Fellenius/Bishop e os casos independentes de FS.
+As subáreas por material estão implementadas no contrato 2 e alimentam o [contrato independente de peso próprio](PESOS-DAS-FATIAS.md). Os pontos médios angulares alimentam a preparação independente de [pressões prescritas](PRESSOES-NAS-FATIAS.md). O próximo passo são as resultantes de sobrecarga conforme as regras aprovadas, antes de implementar Fellenius/Bishop e os casos independentes de FS.
+
+O cálculo das raízes reconstrói os pontos a partir da normal à reta e do deslocamento até cada raiz, evitando cancelar as coordenadas do extremo com sua projeção. Essa forma equivalente reduz o erro ao alongar um segmento e evita gerar cortes distintos por arredondamento no caso de referência da linha de água terminando nas interseções. As regras de cortes próximos, cobertura e tolerância não são relaxadas.

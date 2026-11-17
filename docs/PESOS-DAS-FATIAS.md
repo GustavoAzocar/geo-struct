@@ -38,4 +38,4 @@ Rascunhos não alteram os pesos aplicados e ocultam sua apresentação até apli
 
 Os testes verificam também nulos, finitude, material sem contribuição, origem, imutabilidade, revisão, água/cargas sem adição ao peso próprio e histórico na interface. São verificações desta preparação; não validam estabilidade.
 
-O próximo passo é consolidar e preparar as pressões da linha piezométrica nas bases das fatias, com cobertura, hipóteses de água e casos independentes, antes de acrescentar sobrecargas e equações de equilíbrio.
+A preparação independente de [pressões da linha piezométrica](PRESSOES-NAS-FATIAS.md) está implementada, com cobertura, hipóteses e casos independentes. A próxima etapa são as resultantes de sobrecargas, antes das equações de equilíbrio.

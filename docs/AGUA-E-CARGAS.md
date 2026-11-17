@@ -47,6 +47,8 @@ Uma lista de água antiga vazia ou com um ponto fica piezométrica pendente; nã
 
 ## Limites e etapa seguinte
 
+Na versão em desenvolvimento, a etapa separada de [pressões nas fatias](PRESSOES-NAS-FATIAS.md) consome o cadastro aplicado. Usa o γw informado e a altura vertical até a linha, verifica cobertura do candidato e preserva condição/origem e segmento de interpolação. Não extrapola a linha nem confunde pressão física com pressão usada na resistência. Carga acima do terreno fica diagnosticada e bloqueada nessa preparação enquanto a distinção entre água confinada/lâmina externa depende do fechamento de R2. O cadastro e o arquivo permanecem inalterados.
+
 Materiais continuam com um peso específico total informado. A condição de água não altera esse valor, não cria pesos secos/saturados/submersos e não converte parâmetros efetivos/totais. Nenhuma regra de compatibilidade física entre esses campos é presumida enquanto o contrato do motor está pendente.
 
 O recorte atual contém uma condição de água e uma condição de cargas por seção. Os casos próprios agora podem herdar essas condições ou escolher hipóteses de água e conjuntos de faixas, com direção, círculo fixo ou limites de busca. A geometria e os dados das faixas continuam pertencendo à seção. Água externa, fluxo numérico, forças concentradas, cargas trapezoidais/inclinadas, sismo e condições por estágio ainda não estão implementados. “Dados preenchidos” e ausência de erros de modelagem não significam aptidão para cálculo ou aprovação de estabilidade.
