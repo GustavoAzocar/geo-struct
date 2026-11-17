@@ -408,7 +408,7 @@ button svg {
   font-size: 11px;
   color: var(--muted);
 }
-.tree-item > span:not(.soil-swatch, .active-dot) {
+.tree-item > span:not(.soil-swatch, .active-dot, .material-marker) {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -440,6 +440,115 @@ button svg {
   border-radius: 2px;
   flex-shrink: 0;
   border: 1px solid #0002;
+}
+.material-marker {
+  color: var(--accent);
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-size: 10px;
+  line-height: 14px;
+  width: 16px;
+  height: 16px;
+  text-align: center;
+  flex: 0 0 16px;
+  margin-left: auto;
+}
+.material-pending {
+  color: var(--accent);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.materials-table-wrap {
+  overflow: auto;
+  margin-top: 16px;
+}
+.materials-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 12px;
+}
+.materials-table th,
+.materials-table td {
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border);
+  padding: 12px 8px;
+  overflow-wrap: anywhere;
+}
+.materials-table th {
+  color: var(--muted);
+  font-weight: 550;
+}
+.materials-table small {
+  display: block;
+  color: var(--muted);
+  margin-top: 5px;
+  line-height: 1.5;
+}
+.materials-table td:first-child {
+  min-width: 170px;
+}
+.materials-table td:nth-child(2) {
+  min-width: 180px;
+}
+.materials-table td:nth-child(3) {
+  min-width: 130px;
+}
+.materials-table details summary {
+  cursor: pointer;
+  white-space: nowrap;
+}
+.materials-table .soil-swatch {
+  display: inline-block;
+  vertical-align: middle;
+}
+.material-row-actions {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  min-width: 100px;
+}
+.material-row-actions button {
+  padding: 5px 9px;
+  min-height: 28px;
+  font-size: 11px;
+}
+.material-location {
+  display: block;
+  text-align: left;
+  margin: 6px 0;
+}
+.material-removal {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  margin-top: 16px;
+}
+.material-removal h3 {
+  margin-top: 0;
+}
+.material-assignment fieldset {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+}
+.assignment-target {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px 0;
+  font-size: 13px;
+}
+.assignment-target small {
+  display: block;
+  color: var(--muted);
+  margin-top: 3px;
+}
+.assignment-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0;
 }
 .active-dot {
   width: 5px;

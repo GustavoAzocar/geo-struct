@@ -1,5 +1,6 @@
 import polygonClipping from "polygon-clipping";
 import type { Point, Section, Project } from "./model";
+import { materialPending, materialUses } from "./materials";
 // Tolerância geométrica de modelagem, em metros. Não é tolerância do futuro solver.
 export const EPS = 1e-7;
 export const distance = (a: Point, b: Point) =>
@@ -193,17 +194,12 @@ export type Diagnostic = {
 export function diagnose(p: Project): Diagnostic[] {
   const out: Diagnostic[] = [];
   for (const m of p.materials) {
-    if ([m.gamma, m.cohesion, m.friction].some((v) => v === null))
+    const pending = materialPending(m);
+    if (pending.length)
       out.push({
         level: "warning",
         target: m.id,
-        message: `${m.name}: complete peso específico, coesão e atrito.`,
-      });
-    if (!m.source.trim())
-      out.push({
-        level: "warning",
-        target: m.id,
-        message: `${m.name}: informe a origem dos parâmetros.`,
+        message: `${m.name}: informe ${pending.join(", ")}.${materialUses(p, m.id).length ? "" : " Material ainda sem uso."}`,
       });
   }
   for (const s of p.sections) {
@@ -214,6 +210,11 @@ export function diagnose(p: Project): Diagnostic[] {
         target,
         sectionId: s.id,
       });
+    if (s.backgroundMaterialId === null)
+      push("warning", "solo de fundo sem material atribuído.");
+    for (const r of s.regions)
+      if (r.materialId === null)
+        push("warning", `${r.name}: sem material atribuído.`, r.id);
     const err = terrainError(s.terrain);
     if (err) {
       push("error", err);

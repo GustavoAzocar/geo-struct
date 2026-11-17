@@ -2,6 +2,7 @@ import { isTauri } from "@tauri-apps/api/core";
 import {
   MAX_FILE_BYTES,
   parseProject,
+  readProject,
   serializeProject,
   type Project,
 } from "../domain/model";
@@ -29,6 +30,7 @@ export function download(
 export async function openNative(): Promise<{
   project: Project;
   path: string;
+  migrated: boolean;
 } | null> {
   const { open } = await import("@tauri-apps/plugin-dialog");
   const { readTextFile, stat } = await import("@tauri-apps/plugin-fs");
@@ -40,7 +42,7 @@ export async function openNative(): Promise<{
   if (!path) return null;
   if ((await stat(path)).size > MAX_FILE_BYTES)
     throw new Error("O arquivo excede o limite de 8 MB.");
-  return { project: parseProject(await readTextFile(path)), path };
+  return { ...readProject(await readTextFile(path)), path };
 }
 export async function saveProject(
   p: Project,

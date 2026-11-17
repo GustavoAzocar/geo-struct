@@ -2,26 +2,29 @@
 
 React, TypeScript e Vite compõem a interface. Tauri 2 fornece a janela nativa para Linux/Windows. Os arquivos, a tipografia, os ícones e o processamento são locais. Não existe backend remoto, conta ou telemetria do produto.
 
-| Camada                           | Responsabilidade                                                                    |
-| -------------------------------- | ----------------------------------------------------------------------------------- |
-| `src/domain/model.ts`            | Contrato `geostruct/1`, materiais, seções, IDs, validação estrutural e arquivo JSON |
-| `src/domain/geometry.ts`         | Contornos, interpolação, sobreposição, cobertura e diagnósticos do editor           |
-| `src/domain/editing.ts`          | Operações imutáveis de vértices/contornos, interfaces coincidentes, divisão e cópia |
-| `src/domain/precision.ts`        | Captura, entrada absoluta/relativa/polar e medição, sem dependência de tela         |
-| `src/domain/history.ts`          | Histórico imutável, limitado a 50 transações                                        |
-| `src/components/ModelCanvas.tsx` | Vista SVG, coordenadas de tela, pan/zoom, captura e prévias de desenho              |
-| `src/components/Inspector.tsx`   | Rascunhos de campos e aplicação transacional                                        |
-| `src/App.tsx`                    | Projeto ativo, seleção, comandos, histórico e proteções de navegação                |
-| `src/lib/files.ts`               | Adaptadores web/desktop, serialização, exportação e recuperação                     |
-| `src-tauri`                      | Identidade nativa, diálogos, permissões e empacotamento                             |
+| Camada                           | Responsabilidade                                                                        |
+| -------------------------------- | --------------------------------------------------------------------------------------- |
+| `src/domain/model.ts`            | Contrato `geostruct/2`, migração de v1, materiais, seções, IDs e validação estrutural   |
+| `src/domain/materials.ts`        | Pendências, consulta de uso, criação/duplicação, atribuição e substituição de materiais |
+| `src/domain/geometry.ts`         | Contornos, interpolação, sobreposição, cobertura e diagnósticos do editor               |
+| `src/domain/editing.ts`          | Operações imutáveis de vértices/contornos, interfaces coincidentes, divisão e cópia     |
+| `src/domain/precision.ts`        | Captura, entrada absoluta/relativa/polar e medição, sem dependência de tela             |
+| `src/domain/history.ts`          | Histórico imutável, limitado a 50 transações                                            |
+| `src/components/ModelCanvas.tsx` | Vista SVG, coordenadas de tela, pan/zoom, captura e prévias de desenho                  |
+| `src/components/Inspector.tsx`   | Rascunhos de campos e aplicação transacional                                            |
+| `src/App.tsx`                    | Projeto ativo, seleção, comandos, histórico e proteções de navegação                    |
+| `src/lib/files.ts`               | Adaptadores web/desktop, serialização, exportação e recuperação                         |
+| `src-tauri`                      | Identidade nativa, diálogos, permissões e empacotamento                                 |
 
 O modelo usa coordenadas cartesianas X e Z, com Z positivo para cima. O campo JSON `y` armazena a coordenada vertical Z. Comprimentos em m, tensões em kPa e pesos específicos em kN/m³. Zoom e pan pertencem à vista, nunca alteram o modelo.
 
-Cada seção possui um terreno e uma base horizontal; o domínio é fechado automaticamente. Regiões poligonais representam outros solos e não podem sobrepor suas áreas. O material de fundo preenche o restante do domínio. Materiais são compartilhados no projeto; seções duplicadas recebem novos IDs para seus elementos.
+Cada seção possui um terreno e uma base horizontal; o domínio é fechado automaticamente. Regiões poligonais representam outros solos e não podem sobrepor suas áreas. O material de fundo preenche o restante do domínio. Novas seções/regiões começam com referência de material nula, indicada como pendência; isso não representa um vazio físico. Materiais são compartilhados no projeto; seções duplicadas recebem novos IDs para seus elementos e preservam suas atribuições existentes.
 
 O terreno admite X não decrescente e faces verticais, sem retorno sobre segmentos nem prolongamentos sem área nas extremidades. A base continua horizontal e perfis em balanço não são admitidos. A linha piezométrica mantém X estritamente crescente. Na abscissa de uma face vertical, o desenho de cargas usa o envelope superior e o diagnóstico de água acima do terreno usa o inferior. Essas convenções servem ao editor, não definem forças ou admissibilidade do futuro solver. A tolerância geométrica do editor é `1e-7 m`; não determina convergência, admissibilidade ou tolerância do futuro cálculo.
 
-Os contornos continuam armazenados como listas de pontos do formato `geostruct/1`: nenhum campo persistido foi adicionado ou reinterpretado. Projetos existentes permanecem legíveis, com IDs e materiais preservados. Versões antigas do aplicativo podem apontar faces verticais como inconsistência geométrica. Grade, restrição ortogonal e vinculação de interfaces são opções da sessão, não parâmetros físicos serializados.
+Os contornos continuam armazenados como listas de pontos. O formato atual é `geostruct/2`: admite referências de material nulas, escolha de parâmetros ainda não definida e lista de materiais vazia. A leitura valida v1 antes de migrar somente o número da versão, preservando os dados e IDs. Campos desconhecidos são recusados para evitar perda silenciosa de informações. A interface comunica a migração e marca o projeto para salvar; aplicativos antigos não leem v2. Use Salvar como para manter o arquivo original. A recuperação local antiga passa pela mesma leitura. Grade, restrição ortogonal e vinculação de interfaces são opções da sessão, não parâmetros físicos serializados.
+
+Criar uma região não escolhe o primeiro material. O gerenciador de materiais exibe pendências e usos em todas as seções. Atribuição em lote muda somente os destinos escolhidos na seção ativa; substituição ao excluir percorre todas as atribuições do material. Essas operações são imutáveis e entram no histórico como uma transação. Uma exclusão em uso sem substituto válido é recusada. Duplicar material cria um ID independente e não muda suas atribuições. Veja [Materiais e formato](MATERIAIS-E-FORMATO.md).
 
 A edição vinculada encontra coincidências geométricas entre terreno e regiões. Ao mover uma aresta, insere os vértices necessários nos vizinhos e interpola suas subdivisões ao longo da nova aresta. Inserção/exclusão acompanha os contornos coincidentes; a água permanece independente. Cada aplicação produz uma seção nova e só chega ao histórico após validação. Copiar cria outro ID; dividir preserva o ID original em uma das partes e cria outro na segunda, mantendo o material nas duas. Divisão com ilhas, furos ou mais de duas partes é recusada.
 

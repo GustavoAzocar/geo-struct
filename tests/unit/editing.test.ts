@@ -384,13 +384,16 @@ describe("Faces verticais e arquivos existentes", () => {
     expect(signedArea(p)).toBeCloseTo(1e-6, 10);
     expect(polygonError(p)).toBeNull();
   });
-  it("abre o exemplo versionado existente sem migração ou alteração de IDs", () => {
+  it("abre o exemplo versionado existente preservando os dados na migração", () => {
     const raw = readFileSync(
       new URL("../../examples/talude-duas-camadas.geo.json", import.meta.url),
       "utf8",
     );
     const p = parseProject(raw);
-    expect(JSON.parse(serializeProject(p))).toEqual(JSON.parse(raw));
-    expect(p.version).toBe(1);
+    expect(JSON.parse(serializeProject(p))).toEqual({
+      ...JSON.parse(raw),
+      version: 2,
+    });
+    expect(p.version).toBe(2);
   });
 });

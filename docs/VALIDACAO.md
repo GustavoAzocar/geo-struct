@@ -16,6 +16,12 @@ Testes adicionais verificam interfaces com subdivisões diferentes, conservaçã
 
 Asserções de geometria não são validações das forças sobre faces verticais. O solver ainda não existe. Não se executa geração/conversão de imagens nos testes; traces são mantidos sem screenshots.
 
+### Materiais e arquivos
+
+Os testes verificam atribuição explícita/nula, zero de coesão/atrito, escolha de tipo de resistência, limites de cadastro, duplicação independente, atribuição em lote isolada por seção e substituição/exclusão em todas as seções com histórico único. Cobrem lista vazia de materiais, referências inválidas, preservação dos dados v1 na migração para v2 e recusa de campos desconhecidos. Os fluxos Chromium exercitam o gerenciador na janela mínima, rascunhos, pendências, relatório, persistência, recuperação antiga e navegação aos usos do material.
+
+Os limites numéricos são limites do cadastro de software. “Dados preenchidos” não é validação dos parâmetros de engenharia ou condição de cálculo.
+
 ## Limites
 
 As verificações são de software de modelagem, sem validação de solver geotécnico. Não há benchmark de FS nesta entrega. A revisão com engenheiros e os casos de cálculo independentes dependem das issues #30/#31 do frontend.

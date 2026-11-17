@@ -17,10 +17,9 @@ import {
   newProject,
   exampleProject,
   newSection,
-  newMaterial,
   duplicateSection,
   uid,
-  parseProject,
+  readProject,
   serializeProject,
   projectSchema,
   MAX_FILE_BYTES,
@@ -40,6 +39,12 @@ import {
   splitRegion,
 } from "./domain/editing";
 import type { Precision } from "./domain/precision";
+import {
+  addMaterial,
+  removeMaterial,
+  materialUses,
+  type MaterialUse,
+} from "./domain/materials";
 import { history, commit, undo, redo, type History } from "./domain/history";
 import {
   diagnose,
@@ -71,6 +76,7 @@ import { PanelResizer } from "./components/PanelResizer";
 import { Dialog } from "./components/Dialog";
 import { StartScreen } from "./components/StartScreen";
 import { Report } from "./components/Report";
+import { Materials, MaterialAssignment } from "./components/Materials";
 
 type Question = {
   title: string;
@@ -122,7 +128,13 @@ export default function App() {
   const [notice, setNotice] = useState(""),
     [question, setQuestion] = useState<Question | null>(null),
     [dialog, setDialog] = useState<
-      "new" | "help" | "report" | "precision" | null
+      | "new"
+      | "help"
+      | "report"
+      | "precision"
+      | "materials"
+      | "assign-material"
+      | null
     >(null);
   const [newName, setNewName] = useState("Novo projeto"),
     [newAuthor, setNewAuthor] = useState("");
@@ -289,19 +301,24 @@ export default function App() {
     p: Project,
     path: string | null,
     savedState: boolean,
+    migrated = false,
   ) => {
     setH(history(p));
     setSectionId(p.sections[0].id);
     setSelection({ kind: "terrain" });
     setTool("select");
     setTab("Geometria");
-    setSaved(savedState ? JSON.stringify(p) : "");
+    setSaved(savedState && !migrated ? JSON.stringify(p) : "");
     setFilePath(path);
     setDraftDirty(false);
     setDrawing(false);
     setInspectorEpoch((n) => n + 1);
     setFitToken((n) => n + 1);
     setDialog(null);
+    if (migrated)
+      notify(
+        "Projeto da versão 1 aberto com os dados preservados. O próximo salvamento usará a versão 2; use Salvar como para conservar o arquivo original.",
+      );
   };
   const apply = (p: Project) => {
     setH((prev) => (prev ? commit(prev, p) : history(p)));
@@ -452,7 +469,7 @@ export default function App() {
       s.regions.push({
         id,
         name: `Região ${s.regions.length + 1}`,
-        materialId: p.materials[0].id,
+        materialId: null,
         points,
       });
       selected = { kind: "region", id };
@@ -488,6 +505,10 @@ export default function App() {
       setDrawing(false);
       setSelection(selected);
       if (t === "terrain") setFitToken((n) => n + 1);
+      if (t === "region")
+        notify(
+          "Região criada sem material. Escolha o material nas propriedades ou use Materiais → Atribuir material.",
+        );
       if (t === "load")
         notify(
           "Faixa criada. Informe q (kPa) nas propriedades e clique em Aplicar.",
@@ -539,14 +560,10 @@ export default function App() {
     }
     if (
       selection.kind === "material" &&
-      project.sections.some(
-        (s) =>
-          s.backgroundMaterialId === selection.id ||
-          s.regions.some((r) => r.materialId === selection.id),
-      )
+      materialUses(project, selection.id).length > 0
     ) {
       notify(
-        "Este material está em uso. Reatribua as regiões e solos de fundo antes de excluí-lo.",
+        "Este material está em uso. Em Materiais → Gerenciar materiais, escolha um substituto para excluir sem perder as atribuições.",
       );
       return;
     }
@@ -608,7 +625,21 @@ export default function App() {
       setBusy(false);
     }
     if (result && (await guardProject()))
-      openProject(result.project, result.path, true);
+      openProject(result.project, result.path, true, result.migrated);
+  };
+  const createMaterial = (sourceId?: string) => {
+    if (!project) return;
+    const result = addMaterial(project, sourceId);
+    apply(result.project);
+    setSelection({ kind: "material", id: result.material.id });
+    setTool("select");
+  };
+  const locateMaterialUse = (use: MaterialUse) => {
+    setDialog(null);
+    setSectionId(use.sectionId);
+    setSelection(use.selection);
+    setTool("select");
+    setInspectorEpoch((n) => n + 1);
   };
   const action = async (a: Action) => {
     if (busy || question) return;
@@ -705,6 +736,11 @@ export default function App() {
       return;
     }
     if (!(await guardDraft())) return;
+    if (a === "materials" || a === "assign-material") {
+      setTool("select");
+      setDialog(a);
+      return;
+    }
     if (a === "report") {
       setDialog("report");
       return;
@@ -746,7 +782,6 @@ export default function App() {
         a === "duplicate"
           ? duplicateSection(section)
           : newSection(
-              p.materials[0].id,
               `Seção ${String(p.sections.length + 1).padStart(2, "0")}`,
             );
       p.sections.push(s);
@@ -756,15 +791,11 @@ export default function App() {
       apply(p);
     }
     if (a === "material") {
-      if (p.materials.length >= 100) {
-        notify("Limite de 100 materiais.");
-        return;
+      try {
+        createMaterial();
+      } catch (e) {
+        notify((e as Error).message);
       }
-      const m = newMaterial();
-      m.name = `Solo ${p.materials.length + 1}`;
-      p.materials.push(m);
-      apply(p);
-      setSelection({ kind: "material", id: m.id });
     }
   };
   const actionRef = useRef(action);
@@ -869,17 +900,18 @@ export default function App() {
             e.target.value = "";
             if (!file) return;
             setBusy(true);
-            let p: Project | undefined;
+            let loaded: ReturnType<typeof readProject> | undefined;
             try {
               if (file.size > MAX_FILE_BYTES)
                 throw new Error("O arquivo excede o limite de 8 MB.");
-              p = parseProject(await file.text());
+              loaded = readProject(await file.text());
             } catch (err) {
               notify((err as Error).message);
             } finally {
               setBusy(false);
             }
-            if (p && (await guardProject())) openProject(p, null, true);
+            if (loaded && (await guardProject()))
+              openProject(loaded.project, null, true, loaded.migrated);
           }}
         />
         {!project || !section ? (
@@ -1035,6 +1067,7 @@ export default function App() {
                           key={i}
                           onClick={async () => {
                             if (!(await guardDraft())) return;
+                            setTool("select");
                             if (d.sectionId) setSectionId(d.sectionId);
                             if (
                               project.materials.some((m) => m.id === d.target)
@@ -1274,6 +1307,47 @@ export default function App() {
           onClose={() => setDialog(null)}
         >
           <Report project={project} onError={notify} />
+        </Dialog>
+      )}
+      {dialog === "materials" && project && (
+        <Dialog
+          title="Materiais do projeto"
+          wide
+          onClose={() => setDialog(null)}
+        >
+          <Materials
+            project={project}
+            onEdit={(id) => {
+              setDialog(null);
+              setSelection({ kind: "material", id });
+              setInspectorEpoch((n) => n + 1);
+            }}
+            onNew={() => {
+              createMaterial();
+              setDialog(null);
+            }}
+            onDuplicate={(id) => createMaterial(id)}
+            onRemove={(id, replacement) => {
+              const next = removeMaterial(project, id, replacement);
+              apply(next);
+              if (selection.kind === "material" && selection.id === id)
+                setSelection({ kind: "terrain" });
+            }}
+            onLocate={locateMaterialUse}
+          />
+        </Dialog>
+      )}
+      {dialog === "assign-material" && project && section && (
+        <Dialog title="Atribuir material" onClose={() => setDialog(null)}>
+          <MaterialAssignment
+            project={project}
+            section={section}
+            selection={selection}
+            onApply={(p) => {
+              if (acceptGeometry(p)) setDialog(null);
+            }}
+            onCancel={() => setDialog(null)}
+          />
         </Dialog>
       )}
       {dialog === "help" && (

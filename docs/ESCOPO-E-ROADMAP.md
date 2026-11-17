@@ -10,6 +10,10 @@ Limites de modelagem: 100 seções e 100 materiais por projeto; 64 regiões e 10
 
 Inserir/excluir/mover vértices, mover contornos, copiar regiões e dividir uma região em duas por uma reta. Interfaces coincidentes acompanham a edição, com opção explícita de desvincular. Captura por vértices/interseções/segmentos, grade configurável, restrição horizontal/vertical, entrada absoluta/relativa/polar e medição. Faces verticais são aceitas na modelagem; seu tratamento físico depende do contrato futuro do motor. Divisões que gerariam ilhas, furos ou mais de duas partes são recusadas. Não há importação CAD nesta entrega.
 
+### Materiais e atribuição — implementado
+
+Cadastro Mohr–Coulomb com escolha explícita de parâmetros efetivos/totais, mensagens de limites e pendências por campo. Novas regiões e solos de fundo ficam sem atribuição até a escolha do usuário. Gerenciador com consulta de uso, duplicação e substituição ao excluir; atribuição em lote na seção ativa e histórico por operação. Formato `geostruct/2` com migração de v1. O peso específico permanece como um único valor total informado; nenhum parâmetro é deduzido de outro ou gerado a partir da água. O detalhamento está em [Materiais e formato](MATERIAIS-E-FORMATO.md).
+
 ## Base técnica
 
 - [#28 — Roadmap](https://github.com/ricardocorsini/openstruct-front/issues/28): primeiro motor determinístico 2D, superfícies circulares, Mohr–Coulomb, Fellenius e Bishop Simplificado.
@@ -22,7 +26,7 @@ Os testes de modelagem deste repositório não substituem os casos geotécnicos 
 ## Sequência proposta
 
 1. Geometria e edição: implementadas nesta evolução; revisar o uso em modelos reais.
-2. Materiais, atribuição explícita às regiões/solo de fundo, água e cargas: completar o lançamento e as verificações dos dados necessários ao primeiro motor. O cadastro atual ainda é básico.
+2. Materiais e atribuição explícita: implementados no recorte atual. Próxima entrega: completar o lançamento de água e cargas, as verificações entre essas entradas e os materiais e as pendências necessárias ao primeiro motor.
 3. Casos de análise: modelar cenários, direção de deslizamento, superfície fixa e limites da busca. Seções geométricas e casos de cálculo precisam ter identidades próprias.
 4. Conferência completa do lançamento: validação entre entidades, persistência/migrações e diagnóstico das pendências. Revisar usabilidade e arquivos nos sistemas de destino antes da primeira distribuição desktop.
 5. Concluir a especificação #30 e o catálogo #31. Definir contrato do motor, perfis numéricos, tratamento das faces verticais, materiais/água e comportamento de falhas.

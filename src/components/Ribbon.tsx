@@ -31,6 +31,7 @@ import {
   Scissors,
   Ruler,
   Settings2,
+  PaintBucket,
   type LucideIcon,
 } from "lucide-react";
 import type { Tool } from "../domain/model";
@@ -55,6 +56,8 @@ export type Action =
   | "duplicate"
   | "delete"
   | "material"
+  | "materials"
+  | "assign-material"
   | "fit"
   | "grid"
   | "snap"
@@ -151,6 +154,12 @@ const groups: Record<Tab, { label: string; items: Item[] }[]> = {
       label: "Solos e atribuição",
       items: [
         { action: "material", label: "Novo material", icon: Layers3 },
+        { action: "materials", label: "Gerenciar materiais", icon: ListChecks },
+        {
+          action: "assign-material",
+          label: "Atribuir material",
+          icon: PaintBucket,
+        },
         { action: "select", label: "Selecionar região", icon: MousePointer2 },
         { action: "properties", label: "Propriedades", icon: PencilRuler },
       ],

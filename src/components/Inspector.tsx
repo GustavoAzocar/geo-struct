@@ -6,7 +6,9 @@ import {
   type Section,
   type Selection,
   type Point,
+  type Material,
 } from "../domain/model";
+import { materialPending, materialUses } from "../domain/materials";
 import { contourTarget, replaceContourCoordinates } from "../domain/editing";
 import { diagnose, parseCoordinates, parseNumber } from "../domain/geometry";
 
@@ -126,13 +128,36 @@ export function Inspector({
   const materialSelect = (key: string, label: string) => (
     <label className="field">
       <span>{label}</span>
-      <select value={values[key]} onChange={(e) => change(key, e.target.value)}>
+      <select
+        aria-label={label}
+        value={values[key] ?? ""}
+        onChange={(e) => change(key, e.target.value)}
+      >
+        <option value="">Sem material — atribuição pendente</option>
         {project.materials.map((m) => (
           <option key={m.id} value={m.id}>
             {m.name}
           </option>
         ))}
       </select>
+      {!values[key] && (
+        <small className="material-pending">
+          Escolha o material e clique em Aplicar. A geometria pode ser salva com
+          esta pendência.
+        </small>
+      )}
+      {values[key] &&
+        (() => {
+          const m = project.materials.find((m) => m.id === values[key]);
+          const pending = m ? materialPending(m) : [];
+          return (
+            pending.length > 0 && (
+              <small className="material-pending">
+                Falta no cadastro: {pending.join(", ")}.
+              </small>
+            )
+          );
+        })()}
     </label>
   );
   const number = (key: string, label: string, optional = false) => {
@@ -172,16 +197,16 @@ export function Inspector({
         case "section":
           s.name = values.name;
           s.base = number("base", "Cota da base")!;
-          s.backgroundMaterialId = values.backgroundMaterialId;
+          s.backgroundMaterialId = values.backgroundMaterialId || null;
           break;
         case "terrain":
           s.base = number("base", "Cota da base")!;
-          s.backgroundMaterialId = values.backgroundMaterialId;
+          s.backgroundMaterialId = values.backgroundMaterialId || null;
           break;
         case "region": {
           const r = s.regions.find((x) => x.id === selection.id)!;
           r.name = values.name;
-          r.materialId = values.materialId;
+          r.materialId = values.materialId || null;
           break;
         }
         case "water":
@@ -193,7 +218,7 @@ export function Inspector({
           m.gamma = number("gamma", "Peso específico", true);
           m.cohesion = number("cohesion", "Coesão", true);
           m.friction = number("friction", "Atrito", true);
-          m.mode = values.mode as "effective" | "total";
+          m.mode = (values.mode || null) as Material["mode"];
           m.source = values.source;
           break;
         }
@@ -292,24 +317,48 @@ export function Inspector({
             materialSelect("materialId", "Material da região")}
           {selection.kind === "material" && (
             <>
+              <div className="info-card">
+                Mohr–Coulomb · {materialUses(project, selection.id).length}{" "}
+                atribuições no projeto. Alterações neste cadastro valem para
+                todas elas.
+              </div>
               {field("color", "Cor", { type: "color" })}
               {field("gamma", "Peso específico total γ (kN/m³)", {
                 number: true,
               })}
-              <div className="field-row">
-                {field("cohesion", "Coesão c (kPa)", { number: true })}
-                {field("friction", "Atrito φ (°)", { number: true })}
-              </div>
               <label className="field">
                 <span>Parâmetros de resistência</span>
                 <select
+                  aria-label="Parâmetros de resistência"
                   value={values.mode}
                   onChange={(e) => change("mode", e.target.value)}
                 >
+                  <option value="">Não definido — selecione</option>
                   <option value="effective">Tensões efetivas — c′, φ′</option>
                   <option value="total">Tensões totais — c, φ</option>
                 </select>
               </label>
+              <div className="field-row">
+                {field(
+                  "cohesion",
+                  values.mode === "effective"
+                    ? "Coesão c′ (kPa)"
+                    : "Coesão c (kPa)",
+                  { number: true },
+                )}
+                {field(
+                  "friction",
+                  values.mode === "effective"
+                    ? "Atrito φ′ (°)"
+                    : "Atrito φ (°)",
+                  { number: true },
+                )}
+              </div>
+              <p className="hint">
+                Escolha o tipo correspondente aos parâmetros informados. Alterar
+                a opção não converte valores nem define automaticamente uma
+                condição drenada ou não drenada.
+              </p>
               {field("source", "Origem dos parâmetros", {
                 textarea: true,
                 hint: "Investigação, ensaio, referência ou hipótese adotada.",
@@ -318,6 +367,17 @@ export function Inspector({
                 Campos vazios ficam identificados como pendentes. Esta versão
                 não calcula resistência ou fator de segurança.
               </p>
+              {(() => {
+                const pending = materialPending(source as Material);
+                return (
+                  <div className={pending.length ? "material-pending" : "hint"}>
+                    Cadastro aplicado:{" "}
+                    {pending.length
+                      ? `falta ${pending.join(", ")}.`
+                      : "dados preenchidos."}
+                  </div>
+                );
+              })()}
             </>
           )}
           {selection.kind === "load" && (

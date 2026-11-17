@@ -337,6 +337,9 @@ export function ModelCanvas({
   const ground = project.materials.find(
     (m) => m.id === section.backgroundMaterialId,
   );
+  const missingMaterials =
+    section.regions.filter((r) => r.materialId === null).length +
+    (section.backgroundMaterialId === null ? 1 : 0);
   return (
     <div
       className={`model-canvas tool-${tool}`}
@@ -510,7 +513,7 @@ export function ModelCanvas({
               d={path(boundaryPoints, true)}
               fill={
                 visibility.materials
-                  ? (ground?.color ?? "#d1b28a")
+                  ? (ground?.color ?? "#a4a7a9")
                   : dark
                     ? "#303436"
                     : "#ecebe5"
@@ -534,7 +537,7 @@ export function ModelCanvas({
                 fill={
                   visibility.materials
                     ? (project.materials.find((m) => m.id === r.materialId)
-                        ?.color ?? "#ddd")
+                        ?.color ?? "#a4a7a9")
                     : "transparent"
                 }
                 fillOpacity={0.95}
@@ -810,7 +813,9 @@ export function ModelCanvas({
         <strong>{section.name}</strong>
         <span>
           {section.terrain.length
-            ? "Modelo geométrico"
+            ? missingMaterials
+              ? `${missingMaterials} atribuições pendentes de material`
+              : "Modelo geométrico · materiais atribuídos"
             : "Defina o perfil do terreno para começar"}
         </span>
       </div>

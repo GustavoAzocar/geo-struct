@@ -10,6 +10,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import type { Project, Section, Selection } from "../domain/model";
+import { materialName, materialPending } from "../domain/materials";
 export function ProjectTree({
   project,
   section,
@@ -73,25 +74,45 @@ export function ProjectTree({
               <button
                 className={`tree-item ${active("terrain") ? "selected" : ""}`}
                 onClick={() => onSelect({ kind: "terrain" })}
+                title={`Solo de fundo: ${materialName(project, s.backgroundMaterialId)}`}
               >
                 <Mountain size={14} />
                 Terreno
+                {s.backgroundMaterialId === null && (
+                  <span
+                    className="material-marker"
+                    title="Solo de fundo sem material"
+                    aria-hidden="true"
+                  >
+                    !
+                  </span>
+                )}
               </button>
               {s.regions.map((r) => (
                 <button
                   key={r.id}
                   className={`tree-item ${active("region", r.id) ? "selected" : ""}`}
                   onClick={() => onSelect({ kind: "region", id: r.id })}
+                  title={`Material: ${materialName(project, r.materialId)}`}
                 >
                   <span
                     className="soil-swatch"
                     style={{
-                      background: project.materials.find(
-                        (m) => m.id === r.materialId,
-                      )?.color,
+                      background:
+                        project.materials.find((m) => m.id === r.materialId)
+                          ?.color ?? "#a4a7a9",
                     }}
                   />
                   <span>{r.name}</span>
+                  {r.materialId === null && (
+                    <span
+                      className="material-marker"
+                      title="Sem material"
+                      aria-hidden="true"
+                    >
+                      !
+                    </span>
+                  )}
                 </button>
               ))}
               <button
@@ -135,9 +156,19 @@ export function ProjectTree({
           key={m.id}
           className={`tree-item ${active("material", m.id) ? "selected" : ""}`}
           onClick={() => onSelect({ kind: "material", id: m.id })}
+          title={
+            materialPending(m).length
+              ? `Falta: ${materialPending(m).join(", ")}`
+              : "Dados preenchidos"
+          }
         >
           <span className="soil-swatch" style={{ background: m.color }} />
           <span>{m.name}</span>
+          {materialPending(m).length > 0 && (
+            <span className="material-marker" aria-hidden="true">
+              !
+            </span>
+          )}
         </button>
       ))}
       <div className="tree-footer">

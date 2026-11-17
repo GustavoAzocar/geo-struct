@@ -1,5 +1,16 @@
 # Histórico
 
+## Em desenvolvimento — materiais e atribuição
+
+- Gerenciador de materiais com pendências de cadastro e consulta de uso em todas as seções.
+- Novas regiões e solos de fundo sem atribuição automática; escolha individual ou em lote, com retirada explícita de vínculo.
+- Tipo de parâmetros efetivos/totais inicialmente não definido, rótulos c′/φ′ e c/φ, valores nulos distintos de zero e erros de cadastro em português.
+- Duplicação independente e substituição de todas as atribuições ao excluir material em uso, em uma operação de histórico.
+- Formato `geostruct/2`: referências e tipo de parâmetros podem ser nulos; zero materiais é permitido. Leitura/migração de v1 preserva dados e IDs; campos desconhecidos são recusados.
+- Relatório, árvore e desenho identificam atribuições pendentes. Testes de domínio/interface incluem arquivos e recuperação antigos.
+
+Água/cargas continuam na próxima etapa; esta entrega não adiciona cálculo ou distribuição desktop.
+
 ## Em desenvolvimento — geometria e edição
 
 - Inserir/excluir vértices, mover contornos, copiar e dividir regiões por reta.

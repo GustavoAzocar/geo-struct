@@ -2,7 +2,7 @@
 
 ## Primeiro projeto
 
-Escolha **Novo projeto**, informe nome e, se desejar, responsável. A seção inicial não tem terreno. Os materiais começam com parâmetros vazios. **Explorar um exemplo** abre um modelo próprio em duas camadas, com dados ilustrativos claramente identificados.
+Escolha **Novo projeto**, informe nome e, se desejar, responsável. A seção inicial não tem terreno nem material de fundo atribuído. O cadastro inicial começa com parâmetros e tipo de resistência em branco. **Explorar um exemplo** abre um modelo próprio em duas camadas, com dados ilustrativos claramente identificados e materiais já atribuídos.
 
 Em **Geometria → Perfil do terreno**, marque os pontos da esquerda para a direita. Enter ou Concluir finaliza; Escape cancela; Backspace ou botão direito remove o último ponto. Regiões são fechadas automaticamente. O primeiro contorno do terreno deve ficar acima da cota da base indicada no painel.
 
@@ -19,7 +19,15 @@ Clique em **Usar coordenadas**, confira a tabela e **Aplicar**. Os campos são u
 
 ## Solos, água e cargas
 
-Em **Materiais → Novo material**, informe nome, cor, peso específico total, coesão, atrito, tipo de parâmetros e origem. O solo de fundo é definido nas propriedades da seção/terreno e preenche as áreas sem outra região. Desenhe polígonos com **Região de solo**, selecione-os e atribua o material. As regiões podem compartilhar bordas, mas não sobrepor áreas.
+Em **Materiais → Novo material**, informe nome, cor, peso específico total, coesão, atrito, tipo de parâmetros e origem. Escolha tensões efetivas (c′, φ′) ou totais (c, φ) de acordo com os dados informados. A troca de opção conserva os números; não os converte nem presume condição de drenagem. Campos em branco permanecem pendentes, e zero em coesão/atrito é um valor informado. **Aplicar** confirma o cadastro.
+
+O solo de fundo é definido nas propriedades da seção/terreno e preenche as áreas sem outra região. Novas seções e regiões começam como **Sem material**; selecione um material no painel e aplique. A cor neutra e o marcador de pendência identificam os locais sem atribuição. Esse estado não representa escavação ou vazio. Regiões podem compartilhar bordas, mas não sobrepor áreas.
+
+Em **Materiais → Atribuir material**, escolha o material e marque os destinos da seção ativa. **Marcar sem material** seleciona somente os destinos pendentes; **Marcar todos** inclui o fundo e todas as regiões. **Aplicar atribuição** gera um único passo de histórico. Para retirar um vínculo, escolha explicitamente **Retirar atribuição — deixar sem material**. Se o material tiver cadastro incompleto, a atribuição é permitida e as pendências continuam visíveis.
+
+**Gerenciar materiais** reúne o cadastro e mostra onde cada material é usado. Abra a lista de atribuições e clique em uma para localizar a região/seção. **Editar** abre suas propriedades; **Duplicar** cria um cadastro independente sem novas atribuições. Excluir material em uso exige escolher outro para substituí-lo em todas as seções. A substituição e a exclusão são desfeitas juntas. Um material sem uso pode ser excluído, inclusive o último cadastro.
+
+“Dados preenchidos” indica somente cadastro completo. O peso específico cadastrado continua sendo um único valor total por material; não são gerados valores secos, saturados ou submersos. A preparação de água/cargas e o contrato do futuro cálculo têm etapas próprias.
 
 Em **Água e cargas**, trace a linha piezométrica, com X crescente. Não é análise de percolação: trata-se de uma linha prescrita. Carga acima do terreno e cobertura incompleta produzem avisos. Remover a linha usa Excluir com a linha selecionada.
 
@@ -58,6 +66,8 @@ Durante o desenho ou comandos de dois pontos, abra **Entrada precisa** no canto 
 **Salvar** e Ctrl+S exportam `.geo.json`. No desktop, o primeiro salvamento pede destino e os seguintes atualizam o caminho selecionado. **Salvar como** escolhe um novo destino principal. No navegador, cada salvamento gera um download. Confira seu destino de downloads.
 
 **Abrir** valida a estrutura antes de substituir o projeto atual; arquivo inválido não remove o trabalho aberto. Salve ou descarte alterações do projeto antes de substituí-lo. A recuperação local registra somente as operações aplicadas e é oferecida na tela inicial; nunca abre automaticamente. Ela não substitui o arquivo exportado e não contém campos/traçados ainda em edição.
+
+O salvamento usa `geostruct/2`. Arquivos e recuperações da versão 1 são migrados mantendo materiais, referências, coordenadas e IDs. A abertura do arquivo antigo informa a migração e pede salvamento para persistir o novo formato; **Salvar como** permite conservar o original. Versões antigas do aplicativo não abrem arquivos v2. Campos desconhecidos ou referências inexistentes são recusados, sem descarte silencioso. Consulte [Materiais e formato](MATERIAIS-E-FORMATO.md).
 
 **Fechar projeto** retorna à tela inicial, protegendo alterações. Fechar normalmente remove sua recuperação local. Fechar a janela/browser sem resolver alterações exibe a proteção da plataforma. Bloqueio de armazenamento local é comunicado; salvar arquivo continua disponível.
 

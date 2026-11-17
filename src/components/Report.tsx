@@ -1,4 +1,10 @@
 import type { Project } from "../domain/model";
+import {
+  materialMode,
+  materialName,
+  materialPending,
+  materialUses,
+} from "../domain/materials";
 import { diagnose, boundary } from "../domain/geometry";
 import { exportText, safeName } from "../lib/files";
 const number = (n: number | null) =>
@@ -58,9 +64,10 @@ export function Report({
             <tr>
               <th>Material</th>
               <th>γ (kN/m³)</th>
-              <th>c (kPa)</th>
-              <th>φ (°)</th>
+              <th>c / c′ (kPa)</th>
+              <th>φ / φ′ (°)</th>
               <th>Parâmetros</th>
+              <th>Cadastro / uso</th>
             </tr>
           </thead>
           <tbody>
@@ -70,14 +77,21 @@ export function Report({
                 <td>{number(m.gamma)}</td>
                 <td>{number(m.cohesion)}</td>
                 <td>{number(m.friction)}</td>
-                <td>{m.mode === "effective" ? "Efetivos" : "Totais"}</td>
+                <td>{materialMode(m.mode)}</td>
+                <td>
+                  {materialPending(m).length
+                    ? `Falta: ${materialPending(m).join(", ")}.`
+                    : "Dados preenchidos."}{" "}
+                  {materialUses(project, m.id).length} atribuições.
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
         {project.materials.map((m) => (
           <p key={m.id}>
-            <strong>{m.name} — origem:</strong> {m.source || "Não informada"}
+            <strong>{m.name} — origem:</strong>{" "}
+            {m.source.trim() || "Não informada"}
           </p>
         ))}
         {project.sections.map((s) => {
@@ -93,10 +107,7 @@ export function Report({
               <h2>{s.name}</h2>
               <p>
                 Base: {number(s.base)} m · Solo de fundo:{" "}
-                {
-                  project.materials.find((m) => m.id === s.backgroundMaterialId)
-                    ?.name
-                }
+                {materialName(project, s.backgroundMaterialId)}
               </p>
               {pts.length > 0 && (
                 <svg
@@ -110,7 +121,7 @@ export function Report({
                     fill={
                       project.materials.find(
                         (m) => m.id === s.backgroundMaterialId,
-                      )?.color
+                      )?.color ?? "#a4a7a9"
                     }
                     stroke="#675d50"
                     strokeWidth="0.1"
@@ -121,7 +132,7 @@ export function Report({
                       points={d(r.points)}
                       fill={
                         project.materials.find((m) => m.id === r.materialId)
-                          ?.color
+                          ?.color ?? "#a4a7a9"
                       }
                       stroke="#675d50"
                       strokeWidth="0.1"
@@ -147,8 +158,7 @@ export function Report({
               {s.regions.map((r) => (
                 <div key={r.id}>
                   <h3>
-                    {r.name} ·{" "}
-                    {project.materials.find((m) => m.id === r.materialId)?.name}
+                    {r.name} · {materialName(project, r.materialId)}
                   </h3>
                   <p>
                     {r.points
@@ -215,7 +225,9 @@ export function Report({
             implementadas. Isso não constitui validação de engenharia.
           </p>
         )}
-        <p>Formato geostruct/1 · Projeto {project.id}</p>
+        <p>
+          Formato geostruct/{project.version} · Projeto {project.id}
+        </p>
       </article>
     </>
   );
