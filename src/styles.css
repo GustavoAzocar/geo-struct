@@ -1091,7 +1091,8 @@ select {
   font-size: 11px;
 }
 .coordinate-paste summary,
-.core-input-preview summary {
+.core-input-preview summary,
+.fixed-circle-preview summary {
   cursor: pointer;
   color: var(--muted);
   font-size: 10px;
@@ -1104,19 +1105,39 @@ select {
   margin-top: 6px;
   font-size: 10px;
 }
-.core-input-preview {
+.core-input-preview,
+.fixed-circle-preview {
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 10px;
   font-size: 11px;
   overflow-wrap: anywhere;
 }
-.core-input-preview summary {
+.core-input-preview summary,
+.fixed-circle-preview summary {
   color: var(--text);
   font-size: 12px;
 }
-.core-input-preview ul {
+.core-input-preview ul,
+.fixed-circle-preview ul {
   padding-left: 18px;
+}
+.fixed-circle-preview {
+  margin-top: 12px;
+}
+.fixed-circle-preview > section {
+  margin-top: 12px;
+}
+.fixed-circle-preview .secondary {
+  margin-bottom: 8px;
+}
+.slice-inspection {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.slice-table-wrap {
+  max-height: 40vh;
+  overflow: auto;
 }
 .inspector-actions {
   display: flex;

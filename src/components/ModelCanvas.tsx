@@ -28,6 +28,8 @@ import {
 } from "../domain/editing";
 import { snapPoint, measurePoints, type Precision } from "../domain/precision";
 import { boundary, distance, elevation } from "../domain/geometry";
+import type { FixedCircleGeometry } from "../core/fixed-circle";
+import { SliceOverlay } from "./SliceOverlay";
 
 export type Visibility = {
   materials: boolean;
@@ -70,6 +72,7 @@ export function ModelCanvas({
   section,
   selection,
   analysisCase,
+  sliceGeometry,
   tool,
   dark,
   grid,
@@ -91,6 +94,7 @@ export function ModelCanvas({
   section: Section;
   selection: Selection;
   analysisCase: AnalysisCase | null;
+  sliceGeometry: FixedCircleGeometry | null;
   tool: Tool;
   dark: boolean;
   grid: boolean;
@@ -689,6 +693,9 @@ export function ModelCanvas({
                 </g>
               );
             })}
+          {analysisCase && visibility.circle && sliceGeometry && (
+            <SliceOverlay geometry={sliceGeometry} />
+          )}
           {analysisCase && visibility.circle && (
             <g
               data-case-preview={analysisCase.id}

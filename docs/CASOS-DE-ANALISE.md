@@ -1,6 +1,6 @@
 # Casos de análise e formato v4
 
-Um caso prepara as entradas de uma análise na geometria de uma seção. Cada caso tem ID próprio; geometria, materiais, linha piezométrica e dados das faixas continuam no cadastro da seção. Mudar esses dados afeta os casos vinculados. Não há resultados, fatias, enumeração de candidatos ou cálculo de FS nesta entrega.
+Um caso prepara as entradas de uma análise na geometria de uma seção. Cada caso tem ID próprio; geometria, materiais, linha piezométrica e dados das faixas continuam no cadastro da seção. Mudar esses dados afeta os casos vinculados. A versão em desenvolvimento permite preparar a [geometria das fatias de um círculo fixo](GEOMETRIA-DO-CIRCULO.md), sem gravá-la no arquivo. Não há resultados de estabilidade, enumeração de candidatos ou cálculo de FS.
 
 ## Contrato
 

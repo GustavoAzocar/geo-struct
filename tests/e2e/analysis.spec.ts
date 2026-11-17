@@ -494,9 +494,7 @@ test("entrada incompleta mostra pendências e se atualiza ao editar material com
     "coesão",
   );
   await expect(input).toContainText("q = 0 kPa");
-  await expect(input).toContainText(
-    "Fatias e fator de segurança ainda não calculados",
-  );
+  await expect(input).toContainText("Fator de segurança ainda não calculado");
   await page
     .getByRole("button", { name: "Solo residual", exact: true })
     .click();

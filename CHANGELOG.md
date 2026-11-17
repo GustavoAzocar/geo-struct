@@ -1,5 +1,12 @@
 # Histórico
 
+## Em desenvolvimento — geometria do círculo fixo
+
+- Preparação independente de interseções e fatias no arco inferior, com tolerância explícita, cortes rastreáveis e refinamento angular de até 3°.
+- Áreas geométricas até o arco, comprimentos de arco/corda, cotas unilaterais em faces verticais e identificação do material na base, sem forças ou FS.
+- Prévia no desenho e tabela de inspeção; alterações de entradas/perfil ocultam a prévia anterior. Rascunhos, histórico e formato v4 preservados.
+- Contrato geométrico documentado, casos analíticos e testes de diagnóstico/integridade/interface. A revisão integral das regras mecânicas continua pendente; distribuição em uma próxima versão.
+
 ## Em desenvolvimento — entradas do núcleo
 
 - Contrato independente `geostruct-input/1` e adaptador dos casos existentes, com unidades, origem, coordenadas X/Z e condições efetivas.

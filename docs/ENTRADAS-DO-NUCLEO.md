@@ -1,6 +1,6 @@
 # Entradas do núcleo — primeira etapa
 
-O contrato `geostruct-input/1` reúne as entradas aplicadas de um caso em uma cópia imutável, separada da interface e do arquivo de projeto. É um contrato de transferência de dados, ainda sem perfil numérico, fatias, forças, busca, FS ou classificação de estabilidade. As regras físicas continuam dependentes da especificação #30 e dos casos independentes #31.
+O contrato `geostruct-input/1` reúne as entradas aplicadas de um caso em uma cópia imutável, separada da interface e do arquivo de projeto. É um contrato de transferência de dados, sem perfil numérico, fatias, forças, busca, FS ou classificação de estabilidade dentro dessa entrada. A preparação geométrica consome esse contrato e devolve suas fatias separadamente; ver [Geometria do círculo](GEOMETRIA-DO-CIRCULO.md). As regras físicas continuam dependentes da especificação #30 e dos casos independentes #31.
 
 ## Uso na interface
 
@@ -50,4 +50,4 @@ O arquivo continua `geostruct/4`, sem novos campos ou migração. O projeto salv
 
 Testes cobrem herança e seleção própria, campos incompletos/zero, referências inválidas, conversão X/Z, faces verticais, fontes, isolamento, imutabilidade, ida/volta do arquivo e revisão após desfazer/refazer. Os fluxos de interface cobrem rascunhos, condições efetivas, edição de material compartilhado e preservação do formato v4. São testes de transferência e cadastro, sem validação geotécnica.
 
-A próxima entrega é preparar a geometria de um círculo fixo e suas fatias após fechar as regras correspondentes da [especificação #30](https://github.com/ricardocorsini/openstruct-front/issues/30). Cálculos e tolerâncias devem ser confrontados com os [casos independentes #31](https://github.com/ricardocorsini/openstruct-front/issues/31).
+A preparação geométrica de um círculo fixo já consome esse contrato, com regras e casos analíticos descritos em [Geometria do círculo](GEOMETRIA-DO-CIRCULO.md). O próximo recorte mecânico depende da [especificação #30](https://github.com/ricardocorsini/openstruct-front/issues/30) e dos [casos independentes #31](https://github.com/ricardocorsini/openstruct-front/issues/31).

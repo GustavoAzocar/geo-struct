@@ -1,21 +1,9 @@
-import type {
-  CoreInput,
-  Immutable,
-  InputPreparation,
-  InputSnapshot,
-} from "../core/input";
+import type { CoreInput, InputPreparation, InputSnapshot } from "../core/input";
 import { projectSchema, type Point } from "./model";
 import { resolveCaseSection } from "./analysis";
 import { activeLoads, activeWater } from "./conditions";
 import { auditProject } from "./audit";
-
-function freeze<T>(value: T): Immutable<T> {
-  if (value !== null && typeof value === "object") {
-    Object.values(value).forEach(freeze);
-    Object.freeze(value);
-  }
-  return value as Immutable<T>;
-}
+import { freeze } from "../core/immutable";
 const pointXZ = ({ x, y }: Point) => ({ x, z: y });
 
 /** Recebe o projeto atual, já migrado pelo leitor. Nunca preenche pendências. */

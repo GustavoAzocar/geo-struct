@@ -48,7 +48,11 @@ Os diálogos nativos ampliam o escopo apenas para caminhos selecionados pelo usu
 
 `src/core/input.ts` define o contrato independente `geostruct-input/1`. `src/domain/core-input.ts` adapta um caso aplicado, valida referências, resolve suas condições e produz uma cópia imutável com origem, unidades, coordenadas X/Z e revisão determinística. O componente `CoreInputPreview` permite conferir essa entrada no inspetor do caso. A conferência existente é reutilizada, sem transformar ausência de pendências em admissibilidade. Consulte [Entradas do núcleo](ENTRADAS-DO-NUCLEO.md).
 
-O arquivo permanece v4; snapshots não são persistidos. O núcleo não importa o modelo do editor. O referencial original e os campos nulos são preservados. Normalização pelo sentido do movimento, perfil numérico, preparação de fatias e equações dependem do fechamento das regras das issues #30/#31. A busca futura deverá executar em Worker com progresso e cancelamento. A versão atual não contém solver simulado, regra de FS mínimo ou sinalização de aprovação de estabilidade.
+`src/core/circle-geometry.ts` e `src/core/fixed-circle.ts` preparam interseções e fatias de um círculo fixo. Consomem a entrada independente e um perfil geométrico explícito, sem importar o editor ou sua tolerância. O resultado imutável inclui revisão, interseções, cortes com origem, grandezas geométricas e diagnósticos. `FixedCirclePreview` apresenta os controles e tabela; `SliceOverlay` desenha as fatias na vista existente. A área usa o arco analítico, não o desenho SVG.
+
+O App mantém apenas uma prévia em memória e a apresenta quando sua revisão corresponde ao caso aplicado; rascunhos ocultam o desenho. Mudar o perfil remove a prévia. Preparar geometria não modifica o projeto ou o histórico. O referencial original é conservado; não há normalização motriz ou interpretação mecânica de faces verticais. Veja [Geometria do círculo](GEOMETRIA-DO-CIRCULO.md).
+
+O arquivo permanece v4; snapshots, perfil geométrico e fatias não são persistidos. Normalização para os métodos, perfil de convergência, subáreas por material, forças e equações dependem do fechamento das regras das issues #30/#31. A busca futura deverá executar em Worker com progresso e cancelamento. Não há solver simulado, regra de FS mínimo ou sinalização de aprovação de estabilidade.
 
 ## Conferência integrada dos lançamentos
 

@@ -1,22 +1,14 @@
-import { useMemo } from "react";
-import { prepareCoreInput } from "../domain/core-input";
-import type { Project } from "../domain/model";
+import type { InputPreparation } from "../core/input";
 import { directionLabel, surfaceLabel } from "../domain/analysis";
 import { waterModeLabel, loadConditionLabel } from "../domain/conditions";
 
 export function CoreInputPreview({
-  project,
-  caseId,
+  prepared,
   dirty,
 }: {
-  project: Project;
-  caseId: string;
+  prepared: InputPreparation;
   dirty: boolean;
 }) {
-  const prepared = useMemo(
-    () => prepareCoreInput(project, caseId),
-    [project, caseId],
-  );
   const input = prepared.snapshot?.input;
   return (
     <details className="core-input-preview">
@@ -94,8 +86,8 @@ export function CoreInputPreview({
           </ul>
         )}
         <p className="hint">
-          Fatias e fator de segurança ainda não calculados. Esta conferência não
-          verifica admissibilidade ou estabilidade.
+          Fator de segurança ainda não calculado. Esta conferência não verifica
+          admissibilidade ou estabilidade.
         </p>
       </section>
     </details>

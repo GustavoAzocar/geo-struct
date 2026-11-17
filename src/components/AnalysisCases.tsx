@@ -16,6 +16,10 @@ import {
 } from "../domain/analysis";
 import { introducedError, parseNumber } from "../domain/geometry";
 import { CoreInputPreview } from "./CoreInputPreview";
+import {
+  FixedCirclePreview,
+  type FixedCirclePreviewProps,
+} from "./FixedCirclePreview";
 
 export function AnalysisCases({
   project,
@@ -176,6 +180,7 @@ export function CaseInspector({
   onDirty,
   onDrawCircle,
   onBase,
+  geometryPreview,
 }: {
   project: Project;
   section: Section;
@@ -184,6 +189,7 @@ export function CaseInspector({
   onDirty: (v: boolean) => void;
   onDrawCircle: () => void;
   onBase: () => void;
+  geometryPreview: Omit<FixedCirclePreviewProps, "dirty">;
 }) {
   const initial: Record<string, string> = {
     name: c.name,
@@ -474,7 +480,11 @@ export function CaseInspector({
             Prévia de entradas, sem cálculo. A admissibilidade do círculo e o
             resultado da busca ainda não são verificados.
           </div>
-          <CoreInputPreview project={project} caseId={c.id} dirty={dirty} />
+          <CoreInputPreview
+            prepared={geometryPreview.preparation}
+            dirty={dirty}
+          />
+          <FixedCirclePreview {...geometryPreview} dirty={dirty} />
           <button className="text-button" type="button" onClick={onBase}>
             Voltar à seção base
           </button>

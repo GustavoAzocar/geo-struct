@@ -4,7 +4,7 @@ export type Immutable<T> = T extends object
   ? { readonly [K in keyof T]: Immutable<T[K]> }
   : T;
 
-type PointXZ = { x: number; z: number };
+export type PointXZ = { x: number; z: number };
 type SearchAxis = {
   min: number | null;
   max: number | null;

@@ -36,6 +36,10 @@ Os fluxos Chromium verificam criação, edição, rascunhos, desenho/cancelament
 
 ## Limites
 
+### Geometria do círculo fixo
+
+Os testes conferem interseções e área total contra o segmento circular analítico de raio 5 m e centro (0, 4), translação, escala, refinamento, ramo inferior, vértices compartilhados, faces verticais, material na base e cortes efetivos de água/cargas. Casos negativos cobrem tangência, domínio truncado, contato com a base, cruzamentos adicionais, cobertura da água, seleção vazia, campos/perfil inválidos, interfaces ambíguas e capacidade antes da expansão. A tabela e o desenho são testados por dados/DOM, sem capturas de imagem; os fluxos incluem rascunhos, alteração compartilhada, troca de caso, histórico e preservação do arquivo v4. São testes de geometria, sem benchmark de forças ou FS.
+
 ### Entradas do núcleo
 
 Os testes do adaptador cobrem origem/unidades, conversão X/Z sem espelhamento, nulos/zeros, herança e seleção própria, estados inativos, faces verticais, busca declarada, referências inválidas, imutabilidade e revisão determinística. Incluem alterações menores que a tolerância do editor, isolamento de outras seções e materiais sem uso, preservação v4 e desfazer/refazer. Os fluxos Chromium verificam a conferência no caso, rascunhos, atualização após editar material compartilhado e ausência de dados derivados no arquivo. Não executam fatias, equações ou benchmarks de FS. Consulte [Entradas do núcleo](ENTRADAS-DO-NUCLEO.md).

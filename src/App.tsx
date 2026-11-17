@@ -88,6 +88,9 @@ import { Dialog } from "./components/Dialog";
 import { StartScreen } from "./components/StartScreen";
 import { Report } from "./components/Report";
 import { Materials, MaterialAssignment } from "./components/Materials";
+import { prepareCoreInput } from "./domain/core-input";
+import type { FixedCirclePreparation } from "./core/fixed-circle";
+import type { GeometryFields } from "./components/FixedCirclePreview";
 
 type Question = {
   title: string;
@@ -136,6 +139,12 @@ export default function App() {
   const [saved, setSaved] = useState(""),
     [filePath, setFilePath] = useState<string | null>(null),
     [busy, setBusy] = useState(false);
+  const [geometryFields, setGeometryFields] = useState<GeometryFields>({
+    tolerance: "",
+    angle: "3",
+  });
+  const [slicePreview, setSlicePreview] =
+    useState<FixedCirclePreparation | null>(null);
   const [notice, setNotice] = useState(""),
     [question, setQuestion] = useState<Question | null>(null),
     [dialog, setDialog] = useState<
@@ -182,6 +191,18 @@ export default function App() {
     () => (project ? diagnose(project) : []),
     [project],
   );
+  const preparedCase = useMemo(
+    () =>
+      project && selectedCase
+        ? prepareCoreInput(project, selectedCase.id)
+        : null,
+    [project, selectedCase],
+  );
+  const currentSlices =
+    preparedCase?.snapshot &&
+    slicePreview?.inputRevision === preparedCase.snapshot.revision
+      ? slicePreview
+      : null;
   const dirty = !!project && JSON.stringify(project) !== saved;
   const notify = useCallback((message: string) => {
     setNotice(message);
@@ -330,6 +351,7 @@ export default function App() {
     setTool("select");
     setTab("Geometria");
     setSaved(savedState && !migrated ? JSON.stringify(p) : "");
+    setSlicePreview(null);
     setFilePath(path);
     setDraftDirty(false);
     setDrawing(false);
@@ -1137,6 +1159,13 @@ export default function App() {
                   section={section}
                   selection={selection}
                   analysisCase={selectedCase}
+                  sliceGeometry={
+                    !draftDirty &&
+                    !drawing &&
+                    currentSlices?.status === "prepared"
+                      ? currentSlices.geometry
+                      : null
+                  }
                   tool={tool}
                   dark={dark}
                   grid={grid}
@@ -1237,6 +1266,16 @@ export default function App() {
                   onDirty={setDraftDirty}
                   onDrawCircle={() => void selectTool("case-circle")}
                   onBase={() => void select({ kind: "terrain" })}
+                  geometryPreview={{
+                    preparation: preparedCase!,
+                    values: geometryFields,
+                    result: currentSlices,
+                    onChange: (values) => {
+                      setGeometryFields(values);
+                      setSlicePreview(null);
+                    },
+                    onPrepare: setSlicePreview,
+                  }}
                 />
               ) : (
                 <Inspector

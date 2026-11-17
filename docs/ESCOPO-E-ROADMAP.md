@@ -24,6 +24,10 @@ Cadastro, duplicação e exclusão de casos por seção, com hipóteses, sentido
 
 ## Base técnica
 
+### Preparação geométrica do círculo fixo — implementada
+
+Arco inferior, interseções transversais com o terreno, faces verticais com cotas unilaterais, cortes de terreno/interfaces/água/faixas e refinamento angular de até 3°. Tolerância geométrica explícita, áreas até o arco, comprimentos de arco/corda e identificação geométrica do material na base. Desenho e tabela, com ocultação de prévias desatualizadas. Diagnósticos para contatos, domínio truncado, ambiguidade, cortes estreitos e capacidade. O [contrato geométrico](GEOMETRIA-DO-CIRCULO.md) consolida o recorte de R1/R3 desta entrega; não representa o aceite integral da #30. Sem pesos, pressões, FS ou busca.
+
 ### Entradas do núcleo — implementado
 
 Contrato `geostruct-input/1`, adaptador de casos, cópia imutável, origem dos dados, unidades explícitas e revisão determinística das entradas efetivas. Conferência no inspetor do caso, atualizada após aplicar alterações e desfazer/refazer. Preserva nulos, zeros, referências, escolhas próprias/herdadas e coordenadas originais. O arquivo permanece v4. Sem normalização pelo sentido, perfil numérico, fatias ou equações; ver [Entradas do núcleo](ENTRADAS-DO-NUCLEO.md).
@@ -44,7 +48,7 @@ Os testes de modelagem deste repositório não substituem os casos geotécnicos 
 3. Casos de análise: implementados no recorte de cadastro e prévia, com identidade própria e vínculo à seção.
 4. **Conferência integrada e distribuição 0.1.0 — implementadas:** escopos por seção/caso, dependências compartilhadas, navegação, relatório, limite de arquivo simétrico e instaladores Windows/Linux disponíveis no Launcher. A homologação manual nativa completa continua pendente.
 5. **Contrato de transferência de entradas — implementado.** Concluir a especificação #30 e o catálogo #31 antes de avançar nas regras físicas: perfis numéricos, tratamento das faces verticais, materiais/água e comportamento de falhas.
-6. Implementar preparação de fatias e cálculo em superfície fixa. Validar geometria e forças, além das equações, com referências independentes.
+6. **Interseções e fatias geométricas — implementadas**, com casos analíticos próprios. Próxima entrega: consolidar as regras e preparar subáreas por material, pesos, água e cargas; depois implementar cálculo em superfície fixa com referências independentes. A validação de geometria não substitui a validação das forças ou das equações.
 7. Implementar busca circular determinística, progresso, cancelamento, inspeção por fatia e memória rastreável. Vincular resultados à revisão de entrada e invalidá-los quando ela mudar.
 8. Especificar métodos rigorosos, superfícies não circulares e estabilidade com reforços. Especificar separadamente verificações/dimensionamento das contenções.
 
