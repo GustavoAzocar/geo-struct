@@ -15,6 +15,7 @@ import {
   surfaceLabel,
 } from "../domain/analysis";
 import { introducedError, parseNumber } from "../domain/geometry";
+import { CoreInputPreview } from "./CoreInputPreview";
 
 export function AnalysisCases({
   project,
@@ -473,6 +474,7 @@ export function CaseInspector({
             Prévia de entradas, sem cálculo. A admissibilidade do círculo e o
             resultado da busca ainda não são verificados.
           </div>
+          <CoreInputPreview project={project} caseId={c.id} dirty={dirty} />
           <button className="text-button" type="button" onClick={onBase}>
             Voltar à seção base
           </button>

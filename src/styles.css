@@ -1090,7 +1090,8 @@ select {
   margin: 8px 0;
   font-size: 11px;
 }
-.coordinate-paste summary {
+.coordinate-paste summary,
+.core-input-preview summary {
   cursor: pointer;
   color: var(--muted);
   font-size: 10px;
@@ -1102,6 +1103,20 @@ select {
 .coordinate-paste button {
   margin-top: 6px;
   font-size: 10px;
+}
+.core-input-preview {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+.core-input-preview summary {
+  color: var(--text);
+  font-size: 12px;
+}
+.core-input-preview ul {
+  padding-left: 18px;
 }
 .inspector-actions {
   display: flex;

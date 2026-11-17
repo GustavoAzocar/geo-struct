@@ -1,5 +1,19 @@
 # Histórico
 
+## Em desenvolvimento — entradas do núcleo
+
+- Contrato independente `geostruct-input/1` e adaptador dos casos existentes, com unidades, origem, coordenadas X/Z e condições efetivas.
+- Cópia imutável e revisão determinística para detectar alterações nos dados compartilhados, no caso e após desfazer/refazer.
+- Conferência **Entradas para o núcleo** nas propriedades do caso, respeitando rascunhos e reutilizando os diagnósticos do cadastro.
+- Testes de integridade, isolamento, herança, nulos/zeros, revisão e interface. Projeto permanece v4; sem fatias, equações ou FS nesta etapa. Distribuição em uma próxima versão.
+
+## 0.1.0 — primeira distribuição desktop
+
+- NSIS por usuário para Windows e AppImage para Linux, pelo catálogo assinado do Struct Launcher.
+- Testes de adaptadores de arquivos, compilação e abertura de janela nativa em ambos os sistemas. Homologação manual completa ainda pendente.
+- Ícones padrão provisórios, notas versionadas e vínculo entre tag e commit de origem.
+- Versão de modelagem: sem fator de segurança, verificação de admissibilidade ou dimensionamento.
+
 ## Em desenvolvimento — conferência integrada
 
 - Conferência por seção/caso, filtros, dependências compartilhadas e navegação aos cadastros. Relatório com o mesmo diagnóstico por escopo.

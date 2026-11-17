@@ -429,3 +429,78 @@ test("recuperação v3 conserva todos os dados e mantém casos vazios até cria�
   const dialog = await manager(page);
   await expect(dialog).toContainText("Nenhum caso cadastrado");
 });
+
+test("entrada do núcleo usa dados aplicados e acompanha condições, arquivo e histórico", async ({
+  page,
+}) => {
+  const { p } = fixture();
+  await page.setViewportSize({ width: 960, height: 640 });
+  await open(page, p);
+  await selectCase(page);
+  await page.locator(".core-input-preview summary").click();
+  const input = page.getByRole("region", {
+    name: "Entradas para o núcleo",
+    exact: true,
+  });
+  await expect(input.getByRole("status")).toHaveText("Entradas reunidas");
+  await expect(input).toContainText("2 materiais referenciados");
+  await expect(input).toContainText("q = 20 kPa");
+  await expect(input).toContainText("herdada da seção");
+  expect(await save(page)).toEqual(p);
+
+  await page
+    .getByLabel("Sobrecargas no caso", { exact: true })
+    .selectOption("none");
+  await expect(input).toContainText("Há alterações em edição");
+  await expect(input).toContainText("q = 20 kPa");
+  await apply(page);
+  await page.locator(".core-input-preview summary").click();
+  await expect(input).toContainText("0 faixas ativas");
+  await expect(input).not.toContainText("q = 20 kPa");
+  const saved = await save(page);
+  expect(saved.sections).toEqual(p.sections);
+  expect(saved).not.toHaveProperty("snapshot");
+  expect(saved.version).toBe(4);
+
+  await page.getByRole("tab", { name: "Geometria", exact: true }).click();
+  await page.getByRole("button", { name: "Desfazer", exact: true }).click();
+  // O histórico remonta o inspetor para descartar rascunhos antigos.
+  await page.locator(".core-input-preview summary").click();
+  await expect(input).toContainText("q = 20 kPa");
+  await page.getByRole("button", { name: "Refazer", exact: true }).click();
+  await page.locator(".core-input-preview summary").click();
+  await expect(input).toContainText("0 faixas ativas");
+  expect(await save(page)).toEqual(saved);
+});
+
+test("entrada incompleta mostra pendências e se atualiza ao editar material compartilhado", async ({
+  page,
+}) => {
+  const { p } = fixture();
+  p.materials[0].cohesion = null;
+  p.sections[0].loads[0].q = 0;
+  await open(page, p);
+  await selectCase(page);
+  await page.locator(".core-input-preview summary").click();
+  const input = page.getByRole("region", {
+    name: "Entradas para o núcleo",
+    exact: true,
+  });
+  await expect(input.getByRole("status")).toHaveText("Entradas com pendências");
+  await expect(input.getByLabel("Diagnósticos das entradas")).toContainText(
+    "coesão",
+  );
+  await expect(input).toContainText("q = 0 kPa");
+  await expect(input).toContainText(
+    "Fatias e fator de segurança ainda não calculados",
+  );
+  await page
+    .getByRole("button", { name: "Solo residual", exact: true })
+    .click();
+  await page.getByLabel("Coesão c′ (kPa)", { exact: true }).fill("0");
+  await page.getByRole("button", { name: "Aplicar", exact: true }).click();
+  await selectCase(page);
+  await page.locator(".core-input-preview summary").click();
+  await expect(input.getByRole("status")).toHaveText("Entradas reunidas");
+  await expect(input).toContainText("q = 0 kPa");
+});

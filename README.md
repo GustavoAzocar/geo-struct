@@ -52,7 +52,7 @@ Na primeira preparação desktop é necessário acesso à internet para baixar o
 
 O aplicativo usa `br.com.openstruct.geostruct`, janela mínima de 960 × 640 e diálogo nativo de arquivos. O acesso ao sistema de arquivos fica limitado aos arquivos escolhidos pelo usuário. No navegador, Abrir usa o seletor de arquivo e Salvar gera um download. Conserve o arquivo exportado: a cópia de recuperação no navegador não substitui um backup.
 
-Os fontes continuam em evolução antes da distribuição desktop. Instaladores e integração no catálogo/Launcher serão tratados após a validação da modelagem e da distribuição. Não há atualização automática ativa nesta versão.
+A distribuição 0.1.0 de modelagem usa o catálogo assinado do Struct Launcher. No Launcher, use **Verificar atualizações**, localize **GeoStruct** e escolha **Instalar**. Os [pacotes oficiais](https://github.com/ricardocorsini/openstruct-catalog/releases/tag/geostruct-v0.1.0) incluem Windows x86_64 e Linux x86_64. Atualizações são gerenciadas pelo Launcher; não há autoatualizador dentro do GeoStruct.
 
 ## Desenvolvimento
 
@@ -66,15 +66,16 @@ npm run format:check
 
 Testes de domínio verificam geometrias, limites dos parâmetros, arquivos, referências e histórico. Os testes de interface cobrem fluxos de edição e persistência. São verificações de software de modelagem; não validam um solver geotécnico.
 
-| Caminho           | Responsabilidade                                             |
-| ----------------- | ------------------------------------------------------------ |
-| `src/domain/`     | Modelo, validação geométrica e histórico, sem React ou Tauri |
-| `src/components/` | Ribbon, navegador, editor gráfico, propriedades e relatório  |
-| `src/lib/`        | Entrada e saída local, com adaptadores web e desktop         |
-| `src-tauri/`      | Janela nativa, permissões, identidade e empacotamento        |
-| `tests/`          | Testes de domínio e fluxos Playwright                        |
-| `examples/`       | Exemplo próprio de modelagem                                 |
-| `docs/`           | Guia, arquitetura, escopo e validação                        |
+| Caminho           | Responsabilidade                                               |
+| ----------------- | -------------------------------------------------------------- |
+| `src/domain/`     | Modelo, validação geométrica e histórico, sem React ou Tauri   |
+| `src/core/`       | Contrato independente das entradas do futuro núcleo de cálculo |
+| `src/components/` | Ribbon, navegador, editor gráfico, propriedades e relatório    |
+| `src/lib/`        | Entrada e saída local, com adaptadores web e desktop           |
+| `src-tauri/`      | Janela nativa, permissões, identidade e empacotamento          |
+| `tests/`          | Testes de domínio e fluxos Playwright                          |
+| `examples/`       | Exemplo próprio de modelagem                                   |
+| `docs/`           | Guia, arquitetura, escopo e validação                          |
 
 Consulte [Guia de uso](docs/GUIA-DE-USO.md), [Arquitetura](docs/ARQUITETURA.md), [Escopo e evolução](docs/ESCOPO-E-ROADMAP.md), [Validação](docs/VALIDACAO.md) e [histórico](CHANGELOG.md).
 
@@ -83,6 +84,8 @@ O [contrato de materiais e migração](docs/MATERIAIS-E-FORMATO.md) descreve os 
 O [contrato de água e cargas](docs/AGUA-E-CARGAS.md) descreve as condições, os lançamentos ativos/inativos e a migração para v3. Desativar preserva os dados; água ou cargas ausentes em um arquivo antigo ficam como não definidas.
 
 O [contrato de casos de análise](docs/CASOS-DE-ANALISE.md) descreve a associação à seção, as condições próprias dos cenários e o formato v4. Os casos ainda não executam cálculo ou busca.
+
+Na versão em desenvolvimento, selecione um caso e abra **Entradas para o núcleo**, nas propriedades, para conferir os dados aplicados e suas pendências. O [contrato de entradas](docs/ENTRADAS-DO-NUCLEO.md) reúne condições efetivas, materiais usados, unidades e origem em uma cópia imutável, com revisão que detecta alterações posteriores. O formato do projeto permanece v4. Esta etapa ainda não prepara fatias ou calcula FS e será distribuída em uma próxima versão.
 
 ## Origem e referências
 

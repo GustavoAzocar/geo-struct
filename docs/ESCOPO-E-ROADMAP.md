@@ -24,6 +24,12 @@ Cadastro, duplicação e exclusão de casos por seção, com hipóteses, sentido
 
 ## Base técnica
 
+### Entradas do núcleo — implementado
+
+Contrato `geostruct-input/1`, adaptador de casos, cópia imutável, origem dos dados, unidades explícitas e revisão determinística das entradas efetivas. Conferência no inspetor do caso, atualizada após aplicar alterações e desfazer/refazer. Preserva nulos, zeros, referências, escolhas próprias/herdadas e coordenadas originais. O arquivo permanece v4. Sem normalização pelo sentido, perfil numérico, fatias ou equações; ver [Entradas do núcleo](ENTRADAS-DO-NUCLEO.md).
+
+### Referências e decisões
+
 - [#28 — Roadmap](https://github.com/ricardocorsini/openstruct-front/issues/28): primeiro motor determinístico 2D, superfícies circulares, Mohr–Coulomb, Fellenius e Bishop Simplificado.
 - [#29 — Bibliografia](https://github.com/ricardocorsini/openstruct-front/issues/29): seleção aprovada pelo Eng. Gustavo Azocar. Referências principais: Duncan, Wright e Brandon (2014) e USACE EM 1110-2-1902 (2003).
 - [#30 — Especificação](https://github.com/ricardocorsini/openstruct-front/issues/30), [PR #37](https://github.com/ricardocorsini/openstruct-front/pull/37): documento candidato; D1–D5 aprovadas como base, R0–R6, consulta direta de Bishop e aceite final pendentes na consulta de 17/11/2026.
@@ -36,8 +42,8 @@ Os testes de modelagem deste repositório não substituem os casos geotécnicos 
 1. Geometria e edição: implementadas nesta evolução; revisar o uso em modelos reais.
 2. Materiais, atribuição explícita, água e sobrecargas: implementados no recorte inicial. As regras físicas que combinam materiais/água dependem do contrato do motor.
 3. Casos de análise: implementados no recorte de cadastro e prévia, com identidade própria e vínculo à seção.
-4. **Conferência integrada — implementada:** escopos por seção/caso, dependências compartilhadas, navegação, relatório e limite de arquivo simétrico. **Próxima entrega:** homologação nativa dos fluxos de arquivos/usabilidade em Windows e Linux e preparação dos instaladores da primeira versão de modelagem.
-5. Concluir a especificação #30 e o catálogo #31. Definir contrato do motor, perfis numéricos, tratamento das faces verticais, materiais/água e comportamento de falhas.
+4. **Conferência integrada e distribuição 0.1.0 — implementadas:** escopos por seção/caso, dependências compartilhadas, navegação, relatório, limite de arquivo simétrico e instaladores Windows/Linux disponíveis no Launcher. A homologação manual nativa completa continua pendente.
+5. **Contrato de transferência de entradas — implementado.** Concluir a especificação #30 e o catálogo #31 antes de avançar nas regras físicas: perfis numéricos, tratamento das faces verticais, materiais/água e comportamento de falhas.
 6. Implementar preparação de fatias e cálculo em superfície fixa. Validar geometria e forças, além das equações, com referências independentes.
 7. Implementar busca circular determinística, progresso, cancelamento, inspeção por fatia e memória rastreável. Vincular resultados à revisão de entrada e invalidá-los quando ela mudar.
 8. Especificar métodos rigorosos, superfícies não circulares e estabilidade com reforços. Especificar separadamente verificações/dimensionamento das contenções.

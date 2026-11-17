@@ -36,6 +36,12 @@ Os fluxos Chromium verificam criação, edição, rascunhos, desenho/cancelament
 
 ## Limites
 
+### Entradas do núcleo
+
+Os testes do adaptador cobrem origem/unidades, conversão X/Z sem espelhamento, nulos/zeros, herança e seleção própria, estados inativos, faces verticais, busca declarada, referências inválidas, imutabilidade e revisão determinística. Incluem alterações menores que a tolerância do editor, isolamento de outras seções e materiais sem uso, preservação v4 e desfazer/refazer. Os fluxos Chromium verificam a conferência no caso, rascunhos, atualização após editar material compartilhado e ausência de dados derivados no arquivo. Não executam fatias, equações ou benchmarks de FS. Consulte [Entradas do núcleo](ENTRADAS-DO-NUCLEO.md).
+
+### Alcance das verificações
+
 As verificações são de software de modelagem, sem validação de solver geotécnico. Não há benchmark de FS nesta entrega. A revisão com engenheiros e os casos de cálculo independentes dependem das issues #30/#31 do frontend.
 
 Compilar um executável nativo não comprova sua interação com todos os ambientes. Antes de distribuir instaladores, conferir manualmente em Linux e Windows: abrir/salvar, cancelamento de diálogo, permissões, fechamento com alterações, impressão, escala de tela, zoom/pan e teclado. Validar Linux WebKitGTK e Windows WebView2 além do Chromium dos testes.

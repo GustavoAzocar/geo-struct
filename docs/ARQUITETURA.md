@@ -46,7 +46,9 @@ Os diálogos nativos ampliam o escopo apenas para caminhos selecionados pelo usu
 
 ## Preparação para o motor
 
-O motor será um módulo separado do React, com dados de entrada normalizados, resultados por fatia, diagnósticos e revisão do modelo de origem. A busca deverá executar em Worker com progresso e cancelamento. A versão atual não contém solver simulado, regra de FS mínimo ou sinalização de aprovação de estabilidade. O contrato detalhado depende do fechamento das issues #30/#31.
+`src/core/input.ts` define o contrato independente `geostruct-input/1`. `src/domain/core-input.ts` adapta um caso aplicado, valida referências, resolve suas condições e produz uma cópia imutável com origem, unidades, coordenadas X/Z e revisão determinística. O componente `CoreInputPreview` permite conferir essa entrada no inspetor do caso. A conferência existente é reutilizada, sem transformar ausência de pendências em admissibilidade. Consulte [Entradas do núcleo](ENTRADAS-DO-NUCLEO.md).
+
+O arquivo permanece v4; snapshots não são persistidos. O núcleo não importa o modelo do editor. O referencial original e os campos nulos são preservados. Normalização pelo sentido do movimento, perfil numérico, preparação de fatias e equações dependem do fechamento das regras das issues #30/#31. A busca futura deverá executar em Worker com progresso e cancelamento. A versão atual não contém solver simulado, regra de FS mínimo ou sinalização de aprovação de estabilidade.
 
 ## Conferência integrada dos lançamentos
 
