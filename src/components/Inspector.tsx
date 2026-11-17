@@ -8,9 +8,14 @@ import {
   type Point,
   type Material,
 } from "../domain/model";
+import { setWaterMode } from "../domain/conditions";
 import { materialPending, materialUses } from "../domain/materials";
 import { contourTarget, replaceContourCoordinates } from "../domain/editing";
-import { diagnose, parseCoordinates, parseNumber } from "../domain/geometry";
+import {
+  introducedError,
+  parseCoordinates,
+  parseNumber,
+} from "../domain/geometry";
 
 const labels: Record<Selection["kind"], string> = {
   project: "Dados do projeto",
@@ -18,7 +23,7 @@ const labels: Record<Selection["kind"], string> = {
   terrain: "Perfil do terreno",
   region: "Região de solo",
   material: "Material",
-  water: "Linha piezométrica",
+  water: "Condição de água",
   load: "Sobrecarga",
   circle: "Círculo de tentativa",
 };
@@ -60,7 +65,11 @@ export function Inspector({
   const initial = Object.fromEntries(
     Object.entries(source ?? {})
       .filter(
-        ([, v]) => typeof v === "string" || typeof v === "number" || v === null,
+        ([, v]) =>
+          typeof v === "string" ||
+          typeof v === "number" ||
+          typeof v === "boolean" ||
+          v === null,
       )
       .map(([k, v]) => [k, v === null ? "" : String(v)]),
   );
@@ -109,12 +118,14 @@ export function Inspector({
       <span>{label}</span>
       {opts.textarea ? (
         <textarea
+          aria-label={label}
           value={values[key] ?? ""}
           onChange={(e) => change(key, e.target.value)}
           rows={3}
         />
       ) : (
         <input
+          aria-label={label}
           type={opts.type ?? "text"}
           inputMode={opts.number ? "decimal" : undefined}
           value={values[key] ?? ""}
@@ -177,7 +188,7 @@ export function Inspector({
       const points = () =>
         parseCoordinates(coordinates.map((row) => row.join(" ; ")).join("\n"));
       const target = contourTarget(selection);
-      if (target)
+      if (target && selection.kind !== "water")
         Object.assign(
           s,
           replaceContourCoordinates(
@@ -210,6 +221,21 @@ export function Inspector({
           break;
         }
         case "water":
+          s.water = coordinates.length
+            ? points()
+            : section.water === null
+              ? null
+              : [];
+          Object.assign(
+            s,
+            setWaterMode(s, values.waterMode as Section["waterMode"]),
+          );
+          s.waterUnitWeight = number(
+            "waterUnitWeight",
+            "Peso específico da água",
+            true,
+          );
+          s.waterSource = values.waterSource;
           break;
         case "material": {
           const m = p.materials.find((x) => x.id === selection.id)!;
@@ -227,7 +253,9 @@ export function Inspector({
           l.name = values.name;
           l.x1 = number("x1", "X inicial")!;
           l.x2 = number("x2", "X final")!;
-          l.q = number("q", "Sobrecarga")!;
+          l.q = number("q", "Sobrecarga", true);
+          l.enabled = values.enabled === "true";
+          l.source = values.source;
           break;
         }
         case "circle":
@@ -245,14 +273,7 @@ export function Inspector({
             .map((i) => `${String(i.path.at(-1))}: ${i.message}`)
             .join(" · "),
         );
-      const before = new Set(
-        diagnose(project)
-          .filter((d) => d.level === "error")
-          .map((d) => `${d.target}:${d.message}`),
-      );
-      const added = diagnose(p).find(
-        (d) => d.level === "error" && !before.has(`${d.target}:${d.message}`),
-      );
+      const added = introducedError(project, parsed.data);
       if (added) throw new Error(added.message);
       setDirty(false);
       onDirty(false);
@@ -382,13 +403,31 @@ export function Inspector({
           )}
           {selection.kind === "load" && (
             <>
+              <label className="assignment-target">
+                <input
+                  type="checkbox"
+                  checked={values.enabled === "true"}
+                  onChange={(e) => change("enabled", String(e.target.checked))}
+                />
+                Habilitar esta sobrecarga
+              </label>
+              {section.loadCondition !== "loads" && (
+                <p className="material-pending">
+                  As sobrecargas desta seção estão inativas. Para utilizá-las,
+                  escolha Usar sobrecargas cadastradas em Gerenciar cargas.
+                </p>
+              )}
               <div className="field-row">
                 {field("x1", "X inicial (m)", { number: true })}
                 {field("x2", "X final (m)", { number: true })}
               </div>
               {field("q", "Sobrecarga q (kPa)", {
                 number: true,
-                hint: "Vertical, descendente, uniforme na projeção horizontal. Faixas sobrepostas serão somadas pelo futuro motor.",
+                hint: "Vertical, descendente e uniforme na projeção horizontal. Vazio significa não informado; zero é um valor explícito.",
+              })}
+              {field("source", "Origem da sobrecarga", {
+                textarea: true,
+                hint: "Uso, referência ou hipótese adotada para a intensidade e a faixa.",
               })}
             </>
           )}
@@ -406,10 +445,40 @@ export function Inspector({
             </>
           )}
           {selection.kind === "water" && (
-            <p className="hint">
-              Carga piezométrica prescrita. A linha não representa uma análise
-              de fluxo nem água externa.
-            </p>
+            <>
+              <label className="field">
+                <span>Condição de água</span>
+                <select
+                  aria-label="Condição de água"
+                  value={values.waterMode}
+                  onChange={(e) => change("waterMode", e.target.value)}
+                >
+                  <option value="unspecified">Não definida</option>
+                  <option value="dry">Condição seca</option>
+                  <option value="piezometric">
+                    Linha piezométrica prescrita
+                  </option>
+                </select>
+              </label>
+              {field("waterUnitWeight", "Peso específico da água γw (kN/m³)", {
+                number: true,
+                hint: "Necessário para a condição piezométrica. Informe o valor adotado; não há valor presumido.",
+              })}
+              {field("waterSource", "Origem da condição de água", {
+                textarea: true,
+                hint: "Medição, referência ou justificativa da hipótese, inclusive para condição seca.",
+              })}
+              <p className="hint">
+                A linha representa carga piezométrica prescrita. Fluxo e água
+                externa ainda não são modelados.
+              </p>
+              {values.waterMode !== "piezometric" && (
+                <p className="info-card">
+                  A linha e os valores abaixo ficam guardados, mas inativos
+                  nesta condição. Alterar a condição não apaga os dados.
+                </p>
+              )}
+            </>
           )}
           {showCoordinates && (
             <>

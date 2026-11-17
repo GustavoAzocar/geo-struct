@@ -390,10 +390,10 @@ describe("Faces verticais e arquivos existentes", () => {
       "utf8",
     );
     const p = parseProject(raw);
-    expect(JSON.parse(serializeProject(p))).toEqual({
+    expect(JSON.parse(serializeProject(p))).toMatchObject({
       ...JSON.parse(raw),
-      version: 2,
+      version: 3,
     });
-    expect(p.version).toBe(2);
+    expect(p.version).toBe(3);
   });
 });

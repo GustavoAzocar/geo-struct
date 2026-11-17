@@ -35,6 +35,25 @@ export const materialSchema = z
 const regionSchema = z
   .object({ id, name, materialId: id.nullable(), points })
   .strict();
+const legacyLoadSchema = z
+  .object({
+    id,
+    name,
+    x1: coordinate,
+    x2: coordinate,
+    q: z.number().finite().min(0).max(1e6),
+  })
+  .strict();
+export const loadSchema = legacyLoadSchema.extend({
+  q: z
+    .number()
+    .finite()
+    .min(0, "A sobrecarga não pode ser negativa.")
+    .max(1e6, "O limite de cadastro da sobrecarga é 1.000.000 kPa.")
+    .nullable(),
+  enabled: z.boolean(),
+  source: z.string().max(2000),
+});
 const sectionSchema = z
   .object({
     id,
@@ -44,19 +63,16 @@ const sectionSchema = z
     backgroundMaterialId: id.nullable(),
     regions: z.array(regionSchema).max(64),
     water: points.nullable(),
-    loads: z
-      .array(
-        z
-          .object({
-            id,
-            name,
-            x1: coordinate,
-            x2: coordinate,
-            q: z.number().finite().min(0).max(1e6),
-          })
-          .strict(),
-      )
-      .max(100),
+    waterMode: z.enum(["unspecified", "dry", "piezometric"]),
+    waterUnitWeight: z
+      .number()
+      .finite()
+      .positive("O peso específico da água deve ser maior que zero.")
+      .max(100, "O limite de cadastro do peso específico da água é 100 kN/m³.")
+      .nullable(),
+    waterSource: z.string().max(2000),
+    loadCondition: z.enum(["unspecified", "none", "loads"]),
+    loads: z.array(loadSchema).max(100),
     circle: z
       .object({
         x: coordinate,
@@ -70,7 +86,7 @@ const sectionSchema = z
 const projectFields = z
   .object({
     format: z.literal("geostruct"),
-    version: z.literal(2),
+    version: z.literal(3),
     id,
     name,
     author: z.string().max(200),
@@ -122,7 +138,20 @@ function checkReferences(
   }
 }
 export const projectSchema = projectFields.superRefine(checkReferences);
-const legacyProjectSchema = projectFields
+const legacySectionSchema = sectionSchema
+  .omit({
+    waterMode: true,
+    waterUnitWeight: true,
+    waterSource: true,
+    loadCondition: true,
+  })
+  .extend({ loads: z.array(legacyLoadSchema).max(100) });
+const v2Fields = projectFields.extend({
+  version: z.literal(2),
+  sections: z.array(legacySectionSchema).min(1).max(100),
+});
+const v2ProjectSchema = v2Fields.superRefine(checkReferences);
+const legacyProjectSchema = v2Fields
   .extend({
     version: z.literal(1),
     materials: z
@@ -131,7 +160,7 @@ const legacyProjectSchema = projectFields
       .max(100),
     sections: z
       .array(
-        sectionSchema.extend({
+        legacySectionSchema.extend({
           backgroundMaterialId: id,
           regions: z.array(regionSchema.extend({ materialId: id })).max(64),
         }),
@@ -142,6 +171,7 @@ const legacyProjectSchema = projectFields
   .superRefine(checkReferences);
 export type Point = z.infer<typeof pointSchema>;
 export type Material = z.infer<typeof materialSchema>;
+export type Surcharge = z.infer<typeof loadSchema>;
 export type Section = z.infer<typeof sectionSchema>;
 export type Project = z.infer<typeof projectSchema>;
 export type Selection =
@@ -180,6 +210,10 @@ export const newSection = (sectionName = "Seção 01"): Section => ({
   backgroundMaterialId: null,
   regions: [],
   water: null,
+  waterMode: "unspecified",
+  waterUnitWeight: null,
+  waterSource: "",
+  loadCondition: "unspecified",
   loads: [],
   circle: null,
 });
@@ -188,7 +222,7 @@ export function newProject(projectName: string, author = ""): Project {
   m.name = "Solo 1";
   return {
     format: "geostruct",
-    version: 2,
+    version: 3,
     id: uid(),
     name: projectName,
     author,
@@ -256,7 +290,22 @@ export function exampleProject(): Project {
     { x: 38, y: 7 },
     { x: 60, y: 7 },
   ];
-  s.loads = [{ id: uid(), name: "Sobrecarga de crista", x1: 5, x2: 14, q: 20 }];
+  s.waterMode = "piezometric";
+  s.waterUnitWeight = 9.81;
+  s.waterSource =
+    "Dados ilustrativos para demonstração; sem investigação de campo.";
+  s.loadCondition = "loads";
+  s.loads = [
+    {
+      id: uid(),
+      name: "Sobrecarga de crista",
+      x1: 5,
+      x2: 14,
+      q: 20,
+      enabled: true,
+      source: "Sobrecarga ilustrativa; sem vínculo com um projeto real.",
+    },
+  ];
   return p;
 }
 export function duplicateSection(s: Section): Section {
@@ -281,12 +330,17 @@ export function readProject(text: string): {
   } catch {
     throw new Error("O arquivo não contém um JSON válido.");
   }
-  const legacy =
-    typeof value === "object" &&
-    value !== null &&
-    "version" in value &&
-    value.version === 1;
-  const r = (legacy ? legacyProjectSchema : projectSchema).safeParse(value);
+  const version =
+    typeof value === "object" && value !== null && "version" in value
+      ? value.version
+      : null;
+  const r = (
+    version === 1
+      ? legacyProjectSchema
+      : version === 2
+        ? v2ProjectSchema
+        : projectSchema
+  ).safeParse(value);
   if (!r.success)
     throw new Error(
       "Projeto incompatível ou inválido: " +
@@ -295,9 +349,22 @@ export function readProject(text: string): {
           .map((i) => `${i.path.join(".")}: ${i.message}`)
           .join(" · "),
     );
+  const data = r.data;
+  if (data.version === 3) return { project: data, migrated: false };
   return {
-    project: projectSchema.parse({ ...r.data, version: 2 }),
-    migrated: legacy,
+    project: projectSchema.parse({
+      ...data,
+      version: 3,
+      sections: data.sections.map((s) => ({
+        ...s,
+        waterMode: s.water === null ? "unspecified" : "piezometric",
+        waterUnitWeight: null,
+        waterSource: "",
+        loadCondition: s.loads.length ? "loads" : "unspecified",
+        loads: s.loads.map((l) => ({ ...l, enabled: true, source: "" })),
+      })),
+    }),
+    migrated: true,
   };
 }
 export const parseProject = (text: string): Project =>

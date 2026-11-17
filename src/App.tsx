@@ -45,9 +45,12 @@ import {
   materialUses,
   type MaterialUse,
 } from "./domain/materials";
+import { createLoad } from "./domain/conditions";
+import { Loads } from "./components/Loads";
 import { history, commit, undo, redo, type History } from "./domain/history";
 import {
   diagnose,
+  introducedError,
   distance,
   lineError,
   terrainError,
@@ -133,6 +136,7 @@ export default function App() {
       | "report"
       | "precision"
       | "materials"
+      | "loads"
       | "assign-material"
       | null
     >(null);
@@ -317,7 +321,7 @@ export default function App() {
     setDialog(null);
     if (migrated)
       notify(
-        "Projeto da versão 1 aberto com os dados preservados. O próximo salvamento usará a versão 2; use Salvar como para conservar o arquivo original.",
+        "Projeto de versão anterior aberto com os dados preservados. O próximo salvamento usará a versão 3; use Salvar como para conservar o arquivo original.",
       );
   };
   const apply = (p: Project) => {
@@ -374,7 +378,9 @@ export default function App() {
     const target = contourTarget(selection);
     if (
       ["insert-vertex", "delete-vertex", "move-contour"].includes(t) &&
-      (!target || contourPoints(section, target).length < 2)
+      (!target ||
+        contourPoints(section, target).length < 2 ||
+        (target.kind === "water" && section.waterMode !== "piezometric"))
     ) {
       notify(
         "Selecione primeiro o terreno, uma região ou a linha piezométrica.",
@@ -397,14 +403,7 @@ export default function App() {
       notify("Revise os valores: " + parsed.error.issues[0].message);
       return false;
     }
-    const previous = new Set(
-      diagnose(project!)
-        .filter((d) => d.level === "error")
-        .map((d) => `${d.target}:${d.message}`),
-    );
-    const error = diagnose(p).find(
-      (d) => d.level === "error" && !previous.has(`${d.target}:${d.message}`),
-    );
+    const error = introducedError(project!, parsed.data);
     if (error) {
       notify(error.message);
       return false;
@@ -480,17 +479,21 @@ export default function App() {
         return;
       }
       s.water = points;
+      s.waterMode = "piezometric";
       selected = { kind: "water" };
     } else if (t === "load") {
-      const id = uid();
-      s.loads.push({
-        id,
-        name: `Sobrecarga ${s.loads.length + 1}`,
-        x1: Math.min(points[0].x, points[1].x),
-        x2: Math.max(points[0].x, points[1].x),
-        q: 0,
-      });
-      selected = { kind: "load", id };
+      try {
+        const created = createLoad(
+          s,
+          Math.min(points[0].x, points[1].x),
+          Math.max(points[0].x, points[1].x),
+        );
+        Object.assign(s, created.section);
+        selected = { kind: "load", id: created.load.id };
+      } catch (e) {
+        notify((e as Error).message);
+        return;
+      }
     } else if (t === "circle") {
       const r = distance(points[0], points[1]);
       if (r < 1e-7) {
@@ -736,7 +739,13 @@ export default function App() {
       return;
     }
     if (!(await guardDraft())) return;
-    if (a === "materials" || a === "assign-material") {
+    if (a === "water-settings") {
+      setTool("select");
+      setSelection({ kind: "water" });
+      setInspectorEpoch((n) => n + 1);
+      return;
+    }
+    if (a === "materials" || a === "assign-material" || a === "loads") {
       setTool("select");
       setDialog(a);
       return;
@@ -960,6 +969,7 @@ export default function App() {
                 onSelect={select}
                 onSection={chooseSection}
                 onAddSection={() => action("section")}
+                onManageLoads={() => action("loads")}
               />
               <PanelResizer
                 label="Largura do navegador"
@@ -1073,6 +1083,7 @@ export default function App() {
                               project.materials.some((m) => m.id === d.target)
                             )
                               setSelection({ kind: "material", id: d.target });
+                            else if (d.target === "loads") setDialog("loads");
                             else if (d.target === "water")
                               setSelection({ kind: "water" });
                             else {
@@ -1092,7 +1103,11 @@ export default function App() {
                         >
                           <span
                             className={
-                              d.level === "error" ? "error-dot" : "warning-dot"
+                              d.level === "error"
+                                ? "error-dot"
+                                : d.level === "info"
+                                  ? "info-dot"
+                                  : "warning-dot"
                             }
                           />
                           {d.message}
@@ -1309,6 +1324,37 @@ export default function App() {
           <Report project={project} onError={notify} />
         </Dialog>
       )}
+      {dialog === "loads" && project && section && (
+        <Dialog
+          title="Sobrecargas da seção"
+          wide
+          onClose={() => setDialog(null)}
+        >
+          <Loads
+            project={project}
+            section={section}
+            onApply={(p) => {
+              apply(p);
+              if (
+                selection.kind === "load" &&
+                !p.sections
+                  .find((s) => s.id === section.id)!
+                  .loads.some((l) => l.id === selection.id)
+              )
+                setSelection({ kind: "terrain" });
+            }}
+            onEdit={(id) => {
+              setDialog(null);
+              setSelection({ kind: "load", id });
+              setInspectorEpoch((n) => n + 1);
+            }}
+            onNew={() => {
+              setDialog(null);
+              void selectTool("load");
+            }}
+          />
+        </Dialog>
+      )}
       {dialog === "materials" && project && (
         <Dialog
           title="Materiais do projeto"
@@ -1369,9 +1415,10 @@ export default function App() {
               outros estratos.
             </li>
             <li>
-              <strong>Represente água e cargas.</strong> Trace a linha
-              piezométrica e indique as faixas de sobrecarga. A intensidade q é
-              editada nas propriedades.
+              <strong>Defina água e cargas.</strong> Escolha condição seca ou
+              linha piezométrica e registre sua origem. Em Gerenciar cargas,
+              indique se há sobrecargas. Novas faixas começam com intensidade
+              pendente; informe q e origem nas propriedades.
             </li>
             <li>
               <strong>Confira e salve.</strong> O painel de conferência mostra

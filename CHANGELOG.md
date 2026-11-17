@@ -1,5 +1,16 @@
 # Histórico
 
+## Em desenvolvimento — água e sobrecargas
+
+- Condições explícitas de água e presença de sobrecargas por seção; ausência de lançamento distinta de hipótese adotada.
+- Peso específico e origem da condição de água; alertas de cobertura e posição da linha piezométrica.
+- Sobrecargas com q inicialmente não informado, origem, habilitação, cópia desabilitada e exclusão com histórico.
+- Gerenciador com intervalos sobrepostos e rejeição de reativação fora do terreno; dados inativos preservados no cadastro/relatório.
+- Formato `geostruct/3`, leitura de v1/v2 preservando valores e IDs, inclusive q = 0, e recuperação local compatível.
+- Testes de condições, migração, edição, persistência, histórico e isolamento entre seções.
+
+Próximo passo: casos de análise e limites de busca. Sem solver ou distribuição de instaladores nesta entrega.
+
 ## Em desenvolvimento — materiais e atribuição
 
 - Gerenciador de materiais com pendências de cadastro e consulta de uso em todas as seções.
@@ -9,7 +20,7 @@
 - Formato `geostruct/2`: referências e tipo de parâmetros podem ser nulos; zero materiais é permitido. Leitura/migração de v1 preserva dados e IDs; campos desconhecidos são recusados.
 - Relatório, árvore e desenho identificam atribuições pendentes. Testes de domínio/interface incluem arquivos e recuperação antigos.
 
-Água/cargas continuam na próxima etapa; esta entrega não adiciona cálculo ou distribuição desktop.
+Esta etapa de materiais não adicionou cálculo ou distribuição desktop.
 
 ## Em desenvolvimento — geometria e edição
 

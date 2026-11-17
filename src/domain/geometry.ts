@@ -1,6 +1,7 @@
 import polygonClipping from "polygon-clipping";
 import type { Point, Section, Project } from "./model";
 import { materialPending, materialUses } from "./materials";
+import { activeLoads, activeWater, loadPending } from "./conditions";
 // Tolerância geométrica de modelagem, em metros. Não é tolerância do futuro solver.
 export const EPS = 1e-7;
 export const distance = (a: Point, b: Point) =>
@@ -191,6 +192,35 @@ export type Diagnostic = {
   target: string;
   sectionId?: string;
 };
+export function loadOverlaps(
+  s: Section,
+): { firstId: string; secondId: string; x1: number; x2: number }[] {
+  const loads = activeLoads(s),
+    pairs: { firstId: string; secondId: string; x1: number; x2: number }[] = [];
+  for (let i = 0; i < loads.length; i++)
+    for (let j = i + 1; j < loads.length; j++) {
+      const x1 = Math.max(loads[i].x1, loads[j].x1),
+        x2 = Math.min(loads[i].x2, loads[j].x2);
+      if (x2 - x1 > EPS)
+        pairs.push({ firstId: loads[i].id, secondId: loads[j].id, x1, x2 });
+    }
+  return pairs;
+}
+export function introducedError(
+  before: Project,
+  after: Project,
+): Diagnostic | undefined {
+  const key = (d: Diagnostic) =>
+    `${d.sectionId ?? ""}:${d.target}:${d.message}`;
+  const previous = new Set(
+    diagnose(before)
+      .filter((d) => d.level === "error")
+      .map(key),
+  );
+  return diagnose(after).find(
+    (d) => d.level === "error" && !previous.has(key(d)),
+  );
+}
 export function diagnose(p: Project): Diagnostic[] {
   const out: Diagnostic[] = [];
   for (const m of p.materials) {
@@ -215,6 +245,60 @@ export function diagnose(p: Project): Diagnostic[] {
     for (const r of s.regions)
       if (r.materialId === null)
         push("warning", `${r.name}: sem material atribuído.`, r.id);
+    if (s.waterMode === "unspecified")
+      push(
+        "warning",
+        "defina a condição de água: seca ou linha piezométrica.",
+        "water",
+      );
+    else {
+      if (!s.waterSource.trim())
+        push(
+          "warning",
+          "informe a origem ou hipótese da condição de água.",
+          "water",
+        );
+      if (s.waterMode === "piezometric") {
+        if (s.waterUnitWeight === null)
+          push("warning", "informe o peso específico da água γw.", "water");
+        if (!s.water || s.water.length < 2)
+          push(
+            "warning",
+            "linha piezométrica pendente: informe ao menos dois pontos.",
+            "water",
+          );
+      }
+    }
+    if (s.loadCondition === "unspecified")
+      push(
+        "warning",
+        "defina a condição de sobrecargas: sem sobrecargas ou usar as cadastradas.",
+        "loads",
+      );
+    if (s.loadCondition === "loads" && !activeLoads(s).length)
+      push(
+        "warning",
+        "nenhuma sobrecarga está ativa; cadastre/ative uma faixa ou escolha Sem sobrecargas.",
+        "loads",
+      );
+    for (const l of activeLoads(s)) {
+      const pending = loadPending(l);
+      if (pending.length)
+        push("warning", `${l.name}: informe ${pending.join(" e ")}.`, l.id);
+      if (l.q === 0)
+        push(
+          "info",
+          `${l.name}: q = 0 kPa foi informado explicitamente.`,
+          l.id,
+        );
+    }
+    const overlaps = loadOverlaps(s);
+    if (overlaps.length)
+      push(
+        "warning",
+        `${overlaps.length} sobreposições entre faixas de sobrecarga ativas; confira se a coexistência é intencional.`,
+        "loads",
+      );
     const err = terrainError(s.terrain);
     if (err) {
       push("error", err);
@@ -226,24 +310,25 @@ export function diagnose(p: Project): Diagnostic[] {
       const e = regionError(s, r.points, r.id);
       if (e) push("error", `${r.name}: ${e}`, r.id);
     }
-    if (s.water) {
-      const e = lineError(s.water);
+    const water = activeWater(s);
+    if (water && water.length >= 2) {
+      const e = lineError(water);
       if (e) push("error", `linha piezométrica: ${e}`, "water");
       else {
         if (
-          s.water[0].x > s.terrain[0].x + EPS ||
-          s.water.at(-1)!.x < s.terrain.at(-1)!.x - EPS
+          water[0].x > s.terrain[0].x + EPS ||
+          water.at(-1)!.x < s.terrain.at(-1)!.x - EPS
         )
           push(
             "warning",
             "a linha piezométrica não cobre toda a seção.",
             "water",
           );
-        const xs = [...s.terrain, ...s.water].map((v) => v.x);
+        const xs = [...s.terrain, ...water].map((v) => v.x);
         if (
           xs.some((x) => {
             const g = elevation(s.terrain, x, "lower"),
-              w = elevation(s.water!, x);
+              w = elevation(water, x);
             return g !== null && w !== null && w > g + EPS;
           })
         )
@@ -254,7 +339,7 @@ export function diagnose(p: Project): Diagnostic[] {
           );
       }
     }
-    for (const l of s.loads)
+    for (const l of activeLoads(s))
       if (
         l.x2 - l.x1 <= EPS ||
         l.x1 < s.terrain[0].x - EPS ||

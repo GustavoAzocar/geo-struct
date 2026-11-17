@@ -27,9 +27,11 @@ Abra http://127.0.0.1:1420. Na tela inicial, escolha **Explorar um exemplo** ou 
 - Perfil do terreno com faces verticais, base horizontal e regiões poligonais sem sobreposição, com material de fundo no restante do domínio. Perfis em balanço ainda não são admitidos.
 - Gerenciador de materiais Mohr–Coulomb: peso específico total, coesão, atrito, escolha explícita de parâmetros efetivos/totais, origem e pendências de cadastro.
 - Atribuição explícita de materiais às regiões e ao solo de fundo, individual ou em lote; duplicação, consulta de uso e substituição ao excluir um material compartilhado.
-- Linha piezométrica prescrita, sobrecargas verticais uniformes e círculo de tentativa.
+- Condição de água explícita: não definida, seca ou linha piezométrica prescrita, com peso específico e origem da hipótese.
+- Gerenciador de sobrecargas verticais uniformes: intensidade pendente distinta de zero, origem, habilitação por faixa, duplicação e condições explícitas de presença/ausência de cargas.
+- Alertas de cobertura e posição da água, faixas fora do terreno e sobreposição de cargas ativas; círculo geométrico de tentativa.
 - Validação geométrica, diagnósticos, desfazer/refazer, proteção de propriedades em edição e de alterações não salvas.
-- Projeto `.geo.json` no formato `geostruct/2`, com leitura/migração dos arquivos da versão 1; cópia local de recuperação; importação inválida preserva o projeto aberto.
+- Projeto `.geo.json` no formato `geostruct/3`, com leitura/migração dos arquivos das versões 1 e 2; cópia local de recuperação; importação inválida preserva o projeto aberto.
 - Relatório de dados de entrada com impressão/PDF pelo navegador, HTML portátil e exportação SVG da vista atual.
 - Estrutura desktop Tauri 2 com ícones padrão provisórios; a arte personalizada será incorporada em uma etapa posterior.
 
@@ -75,6 +77,8 @@ Testes de domínio verificam geometrias, limites dos parâmetros, arquivos, refe
 Consulte [Guia de uso](docs/GUIA-DE-USO.md), [Arquitetura](docs/ARQUITETURA.md), [Escopo e evolução](docs/ESCOPO-E-ROADMAP.md), [Validação](docs/VALIDACAO.md) e [histórico](CHANGELOG.md).
 
 O [contrato de materiais e migração](docs/MATERIAIS-E-FORMATO.md) descreve os campos, limites de cadastro e compatibilidade dos arquivos. Novas seções e regiões começam sem material atribuído; essa pendência pode ser salva e resolvida depois.
+
+O [contrato de água e cargas](docs/AGUA-E-CARGAS.md) descreve as condições, os lançamentos ativos/inativos e a migração para v3. Desativar preserva os dados; água ou cargas ausentes em um arquivo antigo ficam como não definidas.
 
 ## Origem e referências
 

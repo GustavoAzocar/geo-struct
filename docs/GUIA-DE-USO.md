@@ -27,11 +27,17 @@ Em **Materiais → Atribuir material**, escolha o material e marque os destinos 
 
 **Gerenciar materiais** reúne o cadastro e mostra onde cada material é usado. Abra a lista de atribuições e clique em uma para localizar a região/seção. **Editar** abre suas propriedades; **Duplicar** cria um cadastro independente sem novas atribuições. Excluir material em uso exige escolher outro para substituí-lo em todas as seções. A substituição e a exclusão são desfeitas juntas. Um material sem uso pode ser excluído, inclusive o último cadastro.
 
-“Dados preenchidos” indica somente cadastro completo. O peso específico cadastrado continua sendo um único valor total por material; não são gerados valores secos, saturados ou submersos. A preparação de água/cargas e o contrato do futuro cálculo têm etapas próprias.
+“Dados preenchidos” indica somente cadastro completo. O peso específico cadastrado continua sendo um único valor total por material; não são gerados valores secos, saturados ou submersos. Água e cargas são cadastradas separadamente; sua interpretação física depende do contrato do futuro cálculo.
 
-Em **Água e cargas**, trace a linha piezométrica, com X crescente. Não é análise de percolação: trata-se de uma linha prescrita. Carga acima do terreno e cobertura incompleta produzem avisos. Remover a linha usa Excluir com a linha selecionada.
+Em **Água e cargas → Condição de água**, escolha **Condição seca** ou **Linha piezométrica prescrita** e registre a origem da hipótese. Projetos novos começam como **Não definida**. Para a condição piezométrica, informe também o peso específico da água γw em kN/m³ e a linha com X crescente, pelo desenho ou tabela. Desenhar uma linha ativa essa condição. Não é análise de percolação nem água externa; cobertura incompleta e linha acima do terreno geram avisos.
 
-Para uma sobrecarga, clique nos limites inicial/final da faixa horizontal. Depois informe **q (kPa)** nas propriedades e aplique. A faixa inicia com q = 0 para não presumir carregamento. A direção prevista é vertical descendente, uniforme na projeção horizontal. Faixas sobrepostas permanecem explícitas no modelo.
+Alterar para seca/não definida guarda a linha, o peso específico e a origem sem usá-los no desenho. Reativar preserva os valores e verifica a geometria. **Excluir**, com água selecionada, remove somente a linha: a condição não passa automaticamente a seca. Também é possível salvar uma condição piezométrica com linha/peso ainda pendentes.
+
+Em **Gerenciar cargas**, escolha **Sem sobrecargas** ou **Usar sobrecargas cadastradas**. O estado inicial **Não definida** é uma pendência. Essa escolha e as caixas de habilitação são aplicadas imediatamente, com desfazer. Cada faixa tem nome, limites X inicial/final, intensidade q (kPa), origem e habilitação própria. Só faixas habilitadas na condição de cargas ficam ativas.
+
+**Desenhar nova faixa** usa dois pontos para definir o intervalo horizontal e ativa a condição de cargas. A intensidade começa **não informada**, nunca como zero presumido. Nas propriedades, preencha q e a origem e clique **Aplicar**. Vazio é pendência; q = 0 é um valor explícito. As setas só aparecem para q positivo. O carregamento cadastrado é vertical descendente e uniforme na projeção horizontal; faixas fora do terreno são recusadas, e sobreposições ativas são listadas para conferência.
+
+Desabilitar uma faixa ou escolher **Sem sobrecargas** preserva todos os lançamentos. **Duplicar** cria uma cópia desabilitada, com ID próprio. Editar abre as propriedades; excluir exige confirmação. Excluir a última faixa não decide a condição da seção: escolha explicitamente Sem sobrecargas quando aplicável. Todas essas operações pertencem à seção ativa e ao histórico. Os dados inativos permanecem no relatório com sua identificação.
 
 **Análise → Círculo de tentativa** recebe centro e um ponto do círculo. Centro/raio podem ser ajustados numericamente. Ele é uma referência geométrica: não há FS nem verificação da superfície nesta versão.
 
@@ -43,7 +49,7 @@ Para uma sobrecarga, clique nos limites inicial/final da faixa horizontal. Depoi
 - Selecione terreno, região ou água para exibir seus vértices. Arrastar um vértice gera um passo de histórico; alterações inválidas são recusadas com mensagem.
 - Ctrl+Z desfaz e Ctrl+Shift+Z/Ctrl+Y refaz. Em campos de texto, esses atalhos conservam a edição nativa do campo.
 - Arraste os divisores dos painéis ou use setas após focá-los com Tab.
-- A faixa **Mostrar** controla solos, água, cargas e círculo. Temas claro/escuro ficam no topo.
+- A faixa **Mostrar** controla a visibilidade de solos, água, cargas e círculo. Ocultar é apenas visual: não muda a condição ou habilitação dos lançamentos. Temas claro/escuro ficam no topo.
 
 ### Editar contornos e interfaces
 
@@ -67,7 +73,7 @@ Durante o desenho ou comandos de dois pontos, abra **Entrada precisa** no canto 
 
 **Abrir** valida a estrutura antes de substituir o projeto atual; arquivo inválido não remove o trabalho aberto. Salve ou descarte alterações do projeto antes de substituí-lo. A recuperação local registra somente as operações aplicadas e é oferecida na tela inicial; nunca abre automaticamente. Ela não substitui o arquivo exportado e não contém campos/traçados ainda em edição.
 
-O salvamento usa `geostruct/2`. Arquivos e recuperações da versão 1 são migrados mantendo materiais, referências, coordenadas e IDs. A abertura do arquivo antigo informa a migração e pede salvamento para persistir o novo formato; **Salvar como** permite conservar o original. Versões antigas do aplicativo não abrem arquivos v2. Campos desconhecidos ou referências inexistentes são recusados, sem descarte silencioso. Consulte [Materiais e formato](MATERIAIS-E-FORMATO.md).
+O salvamento usa `geostruct/3`. Arquivos e recuperações das versões 1 e 2 são migrados mantendo materiais, referências, coordenadas e IDs. A abertura do arquivo antigo informa a migração e pede salvamento para persistir o novo formato; **Salvar como** permite conservar o original. Versões antigas do aplicativo não abrem arquivos v3. Campos desconhecidos ou referências inexistentes são recusados, sem descarte silencioso. Ausência de água/cargas antiga fica não definida, sem pressupor condição seca ou sem cargas. Consulte [Água e cargas](AGUA-E-CARGAS.md).
 
 **Fechar projeto** retorna à tela inicial, protegendo alterações. Fechar normalmente remove sua recuperação local. Fechar a janela/browser sem resolver alterações exibe a proteção da plataforma. Bloqueio de armazenamento local é comunicado; salvar arquivo continua disponível.
 

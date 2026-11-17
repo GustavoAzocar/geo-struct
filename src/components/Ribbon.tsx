@@ -57,6 +57,8 @@ export type Action =
   | "delete"
   | "material"
   | "materials"
+  | "water-settings"
+  | "loads"
   | "assign-material"
   | "fit"
   | "grid"
@@ -169,6 +171,12 @@ const groups: Record<Tab, { label: string; items: Item[] }[]> = {
     {
       label: "Condições da seção",
       items: [
+        {
+          action: "water-settings",
+          label: "Condição de água",
+          icon: Settings2,
+        },
+        { action: "loads", label: "Gerenciar cargas", icon: ListChecks },
         { action: "water", label: "Linha piezométrica", icon: Waves },
         { action: "load", label: "Sobrecarga", icon: ArrowDownToLine },
         { action: "properties", label: "Editar valores", icon: PencilRuler },

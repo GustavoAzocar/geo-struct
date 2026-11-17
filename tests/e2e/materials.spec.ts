@@ -231,7 +231,7 @@ test("exclui o último material sem uso e continua desenhando sem atribuição p
   expect(result.sections[0].regions[0].materialId).toBeNull();
   await page.getByRole("button", { name: "Entradas", exact: true }).click();
   await expect(page.locator("#project-report")).toContainText("Sem material");
-  await expect(page.locator("#project-report")).toContainText("geostruct/2");
+  await expect(page.locator("#project-report")).toContainText("geostruct/3");
 });
 
 test("localiza uma atribuição de outra seção pelo gerenciador", async ({
@@ -257,7 +257,7 @@ test("localiza uma atribuição de outra seção pelo gerenciador", async ({
   ).toHaveValue(p.materials[1].id);
 });
 
-test("leitura de v1 comunica migração e o salvamento v2 preserva todos os dados", async ({
+test("leitura de v1 comunica migração e o salvamento v3 preserva todos os dados", async ({
   page,
 }) => {
   const legacy = JSON.parse(
@@ -267,11 +267,13 @@ test("leitura de v1 comunica migração e o salvamento v2 preserva todos os dado
     ),
   );
   await open(page, legacy);
-  await expect(page.getByRole("status")).toContainText("versão 1 aberto");
+  await expect(page.getByRole("status")).toContainText(
+    "versão anterior aberto",
+  );
   const result = await save(page);
-  expect(result).toEqual({ ...legacy, version: 2 });
+  expect(result).toMatchObject({ ...legacy, version: 3 });
   await page.locator("input[type=file]").setInputFiles({
-    name: "v2.geo.json",
+    name: "v3.geo.json",
     mimeType: "application/json",
     buffer: Buffer.from(JSON.stringify(result)),
   });
@@ -297,5 +299,5 @@ test("recuperação local antiga também preserva materiais e referências", asy
   );
   await page.goto("/");
   await page.getByRole("button", { name: /Recuperar trabalho local/ }).click();
-  expect(await save(page)).toEqual({ ...legacy, version: 2 });
+  expect(await save(page)).toMatchObject({ ...legacy, version: 3 });
 });

@@ -9,6 +9,7 @@ function fixture() {
     { x: 0, y: 10 },
     { x: 20, y: 10 },
   ];
+  s.waterMode = "piezometric";
   s.water = [
     { x: 0, y: 2 },
     { x: 20, y: 2 },

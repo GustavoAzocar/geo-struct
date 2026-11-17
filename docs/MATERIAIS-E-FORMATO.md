@@ -17,7 +17,7 @@ Esta entrega organiza o cadastro e a atribuição de materiais para a modelagem.
 
 Os limites numéricos são controles de entrada já adotados pelo cadastro, não faixas recomendadas para solos ou critérios normativos. Valores fora do domínio são recusados. Valores faltantes continuam nulos, podem ser salvos e são apresentados como pendências. Coesão e atrito iguais a zero são valores informados.
 
-O modo muda os rótulos c′/φ′ ou c/φ e preserva os números. Não converte parâmetros, não impõe φ = 0 e não presume condição drenada/não drenada. O peso específico continua como um único valor total informado; estados seco/saturado/submerso e tratamento de água dependem da próxima etapa e da especificação do motor. Nenhum desses valores é deduzido nesta entrega.
+O modo muda os rótulos c′/φ′ ou c/φ e preserva os números. Não converte parâmetros, não impõe φ = 0 e não presume condição drenada/não drenada. O peso específico continua como um único valor total informado; estados seco/saturado/submerso e tratamento físico de água dependem da especificação do motor. O cadastro da condição de água é descrito em [Água e cargas](AGUA-E-CARGAS.md). Nenhum desses valores é deduzido nesta entrega.
 
 ## Atribuições e operações
 
@@ -32,7 +32,7 @@ Cada seção guarda `backgroundMaterialId`; cada região guarda `materialId`. Um
 
 Cada operação aplicada corresponde a um passo de histórico. Cadastro é compartilhado: editar um material altera os parâmetros associados a todas as suas atribuições. O gerenciador lista esses usos antes da edição. “Dados preenchidos” refere-se ao preenchimento do cadastro e não informa aptidão para cálculo ou aprovação de engenharia.
 
-## Formato `geostruct/2`
+## Evolução dos materiais em `geostruct/2`
 
 | Aspecto                   | Versão 1               | Versão 2                                      |
 | ------------------------- | ---------------------- | --------------------------------------------- |
@@ -42,8 +42,6 @@ Cada operação aplicada corresponde a um passo de histórico. Cadastro é compa
 | Tipo de parâmetros `mode` | `effective` ou `total` | Os mesmos valores ou `null`                   |
 | Demais campos             | Contrato original      | Sem mudança de representação, unidades ou IDs |
 
-A leitura valida o contrato antigo antes da migração. Um v1 válido é convertido para v2 alterando apenas `version`; materiais, parâmetros, referências, seções, geometria, água, cargas, círculo e IDs são preservados. Nenhuma atribuição antiga é removida ou reinterpretada. Nulos em posições que v1 não admitia continuam inválidos se o arquivo se declarar v1.
+A tabela registra a evolução introduzida em v2. O formato atual é **geostruct/3**, descrito em [Água e cargas](AGUA-E-CARGAS.md). A leitura valida o contrato declarado antes da migração; materiais, parâmetros, referências, geometria e IDs são preservados. Nulos em posições que v1 não admitia continuam inválidos se o arquivo se declarar v1.
 
-Arquivos v2 são salvos e reabertos preservando as pendências. Campos desconhecidos, versões não suportadas, referências inexistentes e IDs duplicados são recusados sem substituir o projeto aberto. A validação estrita impede que um arquivo contendo propriedades ainda não suportadas seja importado e regravado perdendo esses campos.
-
-A abertura de v1 comunica a migração e marca o projeto para salvamento. **Salvar como** conserva o original; versões antigas do aplicativo não leem v2. A recuperação local mantém sua chave de armazenamento e usa a mesma leitura/migração. O exemplo versionado continua em v1 como caso permanente de compatibilidade.
+Arquivos v1/v2 são migrados para v3, preservando as pendências de materiais e acrescentando as condições de água/cargas. Campos desconhecidos, versões não suportadas, referências inexistentes e IDs duplicados são recusados sem substituir o projeto aberto. A abertura comunica a migração e marca o projeto para salvamento. **Salvar como** conserva o original; versões antigas do aplicativo não leem v3. A recuperação local mantém sua chave de armazenamento e usa a mesma leitura/migração. O exemplo versionado continua em v1 como caso permanente de compatibilidade.

@@ -12,7 +12,11 @@ Inserir/excluir/mover vértices, mover contornos, copiar regiões e dividir uma 
 
 ### Materiais e atribuição — implementado
 
-Cadastro Mohr–Coulomb com escolha explícita de parâmetros efetivos/totais, mensagens de limites e pendências por campo. Novas regiões e solos de fundo ficam sem atribuição até a escolha do usuário. Gerenciador com consulta de uso, duplicação e substituição ao excluir; atribuição em lote na seção ativa e histórico por operação. Formato `geostruct/2` com migração de v1. O peso específico permanece como um único valor total informado; nenhum parâmetro é deduzido de outro ou gerado a partir da água. O detalhamento está em [Materiais e formato](MATERIAIS-E-FORMATO.md).
+Cadastro Mohr–Coulomb com escolha explícita de parâmetros efetivos/totais, mensagens de limites e pendências por campo. Novas regiões e solos de fundo ficam sem atribuição até a escolha do usuário. Gerenciador com consulta de uso, duplicação e substituição ao excluir; atribuição em lote na seção ativa e histórico por operação. Introduzido no formato `geostruct/2`, preservado no formato atual v3. O peso específico permanece como um único valor total informado; nenhum parâmetro é deduzido de outro ou gerado a partir da água. O detalhamento está em [Materiais e formato](MATERIAIS-E-FORMATO.md).
+
+### Água e sobrecargas — implementado no recorte inicial
+
+Condição de água explícita (não definida, seca ou piezométrica), peso específico informado e origem da hipótese. Sobrecargas uniformes com intensidade nula distinta de zero, origem, habilitação individual, duplicação desabilitada, exclusão e condição global por seção. Desativar preserva os lançamentos. Conferência de cobertura, linha acima do terreno, faixas fora do perfil e sobreposição entre cargas ativas. Formato `geostruct/3` com migração de v1/v2. Ver [Água e cargas](AGUA-E-CARGAS.md). Não há fluxo, água externa, força concentrada, carga trapezoidal, sismo ou cálculo de pressões/esforços nesta etapa.
 
 ## Base técnica
 
@@ -26,8 +30,8 @@ Os testes de modelagem deste repositório não substituem os casos geotécnicos 
 ## Sequência proposta
 
 1. Geometria e edição: implementadas nesta evolução; revisar o uso em modelos reais.
-2. Materiais e atribuição explícita: implementados no recorte atual. Próxima entrega: completar o lançamento de água e cargas, as verificações entre essas entradas e os materiais e as pendências necessárias ao primeiro motor.
-3. Casos de análise: modelar cenários, direção de deslizamento, superfície fixa e limites da busca. Seções geométricas e casos de cálculo precisam ter identidades próprias.
+2. Materiais, atribuição explícita, água e sobrecargas: implementados no recorte inicial. As regras físicas que combinam materiais/água dependem do contrato do motor.
+3. **Próxima entrega — casos de análise:** modelar cenários, direção de deslizamento, superfície fixa e limites da busca. Seções geométricas e casos de cálculo precisam ter identidades próprias.
 4. Conferência completa do lançamento: validação entre entidades, persistência/migrações e diagnóstico das pendências. Revisar usabilidade e arquivos nos sistemas de destino antes da primeira distribuição desktop.
 5. Concluir a especificação #30 e o catálogo #31. Definir contrato do motor, perfis numéricos, tratamento das faces verticais, materiais/água e comportamento de falhas.
 6. Implementar preparação de fatias e cálculo em superfície fixa. Validar geometria e forças, além das equações, com referências independentes.

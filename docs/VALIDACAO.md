@@ -18,9 +18,15 @@ Asserções de geometria não são validações das forças sobre faces verticai
 
 ### Materiais e arquivos
 
-Os testes verificam atribuição explícita/nula, zero de coesão/atrito, escolha de tipo de resistência, limites de cadastro, duplicação independente, atribuição em lote isolada por seção e substituição/exclusão em todas as seções com histórico único. Cobrem lista vazia de materiais, referências inválidas, preservação dos dados v1 na migração para v2 e recusa de campos desconhecidos. Os fluxos Chromium exercitam o gerenciador na janela mínima, rascunhos, pendências, relatório, persistência, recuperação antiga e navegação aos usos do material.
+Os testes verificam atribuição explícita/nula, zero de coesão/atrito, escolha de tipo de resistência, limites de cadastro, duplicação independente, atribuição em lote isolada por seção e substituição/exclusão em todas as seções com histórico único. Cobrem lista vazia de materiais, referências inválidas, preservação dos dados v1 na migração para o formato atual e recusa de campos desconhecidos. Os fluxos Chromium exercitam o gerenciador na janela mínima, rascunhos, pendências, relatório, persistência, recuperação antiga e navegação aos usos do material.
 
 Os limites numéricos são limites do cadastro de software. “Dados preenchidos” não é validação dos parâmetros de engenharia ou condição de cálculo.
+
+### Água, cargas e formato v3
+
+Testes de domínio verificam estados explícitos, retenção ao desativar, q nulo/zero, origem, limites estruturais, ativação inválida, cobertura, linha acima de vértice interior/face vertical, intervalos sobrepostos e contato nas bordas. Incluem exclusão da última faixa, cópia desabilitada, histórico, isolamento e distinção entre erros iguais de seções diferentes. Leitura de v1/v2 preserva IDs e dados, mantém ausência como não definida e recusa campos desconhecidos.
+
+Os testes Chromium cobrem condição seca e reativação, edição decimal/rascunhos, desenho de linha/faixa, relatório, persistência, gerenciador na janela mínima, habilitação, duplicação, exclusão, navegação a pendências de outra seção e rejeição de ativação fora do terreno. Nenhuma verificação calcula pressão, esforço ou FS.
 
 ## Limites
 

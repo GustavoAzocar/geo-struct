@@ -10,6 +10,11 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import type { Project, Section, Selection } from "../domain/model";
+import {
+  waterModeLabel,
+  loadConditionLabel,
+  isLoadActive,
+} from "../domain/conditions";
 import { materialName, materialPending } from "../domain/materials";
 export function ProjectTree({
   project,
@@ -18,6 +23,7 @@ export function ProjectTree({
   onSelect,
   onSection,
   onAddSection,
+  onManageLoads,
 }: {
   project: Project;
   section: Section;
@@ -25,6 +31,7 @@ export function ProjectTree({
   onSelect: (s: Selection) => void;
   onSection: (id: string) => void;
   onAddSection: () => void;
+  onManageLoads: () => void;
 }) {
   const active = (kind: Selection["kind"], id?: string) =>
     selection.kind === kind &&
@@ -120,9 +127,11 @@ export function ProjectTree({
                 onClick={() => onSelect({ kind: "water" })}
               >
                 <Waves size={14} />
-                <span>
-                  {s.water ? "Linha piezométrica" : "Sem linha piezométrica"}
-                </span>
+                <span>{waterModeLabel(s.waterMode)}</span>
+              </button>
+              <button className="tree-item" onClick={onManageLoads}>
+                <ArrowDownToLine size={14} />
+                <span>{loadConditionLabel(s.loadCondition)}</span>
               </button>
               {s.loads.map((l) => (
                 <button
@@ -132,6 +141,11 @@ export function ProjectTree({
                 >
                   <ArrowDownToLine size={14} />
                   <span>{l.name}</span>
+                  {!isLoadActive(s, l) && (
+                    <span className="draft-badge" aria-hidden="true">
+                      Inativa
+                    </span>
+                  )}
                 </button>
               ))}
               {s.circle && (

@@ -1,3 +1,4 @@
+import { activeWater, activeLoads } from "../domain/conditions";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Maximize,
@@ -201,11 +202,12 @@ export function ModelCanvas({
     el.addEventListener("wheel", wheel, { passive: false });
     return () => el.removeEventListener("wheel", wheel);
   }, []);
+  const water = activeWater(section);
   const selectedPoints =
     selection.kind === "terrain"
       ? section.terrain
       : selection.kind === "water"
-        ? (section.water ?? [])
+        ? (water ?? [])
         : selection.kind === "region"
           ? (section.regions.find((r) => r.id === selection.id)?.points ?? [])
           : [];
@@ -233,7 +235,7 @@ export function ModelCanvas({
     () => [
       { points: section.terrain, closed: false },
       ...section.regions.map((r) => ({ points: r.points, closed: true })),
-      { points: section.water ?? [], closed: false },
+      { points: activeWater(section) ?? [], closed: false },
       { points, closed: false },
     ],
     [section, points],
@@ -573,14 +575,12 @@ export function ModelCanvas({
               />
             </>
           )}
-          {visibility.water && section.water && (
+          {visibility.water && water && (
             <>
               <path
                 data-pick="water"
                 d={path(
-                  selection.kind === "water" && dragged
-                    ? shownPoints
-                    : section.water,
+                  selection.kind === "water" && dragged ? shownPoints : water,
                 )}
                 fill="none"
                 stroke="#267aa4"
@@ -590,18 +590,17 @@ export function ModelCanvas({
               />
               <path
                 data-pick="water"
-                d={path(section.water)}
+                d={path(water)}
                 fill="none"
                 stroke="transparent"
                 strokeWidth={12}
                 vectorEffect="non-scaling-stroke"
               />
-              {section.water.length > 0 &&
-                label(section.water.at(-1)!, "  LP", "#267aa4")}
+              {water.length > 0 && label(water.at(-1)!, "  LP", "#267aa4")}
             </>
           )}
           {visibility.loads &&
-            section.loads.map((l) => {
+            activeLoads(section).map((l) => {
               const a = elevation(selectedTerrain, l.x1),
                 b = elevation(selectedTerrain, l.x2);
               if (a === null || b === null) return null;
@@ -629,18 +628,20 @@ export function ModelCanvas({
                     d={`M${l.x1} ${top} H${l.x2}`}
                     vectorEffect="non-scaling-stroke"
                   />
-                  {Array.from({ length: count + 1 }, (_, i) => {
-                    const x = l.x1 + (i * (l.x2 - l.x1)) / count,
-                      y = elevation(selectedTerrain, x)!;
-                    return (
-                      <path
-                        key={i}
-                        d={`M${x} ${top} V${y + 0.25} m${-3.5 / view.z} ${7 / view.z} l${3.5 / view.z} ${-7 / view.z} l${3.5 / view.z} ${7 / view.z}`}
-                        fill="none"
-                        vectorEffect="non-scaling-stroke"
-                      />
-                    );
-                  })}
+                  {l.q !== null &&
+                    l.q > 0 &&
+                    Array.from({ length: count + 1 }, (_, i) => {
+                      const x = l.x1 + (i * (l.x2 - l.x1)) / count,
+                        y = elevation(selectedTerrain, x)!;
+                      return (
+                        <path
+                          key={i}
+                          d={`M${x} ${top} V${y + 0.25} m${-3.5 / view.z} ${7 / view.z} l${3.5 / view.z} ${-7 / view.z} l${3.5 / view.z} ${7 / view.z}`}
+                          fill="none"
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      );
+                    })}
                   <path
                     d={`M${l.x1} ${top} H${l.x2}`}
                     stroke="transparent"
@@ -649,7 +650,7 @@ export function ModelCanvas({
                   />
                   {label(
                     { x: (l.x1 + l.x2) / 2, y: top },
-                    `${fmt(l.q)} kPa`,
+                    l.q === null ? "q não informado" : `${fmt(l.q)} kPa`,
                     "#a24c38",
                     "middle",
                     -9,

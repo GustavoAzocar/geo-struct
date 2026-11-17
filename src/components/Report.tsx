@@ -1,3 +1,9 @@
+import {
+  activeWater,
+  waterModeLabel,
+  loadConditionLabel,
+  isLoadActive,
+} from "../domain/conditions";
 import type { Project } from "../domain/model";
 import {
   materialMode,
@@ -95,6 +101,7 @@ export function Report({
           </p>
         ))}
         {project.sections.map((s) => {
+          const water = activeWater(s);
           const pts = boundary(s),
             xmin = Math.min(...pts.map((p) => p.x)),
             xmax = Math.max(...pts.map((p) => p.x)),
@@ -138,9 +145,9 @@ export function Report({
                       strokeWidth="0.1"
                     />
                   ))}
-                  {s.water && (
+                  {water && (
                     <polyline
-                      points={d(s.water)}
+                      points={d(water)}
                       fill="none"
                       stroke="#277ca7"
                       strokeWidth="0.15"
@@ -167,7 +174,15 @@ export function Report({
                   </p>
                 </div>
               ))}
-              <h3>Água</h3>
+              <h3>Água · {waterModeLabel(s.waterMode)}</h3>
+              <p>
+                Peso específico da água γw: {number(s.waterUnitWeight)} kN/m³
+                {s.waterMode !== "piezometric" ? " (guardado, inativo)" : ""}.
+                Origem da condição: {s.waterSource.trim() || "Não informada"}.
+              </p>
+              {s.water && s.waterMode !== "piezometric" && (
+                <p>Linha guardada, inativa na condição atual:</p>
+              )}
               <p>
                 {s.water
                   ? s.water
@@ -176,6 +191,10 @@ export function Report({
                   : "Sem linha piezométrica prescrita."}
               </p>
               <h3>Sobrecargas verticais uniformes</h3>
+              <p>
+                Condição: {loadConditionLabel(s.loadCondition)}. Intensidades na
+                projeção horizontal.
+              </p>
               {s.loads.length ? (
                 <table>
                   <thead>
@@ -184,6 +203,8 @@ export function Report({
                       <th>X inicial (m)</th>
                       <th>X final (m)</th>
                       <th>q (kPa)</th>
+                      <th>Estado</th>
+                      <th>Origem</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -193,12 +214,17 @@ export function Report({
                         <td>{number(l.x1)}</td>
                         <td>{number(l.x2)}</td>
                         <td>{number(l.q)}</td>
+                        <td>
+                          {isLoadActive(s, l) ? "Ativa" : "Inativa"}
+                          {!l.enabled ? " — desabilitada" : ""}
+                        </td>
+                        <td>{l.source.trim() || "Não informada"}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               ) : (
-                <p>Sem sobrecargas.</p>
+                <p>Nenhuma faixa cadastrada.</p>
               )}
               {s.circle && (
                 <p>
@@ -215,7 +241,12 @@ export function Report({
           <ul>
             {diagnostics.map((d, i) => (
               <li key={i}>
-                {d.level === "error" ? "Erro" : "Aviso"}: {d.message}
+                {d.level === "error"
+                  ? "Erro"
+                  : d.level === "info"
+                    ? "Informação"
+                    : "Aviso"}
+                : {d.message}
               </li>
             ))}
           </ul>
