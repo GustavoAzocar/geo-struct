@@ -97,3 +97,7 @@ Licença MIT. Dependências preservam suas licenças; veja [THIRD_PARTY_NOTICES.
 Em **Análise → Conferir modelo**, filtre por seção/caso e severidade. Cada caso inclui a geometria e os materiais compartilhados, além das condições efetivas de água/cargas do cenário. Materiais sem uso aparecem em um escopo próprio. Clique numa pendência para abrir o cadastro correspondente; rascunhos continuam protegidos. O relatório de entradas inclui a mesma conferência por escopo. Pendências compartilhadas aparecem em cada caso afetado, portanto as contagens não são somáveis como ocorrências únicas.
 
 A conferência é derivada dos dados aplicados e não altera o formato v4 ou cria resultados. Ausência de pendências não comprova admissibilidade das superfícies nem estabilidade. Testes cobrem dependências compartilhadas, isolamento, condições próprias, ida/volta do arquivo, navegação e rascunhos. O salvamento recusa projetos acima de 8 MB para evitar produzir um arquivo que o leitor rejeitaria; o modelo aberto permanece disponível para edição.
+
+## Distribuição desktop 0.1.0
+
+O GeoStruct integra o catálogo assinado do Struct Launcher com NSIS para Windows e AppImage para Linux. Consulte [Desktop](docs/DESKTOP.md) para requisitos, limites de validação e cuidados com arquivos. Esta distribuição é de modelagem, sem motor de cálculo.
