@@ -60,12 +60,19 @@ export function BishopPanel({
   preparation,
   mechanics,
   onResult,
+  initialProfile,
 }: {
   preparation: InputPreparation;
   mechanics: SliceMechanicsPreparation;
   onResult: (result: BishopResult | null) => void;
+  initialProfile?: BishopProfile;
 }) {
-  const [values, setValues] = useState(emptyFields);
+  const [values, setValues] = useState(() => {
+    if (!initialProfile) return emptyFields;
+    const values = { ...emptyFields };
+    for (const { key } of fields) values[key] = String(initialProfile[key]);
+    return values;
+  });
   const [evaluation, setEvaluation] = useState<{
     mechanics: SliceMechanicsPreparation;
     result: BishopResult;

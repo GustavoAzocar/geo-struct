@@ -14,7 +14,9 @@ npm ci
 npm run dev
 ```
 
-Abra http://127.0.0.1:1420. Na tela inicial, escolha **Explorar um exemplo** ou **Novo projeto**. O exemplo é próprio, com dados ilustrativos, e contém terreno, duas camadas, linha piezométrica e sobrecarga. Seus parâmetros não representam um projeto geotécnico validado.
+Abra http://127.0.0.1:1420 e escolha **Abrir projeto padrão** para experimentar a análise. O comando também fica em **Arquivo → Projeto**. O talude demonstrativo tem duas camadas, linha piezométrica, sobrecarga de crista e casos para busca circular e círculo fixo. A busca abre selecionada, com perfil preenchido para Fellenius e Bishop Simplificado. Use **Iniciar busca circular** para avaliar os 27 círculos.
+
+Para começar um modelo próprio, use **Novo projeto**. **Explorar um exemplo** abre o modelo de introdução à edição.
 
 ## Recursos desta versão
 

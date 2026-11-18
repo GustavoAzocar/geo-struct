@@ -1280,6 +1280,7 @@ select {
 }
 .start-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 .start-actions button {
@@ -1627,10 +1628,12 @@ kbd {
   accent-color: var(--accent);
 }
 .search-results .info-card,
-.search-refinement {
+.search-refinement,
+.search-profile {
   margin: 12px 0;
 }
-.search-refinement summary {
+.search-refinement summary,
+.search-profile summary {
   cursor: pointer;
   font-weight: 600;
 }

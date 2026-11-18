@@ -17,6 +17,15 @@ Também é possível digitar a tabela X/Z nas propriedades. **Colar lista de coo
 
 Clique em **Usar coordenadas**, confira a tabela e **Aplicar**. Os campos são um rascunho: sair deles para outro elemento oferece a opção de continuar editando ou descartar. O desenho não é modificado por um valor ainda não aplicado.
 
+## Calcular o projeto padrão
+
+Na tela inicial ou em **Arquivo → Projeto**, escolha **Abrir projeto padrão**. A cópia é editável e já abre na aba **Análise**, no caso **Talude — busca circular**. Para trocar o projeto aberto, o aplicativo aplica a mesma proteção de rascunhos e alterações da abertura de arquivos.
+
+- **Talude — busca circular** tem 27 combinações de centro e raio. Clique em **Iniciar busca circular** para comparar Fellenius e Bishop Simplificado. Os valores iniciais podem ser conferidos ou editados em **Perfil de cálculo do exemplo**.
+- **Talude — círculo fixo** avalia um dos círculos da malha, com centro X = 32 m, Z = 32 m e raio de 25 m. Selecione o caso na árvore, clique em **Preparar fatias** e calcule cada método para ver suas parcelas.
+
+As duas análises usam a mesma seção de dois solos com coesão nula, linha piezométrica prescrita e uma faixa de 20 kPa na crista. Os dados são didáticos. O perfil inicial fica disponível nesta sessão do projeto padrão. Ao salvar uma cópia, o arquivo v4 guarda os dados do modelo e dos casos. Abra o comando de projeto padrão novamente para iniciar outra demonstração.
+
 ## Solos, água e cargas
 
 Em **Materiais → Novo material**, informe nome, cor, peso específico total, coesão, atrito, tipo de parâmetros e origem. Escolha tensões efetivas (c′, φ′) ou totais (c, φ) de acordo com os dados informados. A troca de opção conserva os números; não os converte nem presume condição de drenagem. Campos em branco permanecem pendentes, e zero em coesão/atrito é um valor informado. **Aplicar** confirma o cadastro.

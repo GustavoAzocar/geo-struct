@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { solveFellenius, type FelleniusResult } from "../core/fellenius";
+import {
+  solveFellenius,
+  type FelleniusProfile,
+  type FelleniusResult,
+} from "../core/fellenius";
 import type { InputPreparation } from "../core/input";
 import type { SliceMechanicsPreparation } from "../core/slice-mechanics";
 import { parseNumber } from "../domain/geometry";
@@ -15,13 +19,19 @@ export function FelleniusPanel({
   preparation,
   mechanics,
   onResult,
+  initialProfile,
 }: {
   preparation: InputPreparation;
   mechanics: SliceMechanicsPreparation;
   onResult: (result: FelleniusResult | null) => void;
+  initialProfile?: FelleniusProfile;
 }) {
-  const [driving, setDriving] = useState("");
-  const [tension, setTension] = useState("");
+  const [driving, setDriving] = useState(() =>
+    initialProfile ? String(initialProfile.drivingThresholdKNPerM) : "",
+  );
+  const [tension, setTension] = useState(() =>
+    initialProfile ? String(initialProfile.tensionToleranceKPa) : "",
+  );
   const [evaluation, setEvaluation] = useState<{
     mechanics: SliceMechanicsPreparation;
     result: FelleniusResult;

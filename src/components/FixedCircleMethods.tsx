@@ -3,6 +3,7 @@ import type { InputPreparation } from "../core/input";
 import type { SliceMechanicsPreparation } from "../core/slice-mechanics";
 import type { FelleniusResult } from "../core/fellenius";
 import type { BishopResult } from "../core/bishop";
+import type { CircularSearchProfile } from "../core/circular-search";
 import { FelleniusPanel } from "./FelleniusPanel";
 import { BishopPanel, formatResultNumber } from "./BishopPanel";
 
@@ -13,9 +14,11 @@ type Evaluation<T> = {
 export function FixedCircleMethods({
   preparation,
   mechanics,
+  initialProfile,
 }: {
   preparation: InputPreparation;
   mechanics: SliceMechanicsPreparation;
+  initialProfile?: Pick<CircularSearchProfile, "equilibrium" | "bishop">;
 }) {
   const [fellenius, setFellenius] = useState<Evaluation<FelleniusResult>>(null);
   const [bishop, setBishop] = useState<Evaluation<BishopResult>>(null);
@@ -45,11 +48,17 @@ export function FixedCircleMethods({
       <FelleniusPanel
         preparation={preparation}
         mechanics={mechanics}
+        initialProfile={initialProfile?.equilibrium}
         onResult={(result) => setFellenius({ mechanics, result })}
       />
       <BishopPanel
         preparation={preparation}
         mechanics={mechanics}
+        initialProfile={
+          initialProfile?.bishop
+            ? { ...initialProfile.equilibrium, ...initialProfile.bishop }
+            : undefined
+        }
         onResult={(result) => setBishop({ mechanics, result })}
       />
       {bothSelected && (

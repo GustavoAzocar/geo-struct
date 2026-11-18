@@ -1,6 +1,11 @@
 # Histórico
 
-## Em desenvolvimento — Busca circular determinística
+## Em desenvolvimento — Projeto padrão de estabilidade
+
+- **Abrir projeto padrão** na tela inicial e na aba **Arquivo**, com proteção para o projeto em edição.
+- Talude de duas camadas com água, sobrecarga e casos de busca circular e círculo fixo. Perfis ilustrativos preenchidos na sessão para os dois métodos.
+
+## Etapa anterior — Busca circular determinística
 
 - Malha de centros X/Z e raios na ordem dos índices, com contagem prévia e capacidade de até 10.000 círculos.
 - Busca em segundo plano com progresso e cancelamento. Menor FS admissível por método, bordas, empates, resistência nula e motivos de descarte.

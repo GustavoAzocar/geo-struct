@@ -24,6 +24,7 @@ import {
   ImageDown,
   CircleHelp,
   FolderClosed,
+  FolderInput,
   ListChecks,
   PencilRuler,
   ScanLine,
@@ -47,6 +48,7 @@ export type Tab = (typeof tabs)[number];
 export type Action =
   | "new"
   | "open"
+  | "open-default"
   | "save"
   | "save-as"
   | "close"
@@ -82,6 +84,12 @@ const groups: Record<Tab, { label: string; items: Item[] }[]> = {
       items: [
         { action: "new", label: "Novo projeto", icon: FilePlus2 },
         { action: "open", label: "Abrir", icon: FolderOpen },
+        {
+          action: "open-default",
+          label: "Abrir projeto padrão",
+          icon: FolderInput,
+          tip: "Abrir um talude de demonstração com a busca circular pronta",
+        },
         {
           action: "save",
           label: "Salvar",

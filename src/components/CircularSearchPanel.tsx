@@ -70,12 +70,29 @@ export function CircularSearchPanel({
   preparation,
   dirty,
   onPreview,
+  initialProfile,
 }: {
   preparation: InputPreparation;
   dirty: boolean;
   onPreview: (overlay: SearchOverlay | null) => void;
+  initialProfile?: CircularSearchProfile;
 }) {
-  const [values, setValues] = useState(initial);
+  const [values, setValues] = useState(() => {
+    if (!initialProfile) return initial;
+    const { geometry, equilibrium, bishop, nearTieTolerance } = initialProfile;
+    const parameters = {
+      ...geometry,
+      ...equilibrium,
+      ...bishop,
+      nearTieTolerance,
+    };
+    const values = { ...initial };
+    for (const key of Object.keys(values) as Field[]) {
+      const parameter = parameters[key];
+      if (parameter !== undefined) values[key] = String(parameter);
+    }
+    return values;
+  });
   const [run, setRun] = useState<RunState>({ status: "idle" });
   const [inspection, setInspection] = useState<Inspection | null>(null);
   const [visibleNumber, setVisibleNumber] = useState<number | null>(null);
@@ -223,8 +240,40 @@ export function CircularSearchPanel({
       />
     </label>
   );
+  const settings = (
+    <>
+      {field("toleranceM")}
+      {field("maxArcDegrees")}
+      <fieldset className="case-fields">
+        <legend>Parâmetros da busca</legend>
+        {field("drivingThresholdKNPerM")}
+        {field("tensionToleranceKPa")}
+        {field("nearTieTolerance")}
+        <p className="hint">
+          Informe valores não negativos. A faixa de quase empate sinaliza
+          diferenças acima do menor FS, sem alterar a ordem.
+        </p>
+      </fieldset>
+      {hasBishop && (
+        <fieldset className="case-fields">
+          <legend>Convergência de Bishop</legend>
+          {field("initialFactor")}
+          {field("residualTolerance")}
+          {field("maxIterations")}
+          {field("singularityThreshold")}
+          <p className="hint">
+            F₀ e τF positivos. K inteiro de 1 a {MAX_BISHOP_ITERATIONS}. τm não
+            negativo.
+          </p>
+        </fieldset>
+      )}
+    </>
+  );
   return (
-    <details className="circular-search-panel">
+    <details
+      className="circular-search-panel"
+      open={initialProfile ? true : undefined}
+    >
       <summary>Executar busca circular</summary>
       <section aria-label="Busca circular">
         {dirty ? (
@@ -236,8 +285,7 @@ export function CircularSearchPanel({
               Até {MAX_SEARCH_CANDIDATES.toLocaleString("pt-BR")} círculos por
               execução.
             </p>
-            {field("toleranceM")}
-            {field("maxArcDegrees")}
+            {!initialProfile && settings}
             {grid?.status === "ready" && (
               <p aria-label="Tamanho da malha">
                 <strong>{grid.grid.total} círculos</strong> ·{" "}
@@ -250,29 +298,6 @@ export function CircularSearchPanel({
               <p className="form-error" role="alert">
                 {grid.message}
               </p>
-            )}
-            <fieldset className="case-fields">
-              <legend>Parâmetros da busca</legend>
-              {field("drivingThresholdKNPerM")}
-              {field("tensionToleranceKPa")}
-              {field("nearTieTolerance")}
-              <p className="hint">
-                Informe valores não negativos. A faixa de quase empate sinaliza
-                diferenças acima do menor FS, sem alterar a ordem.
-              </p>
-            </fieldset>
-            {hasBishop && (
-              <fieldset className="case-fields">
-                <legend>Convergência de Bishop</legend>
-                {field("initialFactor")}
-                {field("residualTolerance")}
-                {field("maxIterations")}
-                {field("singularityThreshold")}
-                <p className="hint">
-                  F₀ e τF positivos. K inteiro de 1 a {MAX_BISHOP_ITERATIONS}.
-                  τm não negativo.
-                </p>
-              </fieldset>
             )}
             <div className="search-actions">
               <button
@@ -296,6 +321,12 @@ export function CircularSearchPanel({
                 </button>
               )}
             </div>
+            {initialProfile && (
+              <details className="search-profile">
+                <summary>Perfil de cálculo do exemplo</summary>
+                {settings}
+              </details>
+            )}
             {running && (
               <div className="search-progress">
                 <progress

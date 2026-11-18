@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import type { InputPreparation } from "../core/input";
+import type { CircularSearchProfile } from "../core/circular-search";
 import {
   prepareFixedCircleGeometry,
   type CutReason,
@@ -26,6 +27,7 @@ export type FixedCirclePreviewProps = {
   dirty: boolean;
   onChange: (values: GeometryFields) => void;
   onPrepare: (result: FixedCirclePreparation) => void;
+  initialProfile?: Pick<CircularSearchProfile, "equilibrium" | "bishop">;
 };
 const number = (n: number) =>
   n.toLocaleString("pt-BR", {
@@ -49,6 +51,7 @@ export function FixedCirclePreview({
   dirty,
   onChange,
   onPrepare,
+  initialProfile,
 }: FixedCirclePreviewProps) {
   const [table, setTable] = useState(false);
   const weights = useMemo(
@@ -118,7 +121,10 @@ export function FixedCirclePreview({
     return `${reasonLabel[r.kind]}${name ? ` · ${name}` : ""}${r.index !== undefined ? ` · ${r.index + 1}` : ""}`;
   };
   return (
-    <details className="fixed-circle-preview">
+    <details
+      className="fixed-circle-preview"
+      open={initialProfile ? true : undefined}
+    >
       <summary>Geometria do círculo fixo</summary>
       <section aria-label="Geometria do círculo fixo">
         <p className="hint">
@@ -270,6 +276,7 @@ export function FixedCirclePreview({
               <FixedCircleMethods
                 preparation={preparation}
                 mechanics={mechanics}
+                initialProfile={initialProfile}
               />
             )}
           </>

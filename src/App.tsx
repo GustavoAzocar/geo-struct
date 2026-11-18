@@ -89,6 +89,10 @@ import { StartScreen } from "./components/StartScreen";
 import { Report } from "./components/Report";
 import { Materials, MaterialAssignment } from "./components/Materials";
 import { prepareCoreInput } from "./domain/core-input";
+import {
+  defaultProject,
+  DEFAULT_PROJECT_PROFILE,
+} from "./domain/default-project";
 import type { FixedCirclePreparation } from "./core/fixed-circle";
 import type { GeometryFields } from "./components/FixedCirclePreview";
 import type { SearchOverlay } from "./components/CircularSearchPanel";
@@ -98,6 +102,10 @@ type Question = {
   message: string;
   choices: { value: string; label: string; primary?: boolean }[];
   resolve: (v: string) => void;
+};
+const initialDefaultGeometry: GeometryFields = {
+  tolerance: String(DEFAULT_PROJECT_PROFILE.geometry.toleranceM),
+  angle: String(DEFAULT_PROJECT_PROFILE.geometry.maxArcDegrees),
 };
 function readPreference(key: string, fallback: string) {
   try {
@@ -144,6 +152,9 @@ export default function App() {
     tolerance: "",
     angle: "3",
   });
+  const [defaultCaseIds, setDefaultCaseIds] = useState<string[]>([]);
+  const [defaultGeometryFields, setDefaultGeometryFields] =
+    useState<GeometryFields>(initialDefaultGeometry);
   const [slicePreview, setSlicePreview] =
     useState<FixedCirclePreparation | null>(null);
   const [searchOverlay, setSearchOverlay] = useState<SearchOverlay | null>(
@@ -191,6 +202,8 @@ export default function App() {
         c.id === selection.id &&
         c.sectionId === section?.id,
     ) ?? null;
+  const defaultCase =
+    selectedCase !== null && defaultCaseIds.includes(selectedCase.id);
   const diagnostics = useMemo(
     () => (project ? diagnose(project) : []),
     [project],
@@ -355,6 +368,7 @@ export default function App() {
     migrated = false,
   ) => {
     setH(history(p));
+    setDefaultCaseIds([]);
     setSectionId(p.sections[0].id);
     setSelection({ kind: "terrain" });
     setTool("select");
@@ -792,6 +806,20 @@ export default function App() {
       await openFile();
       return;
     }
+    if (a === "open-default") {
+      if (await guardProject()) {
+        const sample = defaultProject();
+        openProject(sample, null, false);
+        setDefaultCaseIds(sample.analysisCases.map((c) => c.id));
+        setDefaultGeometryFields(initialDefaultGeometry);
+        setSelection({ kind: "case", id: sample.analysisCases[0].id });
+        setTab("Análise");
+        notify(
+          "Projeto padrão aberto. Inicie a busca circular para explorar o talude.",
+        );
+      }
+      return;
+    }
     if (a === "new") {
       if (await guardProject()) {
         setNewName("Novo projeto");
@@ -1076,6 +1104,7 @@ export default function App() {
           <StartScreen
             onNew={() => action("new")}
             onOpen={openFile}
+            onOpenDefault={() => action("open-default")}
             onExample={() => {
               openProject(exampleProject(), null, false);
               notify(
@@ -1278,12 +1307,18 @@ export default function App() {
                   onDrawCircle={() => void selectTool("case-circle")}
                   onBase={() => void select({ kind: "terrain" })}
                   onSearchPreview={setSearchOverlay}
+                  initialProfile={
+                    defaultCase ? DEFAULT_PROJECT_PROFILE : undefined
+                  }
                   geometryPreview={{
                     preparation: preparedCase!,
-                    values: geometryFields,
+                    values: defaultCase
+                      ? defaultGeometryFields
+                      : geometryFields,
                     result: currentSlices,
                     onChange: (values) => {
-                      setGeometryFields(values);
+                      if (defaultCase) setDefaultGeometryFields(values);
+                      else setGeometryFields(values);
                       setSlicePreview(null);
                     },
                     onPrepare: setSlicePreview,

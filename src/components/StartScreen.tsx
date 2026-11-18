@@ -2,6 +2,7 @@ import {
   ArrowUpRight,
   FilePlus2,
   FolderOpen,
+  FolderInput,
   RotateCcw,
   Mountain,
   Layers3,
@@ -11,12 +12,14 @@ import type { Project } from "../domain/model";
 export function StartScreen({
   onNew,
   onOpen,
+  onOpenDefault,
   onExample,
   onRecover,
   recovery,
 }: {
   onNew: () => void;
   onOpen: () => void;
+  onOpenDefault: () => void;
   onExample: () => void;
   onRecover: () => void;
   recovery: { project: Project; savedAt: string } | null;
@@ -45,6 +48,10 @@ export function StartScreen({
           <button className="secondary" onClick={onOpen}>
             <FolderOpen size={18} />
             Abrir projeto
+          </button>
+          <button className="secondary" onClick={onOpenDefault}>
+            <FolderInput size={18} />
+            Abrir projeto padrão
           </button>
         </div>
         <button className="example-link" onClick={onExample}>
@@ -77,8 +84,7 @@ export function StartScreen({
           </span>
         </div>
         <p className="start-stage">
-          Versão 0.1 · Modelagem
-          <br />O cálculo de estabilidade será incorporado em uma próxima etapa.
+          Versão 0.1 · Modelagem e análise de taludes
         </p>
       </div>
     </main>

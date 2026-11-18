@@ -1,4 +1,5 @@
 import { auditProject } from "../domain/audit";
+import type { CircularSearchProfile } from "../core/circular-search";
 import { useEffect, useState } from "react";
 import { Check, RotateCcw } from "lucide-react";
 import {
@@ -183,6 +184,7 @@ export function CaseInspector({
   onBase,
   geometryPreview,
   onSearchPreview,
+  initialProfile,
 }: {
   project: Project;
   section: Section;
@@ -193,6 +195,7 @@ export function CaseInspector({
   onBase: () => void;
   geometryPreview: Omit<FixedCirclePreviewProps, "dirty">;
   onSearchPreview: (overlay: SearchOverlay | null) => void;
+  initialProfile?: CircularSearchProfile;
 }) {
   const initial: Record<string, string> = {
     name: c.name,
@@ -312,6 +315,22 @@ export function CaseInspector({
       setError((e as Error).message);
     }
   };
+  const calculationPanel =
+    c.surfaceMode === "search" ? (
+      <CircularSearchPanel
+        key={geometryPreview.preparation.snapshot?.revision}
+        preparation={geometryPreview.preparation}
+        dirty={dirty}
+        onPreview={onSearchPreview}
+        initialProfile={initialProfile}
+      />
+    ) : (
+      <FixedCirclePreview
+        {...geometryPreview}
+        dirty={dirty}
+        initialProfile={initialProfile}
+      />
+    );
   return (
     <aside className="inspector" aria-label="Propriedades do caso">
       <div className="panel-heading">
@@ -331,6 +350,7 @@ export function CaseInspector({
             Seção: {section.name}. Alterar a geometria ou os materiais da seção
             afeta todos os seus casos.
           </p>
+          {initialProfile && calculationPanel}
           {field("name", "Nome do caso")}
           {textField("description", "Hipóteses do caso")}
           {select("direction", "Direção de deslizamento", [
@@ -484,16 +504,7 @@ export function CaseInspector({
             prepared={geometryPreview.preparation}
             dirty={dirty}
           />
-          {c.surfaceMode === "search" ? (
-            <CircularSearchPanel
-              key={geometryPreview.preparation.snapshot?.revision}
-              preparation={geometryPreview.preparation}
-              dirty={dirty}
-              onPreview={onSearchPreview}
-            />
-          ) : (
-            <FixedCirclePreview {...geometryPreview} dirty={dirty} />
-          )}
+          {!initialProfile && calculationPanel}
           <button className="text-button" type="button" onClick={onBase}>
             Voltar à seção base
           </button>
