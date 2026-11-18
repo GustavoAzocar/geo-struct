@@ -1,6 +1,13 @@
 # Histórico
 
-## Em desenvolvimento — Fellenius em círculo fixo
+## Em desenvolvimento — Bishop Simplificado em círculo fixo
+
+- Iteração com F₀, τF, K, τm, τD e τt explícitos; histórico e resíduo no F avaliado. Sem amortecimento ou substituição silenciosa do perfil.
+- Inspeção de parcelas, normais, momentos próprios das faixas e diagnósticos de singularidade, falta de convergência, tração e resistência nula. Tentativas rejeitadas não fornecem FS.
+- Comparação com Fellenius para a mesma entrada e fatias, com limiares comuns iguais e resultados admissíveis. Invalidação por perfil, dados, histórico, arquivo e caso.
+- Caso analítico, dez fatias de referência, refinamento/invariâncias e fluxos de interface. Formato v4 e distribuição 0.1.0 preservados; busca e aceite integral de engenharia continuam pendentes.
+
+## Etapa anterior — Fellenius em círculo fixo
 
 - Método de referência com pressão neutra projetada (D1/USACE C-12), normal aproximada, resistência do material da base e momentos próprios das sobrecargas. FS somente para o círculo informado.
 - Perfil explícito de limiar motriz/tração, somas compensadas e diagnósticos de finitude, cancelamento, tração e resistência nula. Face vertical no intervalo e modos mistos bloqueiam o recorte.

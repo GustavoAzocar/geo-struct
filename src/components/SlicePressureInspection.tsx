@@ -163,7 +163,7 @@ export function SlicePressureInspection({
       <p className="hint">
         Pressão física prescrita, sem alteração pelo modo de resistência.
         Consulte a entrada mecânica para ue e as resultantes aproximadas da
-        base. O cálculo de Fellenius é executado separadamente.
+        base. O cálculo por Fellenius ou Bishop é executado separadamente.
       </p>
     </details>
   );

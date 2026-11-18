@@ -1,4 +1,4 @@
-# Validação da primeira etapa
+# Validação do GeoStruct
 
 ## Verificações executáveis
 
@@ -14,7 +14,7 @@ Os artefatos do CI incluem traces de falhas, sem capturas de imagens. Resultados
 
 Testes adicionais verificam interfaces com subdivisões diferentes, conservação de área e ausência de sobreposição após editar/dividir, limites de pontos, identidades/materiais, cópia inválida, precisão/captura e faces verticais. O arquivo de exemplo da primeira versão é lido e regravado sem alterar seus dados. Os fluxos de interface cobrem edição compartilhada e histórico, inserção/exclusão gráfica, divisão com persistência, rejeição de cópia, deslocamento relativo, medição sem modificar o modelo e entrada de face vertical na janela mínima.
 
-Asserções de geometria não são validações das forças sobre faces verticais. O recorte de Fellenius recusa faces verticais no intervalo da massa. Não se executa geração/conversão de imagens nos testes; traces são mantidos sem screenshots.
+Asserções de geometria não são validações das forças sobre faces verticais. O recorte de Fellenius/Bishop recusa faces verticais no intervalo da massa. Não se executa geração/conversão de imagens nos testes; traces são mantidos sem screenshots.
 
 ### Materiais e arquivos
 
@@ -40,7 +40,13 @@ Os fluxos Chromium verificam criação, edição, rascunhos, desenho/cancelament
 
 Casos analíticos conferem normal projetada, coesão/atrito, força de carga constante com braços distintos, sinais e FS. A transcrição de nove fatias de Duncan fig. 7.34 reproduz FS ≈ 1,186281 após conversão SI, distinguindo a variante C-12 da C-13. O modelo próprio com preparação completa verifica refinamento, translação, espelhamento/sentido e água/modo. Testes de diagnóstico cobrem limiares exatos, tração tolerada/rejeitada sem corte para zero, resistência nula e soma não positiva, cancelamento, finitude, underflow, revisão, método selecionado, modos mistos e face vertical.
 
-Fluxos Chromium cobrem limiares obrigatórios, inspeção na janela mínima, alteração de perfil/dados, rascunho, histórico, isolamento de casos, arquivo sem resultados, resistência nula e tração. As referências, políticas e limites da evidência estão em [Fellenius em círculo fixo](FELLENIUS-CIRCULO-FIXO.md). O benchmark publicado verifica a equação nas fatias transcritas; não valida a reconstrução geométrica ou a busca do exemplo. Não há validação de Bishop ou aceite normativo.
+Fluxos Chromium cobrem limiares obrigatórios, inspeção na janela mínima, alteração de perfil/dados, rascunho, histórico, isolamento de casos, arquivo sem resultados, resistência nula e tração. As referências, políticas e limites da evidência estão em [Fellenius em círculo fixo](FELLENIUS-CIRCULO-FIXO.md). O benchmark publicado verifica a equação nas fatias transcritas; não valida a reconstrução geométrica ou a busca do exemplo. A admissibilidade de Bishop é verificada separadamente; não há aceite normativo.
+
+### Bishop Simplificado em círculo fixo
+
+O caso de uma fatia compara o ponto fixo com a raiz obtida algebricamente, conserva o braço próprio da carga e verifica equilíbrio vertical/resistência no próprio F retornado. Dez fatias transcritas de Duncan fig. 7.40 reproduzem D, numerador em F = 1,6, solução ≈ 1,61302 e resíduo; o perfil de referência exige cinco avaliações. A fonte da transcrição e suas limitações estão em [Bishop em círculo fixo](BISHOP-CIRCULO-FIXO.md).
+
+Os testes cobrem aceitação na primeira/última avaliação, limiar exato, falta de convergência, singularidade dependente de F₀, normais transitórias versus convergidas, tração/avisos, zero físico distinto de cancelamento, finitude, underflow, identidade da entrada e imutabilidade. O preparo completo cobre refinamento, água, modo, translação e espelhamento. Fluxos Chromium exercitam perfil, inspeção, comparação compatível/incompatível, método sozinho, falhas, rascunhos, edição, histórico, arquivo e isolamento de casos. Não elegem método vencedor, superfície crítica ou aprovação normativa.
 
 ### Entrada mecânica das fatias
 
@@ -80,7 +86,7 @@ Os testes do adaptador cobrem origem/unidades, conversão X/Z sem espelhamento, 
 
 ### Alcance das verificações
 
-As verificações são de software de modelagem, sem validação de solver geotécnico. Não há benchmark de FS nesta entrega. A revisão com engenheiros e os casos de cálculo independentes dependem das issues #30/#31 do frontend.
+As verificações cobrem o modelador, a preparação e os recortes documentados de Fellenius/Bishop em círculo fixo. Há casos analíticos e reprodução de fatias transcritas da bibliografia; isso não constitui validação integral do solver, da reconstrução das geometrias publicadas ou de uma busca crítica. A revisão independente de engenharia continua nas issues #30/#31 do frontend.
 
 Compilar um executável nativo não comprova sua interação com todos os ambientes. Antes de distribuir instaladores, conferir manualmente em Linux e Windows: abrir/salvar, cancelamento de diálogo, permissões, fechamento com alterações, impressão, escala de tela, zoom/pan e teclado. Validar Linux WebKitGTK e Windows WebView2 além do Chromium dos testes.
 

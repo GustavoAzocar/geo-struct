@@ -14,9 +14,11 @@ const number = (n: number) =>
 export function FelleniusPanel({
   preparation,
   mechanics,
+  onResult,
 }: {
   preparation: InputPreparation;
   mechanics: SliceMechanicsPreparation;
+  onResult: (result: FelleniusResult | null) => void;
 }) {
   const [driving, setDriving] = useState("");
   const [tension, setTension] = useState("");
@@ -31,13 +33,12 @@ export function FelleniusPanel({
     preparation.snapshot?.input.analysis.methods.includes("fellenius");
   const calculate = () => {
     if (!selected) return;
-    setEvaluation({
-      mechanics,
-      result: solveFellenius(preparation, mechanics, {
-        drivingThresholdKNPerM: parseNumber(driving) ?? NaN,
-        tensionToleranceKPa: parseNumber(tension) ?? NaN,
-      }),
+    const result = solveFellenius(preparation, mechanics, {
+      drivingThresholdKNPerM: parseNumber(driving) ?? NaN,
+      tensionToleranceKPa: parseNumber(tension) ?? NaN,
     });
+    setEvaluation({ mechanics, result });
+    onResult(result);
   };
   return (
     <section className="fellenius-panel" aria-label="Fellenius no círculo fixo">
@@ -55,6 +56,7 @@ export function FelleniusPanel({
           onChange={(e) => {
             setDriving(e.target.value);
             setEvaluation(null);
+            onResult(null);
           }}
         />
       </label>
@@ -67,6 +69,7 @@ export function FelleniusPanel({
           onChange={(e) => {
             setTension(e.target.value);
             setEvaluation(null);
+            onResult(null);
           }}
         />
       </label>
@@ -76,9 +79,6 @@ export function FelleniusPanel({
       </p>
       {!selected && (
         <p>Selecione Fellenius nos métodos do caso e aplique a alteração.</p>
-      )}
-      {preparation.snapshot?.input.analysis.methods.includes("bishop") && (
-        <p className="hint">Bishop Simplificado ainda não está disponível.</p>
       )}
       <button
         className="secondary"

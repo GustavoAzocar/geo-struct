@@ -134,7 +134,8 @@ export function SliceWeightInspection({
       )}
       <p className="hint">
         Peso próprio separado das sobrecargas e das pressões. A entrada mecânica
-        reúne essas grandezas. O cálculo de Fellenius é executado separadamente.
+        reúne essas grandezas. O cálculo por Fellenius ou Bishop é executado
+        separadamente.
       </p>
     </details>
   );

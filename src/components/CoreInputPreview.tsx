@@ -86,8 +86,8 @@ export function CoreInputPreview({
           </ul>
         )}
         <p className="hint">
-          Esta conferência reúne entradas. O cálculo de Fellenius é executado
-          separadamente, após preparar as fatias do círculo fixo.
+          Esta conferência reúne entradas. O cálculo por Fellenius ou Bishop é
+          executado separadamente, após preparar as fatias do círculo fixo.
         </p>
       </section>
     </details>

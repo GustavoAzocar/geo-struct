@@ -56,6 +56,10 @@ Consolidação de geometria, peso, água e sobrecargas com revisão/perfil coere
 
 Variante projetada de D1, normal aproximada, resistência por base, braços próprios das faixas e FS do círculo informado. Perfil explícito, diagnósticos de momento motriz, tração, finitude e resistência nula; inspeção das parcelas e invalidação por revisão. Recusa faces verticais no intervalo da massa e mistura de modos nas bases. Regras locais e evidências em [Fellenius em círculo fixo](FELLENIUS-CIRCULO-FIXO.md), sem aceite integral da candidata, busca ou critério normativo.
 
+### Bishop Simplificado em círculo fixo — implementado no recorte inicial
+
+Formulação D1 com `ue b` no numerador reduzido, ponto fixo, resíduo no F avaliado, perfil explícito e histórico das tentativas. Singularidade, não convergência, resistência nula e tração possuem diagnósticos próprios. Comparação com Fellenius na mesma entrada/fatias exige limiares comuns iguais e dois resultados positivos admissíveis. Regras e casos em [Bishop em círculo fixo](BISHOP-CIRCULO-FIXO.md); sem busca ou aceite integral da candidata.
+
 ### Referências e decisões
 
 - [#28 — Roadmap](https://github.com/ricardocorsini/openstruct-front/issues/28): primeiro motor determinístico 2D, superfícies circulares, Mohr–Coulomb, Fellenius e Bishop Simplificado.
@@ -72,7 +76,7 @@ Os testes de modelagem deste repositório não substituem os casos geotécnicos 
 3. Casos de análise: implementados no recorte de cadastro e prévia, com identidade própria e vínculo à seção.
 4. **Conferência integrada e distribuição 0.1.0 — implementadas:** escopos por seção/caso, dependências compartilhadas, navegação, relatório, limite de arquivo simétrico e instaladores Windows/Linux disponíveis no Launcher. A homologação manual nativa completa continua pendente.
 5. **Contrato de transferência de entradas — implementado.** O recorte aprovado de D2 já sustenta o peso próprio. Concluir as regras restantes da especificação #30 e o catálogo #31 para os próximos cálculos: perfis numéricos, tratamento das faces verticais, água e comportamento de falhas.
-6. **Preparações, entrada mecânica e Fellenius em círculo fixo — implementados no recorte documentado.** Próxima entrega: Bishop Simplificado com perfil explícito, resíduo, convergência e comparação na mesma superfície, após consolidar as regras pertinentes e seus casos independentes. O aceite integral da #30 e o catálogo #31 continuam em revisão.
+6. **Preparações, entrada mecânica, Fellenius e Bishop em círculo fixo — implementados no recorte documentado.** Próxima entrega: busca circular determinística, com perfil explícito, classificação dos candidatos, progresso/cancelamento e refinamento, após consolidar as regras pertinentes e seus casos independentes. O aceite integral da #30 e o catálogo #31 continuam em revisão.
 7. Implementar busca circular determinística, progresso, cancelamento, inspeção por fatia e memória rastreável. Vincular resultados à revisão de entrada e invalidá-los quando ela mudar.
 8. Especificar métodos rigorosos, superfícies não circulares e estabilidade com reforços. Especificar separadamente verificações/dimensionamento das contenções.
 

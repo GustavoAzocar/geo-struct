@@ -1317,7 +1317,9 @@ export default function App() {
                 GRADE
               </button>
               <span>m · kN · kPa</span>
-              <span className="model-only">Fellenius · círculo fixo</span>
+              <span className="model-only">
+                Fellenius / Bishop · círculo fixo
+              </span>
             </footer>
           </>
         )}
@@ -1628,9 +1630,9 @@ export default function App() {
             </p>
           </div>
           <div className="info-card">
-            Esta versão permite calcular Fellenius para um círculo fixo nas
-            propriedades do caso, após preparar as fatias. Bishop, busca crítica
-            e contenções pertencem às próximas etapas. A conferência geométrica
+            Esta versão permite calcular Fellenius e Bishop para um círculo fixo
+            nas propriedades do caso, após preparar as fatias. Busca crítica e
+            contenções pertencem às próximas etapas. A conferência geométrica
             não representa aprovação de estabilidade.
           </div>
           <p className="hint">

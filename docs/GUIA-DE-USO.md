@@ -69,7 +69,7 @@ Durante o desenho ou comandos de dois pontos, abra **Entrada precisa** no canto 
 
 ## Casos de análise
 
-Em **Análise → Novo caso**, cadastre um cenário da seção ativa. O caso começa com escolhas pendentes. Informe nome, hipóteses, direção e os métodos pretendidos. Direita/esquerda é sempre relativa ao eixo X do desenho; escolher movimento para a esquerda não espelha seus dados. Fellenius está disponível para círculo fixo; Bishop e busca permanecem pendentes.
+Em **Análise → Novo caso**, cadastre um cenário da seção ativa. O caso começa com escolhas pendentes. Informe nome, hipóteses, direção e os métodos pretendidos. Direita/esquerda é sempre relativa ao eixo X do desenho; escolher movimento para a esquerda não espelha seus dados. Fellenius e Bishop estão disponíveis para círculo fixo; a busca permanece pendente.
 
 Em **Água no caso**, escolha usar a condição atual da seção ou adotar condição seca/usar a linha cadastrada. As hipóteses próprias exigem origem; a opção piezométrica usa os pontos e γw da seção, mesmo se a linha estiver guardada nela. Em **Sobrecargas no caso**, escolha a condição atual da seção, ausência de cargas ou faixas selecionadas. A seleção explícita pode ativar faixas desabilitadas na seção; mantenha isso como escolha consciente. Dados das faixas (q, posição e origem), geometria e materiais permanecem compartilhados.
 
@@ -109,7 +109,15 @@ Após **Preparar fatias**, localize **Fellenius · círculo fixo** nas proprieda
 
 O resultado apresenta FS do círculo ou o motivo de rejeição. Resistência nula nas bases aparece como FS = 0 destacado. Em **Inspecionar Fellenius**, consulte perfil, círculo/sentido, normal aproximada, tensão, parcelas de coesão/atrito e momentos de pesos/cargas. Valores negativos permanecem registrados. Alterar entradas, perfil, histórico, arquivo ou caso exige novo cálculo. Refinar a abertura angular permite comparar a sensibilidade.
 
-Neste recorte, face vertical no intervalo da massa, modos resistentes mistos e água externa bloqueiam o método. Bishop e busca crítica não são executados. Os resultados e limiares pertencem à sessão; salvar conserva somente as entradas do projeto v4. Veja [regras e referências](FELLENIUS-CIRCULO-FIXO.md).
+Neste recorte, face vertical no intervalo da massa, modos resistentes mistos e água externa bloqueiam o método. A busca crítica não é executada. Os resultados e limiares pertencem à sessão; salvar conserva somente as entradas do projeto v4. Veja [regras e referências](FELLENIUS-CIRCULO-FIXO.md).
+
+## Bishop Simplificado e comparação
+
+Selecione Bishop Simplificado no caso, aplique e prepare as fatias. No painel **Bishop Simplificado · círculo fixo**, informe todos os campos: F₀ positivo, tolerância absoluta τF positiva, máximo K inteiro de 1 a 1.000 e os limiares não negativos τm, τD e τt. Clique **Calcular Bishop**. Os limites ficam registrados na inspeção e valem para esta sessão.
+
+**Inspecionar Bishop** mostra F avaliado, atualização G(F), resíduo, trajetória e parcelas por fatia. Sem convergência, com singularidade ou tração além do limite, o painel conserva o diagnóstico e não fornece FS válido. As tentativas da tabela não são resultados aprovados. Resistência física nula recebe diagnóstico próprio, sem iterar F = 0. Consulte [equações e limites](BISHOP-CIRCULO-FIXO.md).
+
+Selecionando os dois métodos, calcule cada um nas mesmas fatias. **Comparar métodos** mostra os estados; ΔFS aparece quando ambos têm resultados positivos admissíveis e τD/τt coincidem. Alterar um perfil remove seu resultado e a diferença. Preparar outra discretização, editar dados ou trocar arquivo/caso exige novos cálculos. Compare também o refinamento angular antes de interpretar o valor.
 
 ## Documentar
 

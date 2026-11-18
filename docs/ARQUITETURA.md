@@ -66,7 +66,13 @@ O App mantém apenas uma prévia em memória e a apresenta quando sua revisão c
 
 `FelleniusPanel` executa o método somente por ação explícita. Campos numéricos começam vazios; alteração de perfil remove o resultado. A apresentação exige a mesma entrada mecânica; rascunho, revisão, histórico, arquivo ou troca de caso retiram o resultado anterior. Inspeção própria apresenta os valores brutos e os diagnósticos, inclusive quando a admissibilidade impede fornecer FS.
 
-O arquivo permanece v4; snapshots, perfis, preparações e resultados não são persistidos nem incluídos no relatório de entradas. Próximo passo: Bishop Simplificado, com resíduo, convergência e casos independentes, após consolidar seu recorte. Modos mistos, faces verticais e água externa permanecem fora do método inicial; a implementação não encerra a revisão integral da #30/#31. A busca futura deverá executar em Worker com progresso e cancelamento. Não há regra de FS mínimo ou sinalização de aprovação de estabilidade.
+`src/core/limit-equilibrium.ts` compartilha a validação da entrada aplicada, consistência das fatias/cargas, aritmética finita, somas compensadas e denominador motriz. Não usa a admissibilidade de Fellenius como pré-condição de Bishop: normais e resistência são avaliadas por cada método.
+
+`src/core/bishop.ts` implementa ponto fixo sem amortecimento, conforme D1 e USACE F-4/F-6. O contrato `geostruct-bishop/1` conserva perfil explícito, revisão, círculo, histórico de tentativas, última avaliação completa e diagnósticos. Aceita o F avaliado quando seu próprio resíduo atende a τF e a normal convergida passa pela tolerância de tração. Singularidade, não convergência, resistência física nula e rejeição permanecem distintas; nenhum desses estados oferece FS numérico. K tem limite operacional de 1.000 avaliações. Ver [Bishop em círculo fixo](BISHOP-CIRCULO-FIXO.md).
+
+`FixedCircleMethods` reúne `FelleniusPanel` e `BishopPanel`. Resultados só aparecem para a mesma instância de entrada mecânica; cada edição de perfil retira o resultado e a diferença entre métodos. A comparação exige dois resultados positivos admissíveis e igualdade de τD/τt. Uma falha não impede executar o outro método. A inspeção diferencia tentativas completas da trajetória interrompida, sem apresentar a última tentativa como solução.
+
+O arquivo permanece v4; snapshots, perfis, preparações e resultados não são persistidos nem incluídos no relatório de entradas. Próximo passo: busca circular determinística, após consolidar perfil, classificação dos candidatos e regras de refinamento. Modos mistos, faces verticais e água externa permanecem fora do método inicial; a implementação não encerra a revisão integral da #30/#31. A busca futura deverá executar em Worker com progresso e cancelamento. Não há regra de FS mínimo ou sinalização de aprovação de estabilidade.
 
 ## Conferência integrada dos lançamentos
 

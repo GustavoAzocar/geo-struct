@@ -16,7 +16,7 @@ import { prepareSliceLoads } from "../core/slice-loads";
 import { SliceLoadInspection } from "./SliceLoadInspection";
 import { prepareSliceMechanics } from "../core/slice-mechanics";
 import { SliceMechanicsInspection } from "./SliceMechanicsInspection";
-import { FelleniusPanel } from "./FelleniusPanel";
+import { FixedCircleMethods } from "./FixedCircleMethods";
 
 export type GeometryFields = { tolerance: string; angle: string };
 export type FixedCirclePreviewProps = {
@@ -267,7 +267,10 @@ export function FixedCirclePreview({
               Inspecionar fatias
             </button>
             {!dirty && mechanics?.status === "prepared" && (
-              <FelleniusPanel preparation={preparation} mechanics={mechanics} />
+              <FixedCircleMethods
+                preparation={preparation}
+                mechanics={mechanics}
+              />
             )}
           </>
         )}
@@ -279,8 +282,8 @@ export function FixedCirclePreview({
         <p className="hint">
           Preparação de geometria, peso próprio, pressões prescritas e
           resultantes de sobrecargas. A entrada mecânica reúne os parâmetros da
-          base e as parcelas de água. Use Calcular Fellenius para avaliar o
-          círculo fixo com limiares explícitos.
+          base e as parcelas de água. Use os painéis de Fellenius e Bishop para
+          avaliar o círculo fixo com limiares explícitos.
         </p>
       </section>
       {table && !dirty && result?.status === "prepared" && (

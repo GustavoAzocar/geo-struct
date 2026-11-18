@@ -340,8 +340,8 @@ export function Ribbon({
           <div className="analysis-note">
             <strong>Preparação dos casos</strong>
             <span>
-              Prepare as fatias e calcule Fellenius nas propriedades do caso.
-              Bishop e busca crítica ainda não disponíveis.
+              Prepare as fatias e calcule Fellenius ou Bishop nas propriedades
+              do caso. Busca crítica ainda não disponível.
             </span>
           </div>
         )}

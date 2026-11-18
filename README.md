@@ -1,7 +1,7 @@
 <h1 align="center">GeoStruct</h1>
 <p align="center">Modelagem geotécnica 2D para taludes e contenções.<br/>Um aplicativo livre do <strong>OpenStruct</strong>.</p>
 
-**GeoStruct — modelagem e evolução do núcleo 2D.** Crie seções, atribua materiais, represente água e sobrecargas e salve projetos locais. A branch de desenvolvimento calcula Fellenius para um círculo fixo, com inspeção por fatia e diagnósticos. A distribuição 0.1.0 disponível no Launcher permanece de modelagem. Bishop, busca crítica e dimensionamento de contenções ainda não estão disponíveis; não há aprovação normativa de estabilidade.
+**GeoStruct — modelagem e evolução do núcleo 2D.** Crie seções, atribua materiais, represente água e sobrecargas e salve projetos locais. A branch de desenvolvimento calcula Fellenius e Bishop Simplificado para um círculo fixo, com inspeção por fatia, convergência e diagnósticos. A distribuição 0.1.0 disponível no Launcher permanece de modelagem. Busca crítica e dimensionamento de contenções ainda não estão disponíveis; não há aprovação normativa de estabilidade.
 
 ## Começar
 
@@ -64,12 +64,12 @@ npm run test:e2e
 npm run format:check
 ```
 
-Testes de domínio verificam geometrias, limites dos parâmetros, arquivos, referências e histórico. Os testes de interface cobrem fluxos de edição e persistência. Os casos independentes de Fellenius verificam o recorte documentado, sem substituir a validação integral de engenharia.
+Testes de domínio verificam geometrias, limites dos parâmetros, arquivos, referências e histórico. Os testes de interface cobrem fluxos de edição e persistência. Os casos independentes de Fellenius e Bishop verificam o recorte documentado, sem substituir a validação integral de engenharia.
 
 | Caminho           | Responsabilidade                                             |
 | ----------------- | ------------------------------------------------------------ |
 | `src/domain/`     | Modelo, validação geométrica e histórico, sem React ou Tauri |
-| `src/core/`       | Preparações das fatias e método de Fellenius                 |
+| `src/core/`       | Preparações das fatias, Fellenius e Bishop                   |
 | `src/components/` | Ribbon, navegador, editor gráfico, propriedades e relatório  |
 | `src/lib/`        | Entrada e saída local, com adaptadores web e desktop         |
 | `src-tauri/`      | Janela nativa, permissões, identidade e empacotamento        |
@@ -83,11 +83,11 @@ O [contrato de materiais e migração](docs/MATERIAIS-E-FORMATO.md) descreve os 
 
 O [contrato de água e cargas](docs/AGUA-E-CARGAS.md) descreve as condições, os lançamentos ativos/inativos e a migração para v3. Desativar preserva os dados; água ou cargas ausentes em um arquivo antigo ficam como não definidas.
 
-O [contrato de casos de análise](docs/CASOS-DE-ANALISE.md) descreve a associação à seção, as condições próprias dos cenários e o formato v4. Fellenius pode ser executado em círculo fixo; Bishop e busca permanecem pendentes.
+O [contrato de casos de análise](docs/CASOS-DE-ANALISE.md) descreve a associação à seção, as condições próprias dos cenários e o formato v4. Fellenius e Bishop podem ser executados em círculo fixo; a busca permanece pendente.
 
 Na versão em desenvolvimento, selecione um caso e abra **Entradas para o núcleo**, nas propriedades, para conferir os dados aplicados e suas pendências. O [contrato de entradas](docs/ENTRADAS-DO-NUCLEO.md) reúne condições efetivas, materiais usados, unidades e origem em uma cópia imutável, com revisão que detecta alterações posteriores.
 
-Em **Geometria do círculo fixo**, informe a tolerância em metros e use **Preparar fatias**. A prévia mostra cortes, arco e tabela de áreas/comprimentos, com refinamento angular de até 3°. Alterações nas entradas ocultam a geometria anterior. O [contrato geométrico](docs/GEOMETRIA-DO-CIRCULO.md) documenta interseções, faces verticais, cortes obrigatórios, limitações e casos analíticos. O arquivo permanece v4; perfil e prévia ficam apenas na sessão. A preparação é independente da avaliação por Fellenius. Estas alterações serão distribuídas em uma próxima versão.
+Em **Geometria do círculo fixo**, informe a tolerância em metros e use **Preparar fatias**. A prévia mostra cortes, arco e tabela de áreas/comprimentos, com refinamento angular de até 3°. Alterações nas entradas ocultam a geometria anterior. O [contrato geométrico](docs/GEOMETRIA-DO-CIRCULO.md) documenta interseções, faces verticais, cortes obrigatórios, limitações e casos analíticos. O arquivo permanece v4; perfil e prévia ficam apenas na sessão. A preparação é independente da avaliação pelos métodos. Estas alterações serão distribuídas em uma próxima versão.
 
 Na inspeção, abra **Áreas por material** para consultar os totais e a composição de uma fatia. As parcelas preservam suas regiões de origem e o solo de fundo, incluindo materiais acima da base. A soma é conferida contra a área até o arco, sem ajustes para forçar o fechamento. Consulte o [contrato das subáreas](docs/AREAS-POR-MATERIAL.md).
 
@@ -100,6 +100,8 @@ Em **Sobrecargas por fatia**, confira `Q = q × L` no trecho horizontal carregad
 Em **Entrada mecânica**, confira as fatias ordenadas no movimento, α da base, parâmetros e origem do material da base, W/Q e a distinção entre u/ue e U/Ue. A base usa a corda; `U = uℓ` é a resultante aproximada da pressão prescrita. O modo total zera ue/Ue sem apagar u/U. Sentido ou parâmetros resistentes ausentes bloqueiam apenas a consolidação, preservando as outras inspeções. Consulte [Entrada mecânica das fatias](docs/ENTRADA-MECANICA-DAS-FATIAS.md). O arquivo continua v4, somente com dados de entrada.
 
 Em **Fellenius · círculo fixo**, informe o limiar motriz (kN/m) e a tolerância de tração (kPa), então use **Calcular Fellenius**. Consulte **Inspecionar Fellenius** para normal aproximada, parcelas resistentes, momentos e diagnósticos. O FS pertence ao círculo informado; não representa o mínimo de uma busca. Faces verticais na massa, bases com modos mistos e água externa ficam fora deste recorte. Veja [regras, equações e casos independentes](docs/FELLENIUS-CIRCULO-FIXO.md).
+
+Em **Bishop Simplificado · círculo fixo**, informe F₀, tolerância do resíduo τF, máximo de avaliações K e limiares τm, τD e τt, então use **Calcular Bishop**. **Inspecionar Bishop** mostra cada tentativa, o resíduo no F avaliado, normais e parcelas por fatia. Singularidade, falta de convergência e tração além do limiar impedem apresentar um FS válido. Selecionando os dois métodos, a comparação mostra a diferença somente com resultados positivos admissíveis, nas mesmas fatias e com τD/τt iguais. Veja [regras, equações e casos independentes de Bishop](docs/BISHOP-CIRCULO-FIXO.md). Os parâmetros e resultados permanecem apenas na sessão.
 
 ## Origem e referências
 
