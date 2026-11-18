@@ -1,3 +1,4 @@
+import { version } from "../../package.json";
 import {
   ArrowUpRight,
   FilePlus2,
@@ -84,7 +85,7 @@ export function StartScreen({
           </span>
         </div>
         <p className="start-stage">
-          Versão 0.1 · Modelagem e análise de taludes
+          Versão {version} · Modelagem e análise de taludes
         </p>
       </div>
     </main>

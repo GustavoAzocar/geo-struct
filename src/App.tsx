@@ -1,3 +1,4 @@
+import { version } from "../package.json";
 import { Audit } from "./components/Audit";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -1686,7 +1687,7 @@ export default function App() {
             fatias do resultado.
           </div>
           <p className="hint">
-            GeoStruct 0.1.0 · Ricardo Corsini e colaboradores · OpenStruct
+            GeoStruct {version} · Ricardo Corsini e colaboradores · OpenStruct
           </p>
         </Dialog>
       )}

@@ -1,6 +1,8 @@
-# GeoStruct desktop 0.1.0
+# GeoStruct desktop 0.2.0
 
-Distribuição de modelagem, sem motor de estabilidade. Windows x86_64 usa NSIS por usuário; Linux x86_64 usa AppImage. O Struct Launcher verifica assinatura, tamanho e SHA-256 antes de instalar. Os pacotes e metadados ficam no hub público openstruct-catalog, com o código de origem identificado por SHA e tag imutáveis. Não há autoatualizador dentro do GeoStruct; atualize pelo Launcher.
+Distribuição de modelagem geotécnica e análise de estabilidade de taludes com superfícies circulares. Windows x86_64 usa NSIS por usuário; Linux x86_64 usa AppImage. O Struct Launcher verifica assinatura, tamanho e SHA-256 antes de instalar. Os pacotes e metadados ficam no hub público openstruct-catalog, com o código de origem identificado por SHA e tag imutáveis. Não há autoatualizador dentro do GeoStruct; atualize pelo Launcher.
+
+No Struct Launcher, use **Verificar atualizações**, selecione **GeoStruct** e escolha **Instalar** ou **Atualizar**. Os dois instaladores e as notas estão na [release 0.2.0](https://github.com/ricardocorsini/openstruct-catalog/releases/tag/geostruct-v0.2.0). Depois de abrir o aplicativo, use **Abrir projeto padrão** para experimentar os dois métodos de equilíbrio-limite. A versão lê os arquivos `geostruct/4` já usados pela distribuição anterior.
 
 Ícones padrão do Tauri, sem arte personalizada. O AppImage tem como base Ubuntu 22.04; outras distribuições precisam das dependências usuais GTK/WebKitGTK e suporte AppImage. Windows usa WebView2.
 

@@ -1,79 +1,83 @@
 # Histórico
 
-## Em desenvolvimento — Projeto padrão de estabilidade
+## 0.2.0 — 2026-11-18
+
+Primeira distribuição desktop com análise circular de taludes. Instale ou atualize pelo Struct Launcher. Os arquivos de projeto continuam no formato `geostruct/4`.
+
+### Projeto padrão de estabilidade
 
 - **Abrir projeto padrão** na tela inicial e na aba **Arquivo**, com proteção para o projeto em edição.
 - Talude de duas camadas com água, sobrecarga e casos de busca circular e círculo fixo. Perfis ilustrativos preenchidos na sessão para os dois métodos.
 
-## Etapa anterior — Busca circular determinística
+### Busca circular determinística
 
 - Malha de centros X/Z e raios na ordem dos índices, com contagem prévia e capacidade de até 10.000 círculos.
 - Busca em segundo plano com progresso e cancelamento. Menor FS admissível por método, bordas, empates, resistência nula e motivos de descarte.
 - Inspeção de candidatos, desenho das fatias e conferência com abertura angular menor. Perfil e resultados vinculados ao caso aplicado durante a sessão.
 
-## Etapa anterior — Bishop Simplificado em círculo fixo
+### Bishop Simplificado em círculo fixo
 
 - Iteração com F₀, τF, K, τm, τD e τt explícitos; histórico e resíduo no F avaliado. Sem amortecimento ou substituição silenciosa do perfil.
 - Inspeção de parcelas, normais, momentos próprios das faixas e diagnósticos de singularidade, falta de convergência, tração e resistência nula. Tentativas rejeitadas não fornecem FS.
 - Comparação com Fellenius para a mesma entrada e fatias, com limiares comuns iguais e resultados admissíveis. Invalidação por perfil, dados, histórico, arquivo e caso.
-- Caso analítico, dez fatias de referência, refinamento/invariâncias e fluxos de interface. Formato v4 e distribuição 0.1.0 preservados; busca e aceite integral de engenharia continuam pendentes.
+- Caso analítico, dez fatias de referência, refinamento/invariâncias e fluxos de interface. Resultados vinculados ao perfil e à revisão da entrada.
 
-## Etapa anterior — Fellenius em círculo fixo
+### Fellenius em círculo fixo
 
 - Método de referência com pressão neutra projetada (D1/USACE C-12), normal aproximada, resistência do material da base e momentos próprios das sobrecargas. FS somente para o círculo informado.
 - Perfil explícito de limiar motriz/tração, somas compensadas e diagnósticos de finitude, cancelamento, tração e resistência nula. Face vertical no intervalo e modos mistos bloqueiam o recorte.
 - Cálculo por ação explícita e inspeção das parcelas por fatia, com invalidação por edição, perfil, caso, histórico e arquivo. Textos do aplicativo passam a distinguir cadastro, preparação e cálculo.
-- Casos analíticos, reprodução de nove fatias de referência e fluxos de interface. Formato v4 e distribuição 0.1.0 preservados; Bishop, busca e aceite integral da especificação continuam pendentes.
+- Casos analíticos, reprodução de nove fatias de referência e fluxos de interface. Verificação do método nas superfícies fixas de referência.
 
-## Em desenvolvimento — entrada mecânica das fatias
+### Entrada mecânica das fatias
 
 - Consolidação de geometria, pesos, pressões e sobrecargas da mesma revisão/perfil em `geostruct-slice-mechanics/1`, com ordenação no sentido do movimento e identificação geométrica original preservada.
 - Corda da base, α positivo na descida, coordenadas locais no centro do círculo e braço aproximado do peso. Sobrecargas conservam seus braços próprios.
 - Resistência fornecida pelo material da base, com c/φ/modo explícitos. Pressão física u e resultante aproximada U = uℓ separadas de ue/Ue destinados à resistência; modo total não apaga a pressão física nem muda o peso próprio.
-- Inspeção integrada por fatia, diagnósticos sem resultado parcial e testes independentes de sinais, unidades, modos, referência, perfil, arquivo e histórico. Sem equilíbrio, normal, convergência ou FS; formato v4 e distribuição 0.1.0 preservados.
+- Inspeção integrada por fatia, diagnósticos sem resultado parcial e testes independentes de sinais, unidades, modos, referência, perfil, arquivo e histórico. A entrada mecânica reúne as parcelas usadas pelos métodos.
 
-## Em desenvolvimento — resultantes das sobrecargas
+### Resultantes das sobrecargas
 
 - Recorte de D3: forças verticais por largura horizontal carregada, pontos no terreno e braços próprios em relação ao círculo. Momentos com sinal CCW e orientados ao movimento, sem confundir força nula com momento nulo.
 - Inspeção por faixa/fatia com IDs, origens, intervalos, intensidades e totais; sobreposições aditivas, carga zero distinta de q ausente e faixas sem contribuição identificadas.
 - Contrato imutável `geostruct-slice-loads/1`, mesma revisão/perfil da geometria. Falhas bloqueiam sobrecargas sem remover pesos/pressões; sentido ausente mantém momento CCW e deixa orientação pendente.
-- Integração analítica independente, conservação com refinamento, escala, translação e espelhamento, sinais/cancelamento, arquivo, rascunhos e histórico. Projeto continua v4, sem equilíbrio ou FS. Distribuição em uma próxima versão.
+- Integração analítica independente, conservação com refinamento, escala, translação e espelhamento, sinais/cancelamento, arquivo, rascunhos e histórico. Registro do braço de cada faixa na inspeção das fatias.
 
-## Em desenvolvimento — pressões de água nas bases
+### Pressões de água nas bases
 
 - Preparação de `u = γw max(0, zp − zbase)` em kPa, no ponto médio angular do arco, com condição seca explícita e pressão zero na linha/acima dela.
 - Conferência de cobertura de todo o candidato, sem extrapolar; γw ausente e carga acima do terreno produzem diagnósticos. A distinção entre água confinada/lâmina externa permanece fora deste recorte.
 - Inspeção por fatia com cotas, altura vertical, γw, condição/origem e segmento da linha; pressões independentes dos pesos e do modo de resistência. Rascunhos, revisão, histórico e arquivo v4 preservados.
 - Cálculo das interseções pela normal à reta evita cancelamento entre extremo e projeção, corrigindo uma falsa proximidade entre o nó de água e a extremidade do candidato. Mesma geometria/contrato, com regressão para segmentos longos e cobertura nas extremidades.
-- Casos analíticos, integridade e fluxos de interface. Sem forças de água, equilíbrio ou FS; distribuição em uma próxima versão.
+- Casos analíticos, integridade e fluxos de interface. Sem forças de água, equilíbrio ou FS.
 
-## Em desenvolvimento — peso próprio das fatias
+### Peso próprio das fatias
 
 - Preparação de `Wi = Σ γj Aij`, em kN/m, pelo peso específico total informado de cada material; recorte de D2 documentado com fontes e casos independentes.
 - Inspeção dos pesos por fatia/material, áreas, γ e origem das parcelas, incluindo materiais acima da base. Peso próprio na tabela geral e total no inspetor.
 - γ ausente bloqueia somente os pesos; áreas continuam disponíveis. Sem inferir propriedades, aplicar redução por água ou somar sobrecargas ao peso próprio.
-- Contrato independente e imutável `geostruct-slice-weights/1`, vinculado à revisão/perfil; rascunhos, edição, desfazer/refazer e formato v4 preservados. Testes aritméticos, analíticos e de interface. Sem equilíbrio ou FS; distribuição em uma próxima versão.
+- Contrato independente e imutável `geostruct-slice-weights/1`, vinculado à revisão/perfil; rascunhos, edição, desfazer/refazer e formato v4 preservados. Testes aritméticos, analíticos e de interface. Sem equilíbrio ou FS.
 
-## Em desenvolvimento — áreas por material
+### áreas por material
 
 - Partição geométrica das fatias por material, com integração até o arco, regiões côncavas, inclusões acima da base e fundo integrado nos intervalos livres.
 - Totais por material e parcelas por origem, conferência de conservação por fatia e global, sem corrigir resíduos ou inferir pesos.
 - Inspeção dos totais e da fatia selecionada; atribuições ausentes em parcelas positivas impedem a preparação. Histórico, revisão e formato v4 preservados.
-- Reaproveitamento das raízes de interfaces coincidentes com subdivisões diferentes, sem juntar interfaces apenas próximas. Contrato geométrico 2 e casos analíticos de áreas; distribuição em uma próxima versão.
+- Reaproveitamento das raízes de interfaces coincidentes com subdivisões diferentes, sem juntar interfaces apenas próximas. Contrato geométrico 2 e casos analíticos de áreas.
 
-## Em desenvolvimento — geometria do círculo fixo
+### Geometria do círculo fixo
 
 - Preparação independente de interseções e fatias no arco inferior, com tolerância explícita, cortes rastreáveis e refinamento angular de até 3°.
 - Áreas geométricas até o arco, comprimentos de arco/corda, cotas unilaterais em faces verticais e identificação do material na base, sem forças ou FS.
 - Prévia no desenho e tabela de inspeção; alterações de entradas/perfil ocultam a prévia anterior. Rascunhos, histórico e formato v4 preservados.
-- Contrato geométrico documentado, casos analíticos e testes de diagnóstico/integridade/interface. A revisão integral das regras mecânicas continua pendente; distribuição em uma próxima versão.
+- Contrato geométrico documentado, casos analíticos e testes de diagnóstico/integridade/interface. A revisão integral das regras mecânicas continua pendente.
 
-## Em desenvolvimento — entradas do núcleo
+### Entradas do núcleo
 
 - Contrato independente `geostruct-input/1` e adaptador dos casos existentes, com unidades, origem, coordenadas X/Z e condições efetivas.
 - Cópia imutável e revisão determinística para detectar alterações nos dados compartilhados, no caso e após desfazer/refazer.
 - Conferência **Entradas para o núcleo** nas propriedades do caso, respeitando rascunhos e reutilizando os diagnósticos do cadastro.
-- Testes de integridade, isolamento, herança, nulos/zeros, revisão e interface. Projeto permanece v4; sem fatias, equações ou FS nesta etapa. Distribuição em uma próxima versão.
+- Testes de integridade, isolamento, herança, nulos/zeros, revisão e interface. O contrato conserva o formato de projeto v4.
 
 ## 0.1.0 — primeira distribuição desktop
 

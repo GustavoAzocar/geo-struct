@@ -1,3 +1,4 @@
+import { version } from "../../package.json";
 import { auditProject, auditCounts } from "../domain/audit";
 import {
   activeWater,
@@ -196,7 +197,7 @@ export function Report({
         </button>
       </div>
       <article id="project-report" className="project-report">
-        <div className="report-brand">OPENSTRUCT / GEOSTRUCT 0.1.0</div>
+        <div className="report-brand">OPENSTRUCT / GEOSTRUCT {version}</div>
         <h1>{project.name}</h1>
         <h2>Conferência dos lançamentos por seção e caso</h2>
         <p>

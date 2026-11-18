@@ -1,7 +1,7 @@
 <h1 align="center">GeoStruct</h1>
 <p align="center">Modelagem geotécnica 2D para taludes e contenções.<br/>Um aplicativo livre do <strong>OpenStruct</strong>.</p>
 
-**GeoStruct — modelagem e evolução do núcleo 2D.** Crie seções, atribua materiais, represente água e sobrecargas e salve projetos locais. A branch de desenvolvimento calcula Fellenius e Bishop Simplificado em círculo fixo e executa uma busca circular em malha de centros e raios. Os resultados incluem inspeção por fatia, diagnósticos e o menor FS admissível por método na malha avaliada. A distribuição 0.1.0 disponível no Launcher é de modelagem.
+**GeoStruct — modelagem e evolução do núcleo 2D.** Crie seções, atribua materiais, represente água e sobrecargas e salve projetos locais. O GeoStruct 0.2.0 calcula Fellenius e Bishop Simplificado em círculo fixo e executa uma busca circular em malha de centros e raios. Os resultados incluem inspeção por fatia, diagnósticos e o menor FS admissível por método na malha avaliada.
 
 ## Começar
 
@@ -54,7 +54,7 @@ Na primeira preparação desktop é necessário acesso à internet para baixar o
 
 O aplicativo usa `br.com.openstruct.geostruct`, janela mínima de 960 × 640 e diálogo nativo de arquivos. O acesso ao sistema de arquivos fica limitado aos arquivos escolhidos pelo usuário. No navegador, Abrir usa o seletor de arquivo e Salvar gera um download. Conserve o arquivo exportado: a cópia de recuperação no navegador não substitui um backup.
 
-A distribuição 0.1.0 de modelagem usa o catálogo assinado do Struct Launcher. No Launcher, use **Verificar atualizações**, localize **GeoStruct** e escolha **Instalar**. Os [pacotes oficiais](https://github.com/ricardocorsini/openstruct-catalog/releases/tag/geostruct-v0.1.0) incluem Windows x86_64 e Linux x86_64. Atualizações são gerenciadas pelo Launcher; não há autoatualizador dentro do GeoStruct.
+A distribuição 0.2.0 usa o catálogo assinado do Struct Launcher. No Launcher, use **Verificar atualizações**, localize **GeoStruct** e escolha **Instalar** ou **Atualizar**. Os [pacotes oficiais](https://github.com/ricardocorsini/openstruct-catalog/releases/tag/geostruct-v0.2.0) incluem Windows x86_64 e Linux x86_64. Atualizações são gerenciadas pelo Launcher; não há autoatualizador dentro do GeoStruct.
 
 ## Desenvolvimento
 
@@ -87,9 +87,9 @@ O [contrato de água e cargas](docs/AGUA-E-CARGAS.md) descreve as condições, o
 
 O [contrato de casos de análise](docs/CASOS-DE-ANALISE.md) descreve a associação à seção, as condições próprias dos cenários e o formato v4. Os dois métodos podem ser executados em círculo fixo ou na busca circular.
 
-Na versão em desenvolvimento, selecione um caso e abra **Entradas para o núcleo**, nas propriedades, para conferir os dados aplicados e suas pendências. O [contrato de entradas](docs/ENTRADAS-DO-NUCLEO.md) reúne condições efetivas, materiais usados, unidades e origem em uma cópia imutável, com revisão que detecta alterações posteriores.
+Selecione um caso e abra **Entradas para o núcleo**, nas propriedades, para conferir os dados aplicados e suas pendências. O [contrato de entradas](docs/ENTRADAS-DO-NUCLEO.md) reúne condições efetivas, materiais usados, unidades e origem em uma cópia imutável, com revisão que detecta alterações posteriores.
 
-Em **Geometria do círculo fixo**, informe a tolerância em metros e use **Preparar fatias**. A prévia mostra cortes, arco e tabela de áreas/comprimentos, com refinamento angular de até 3°. Alterações nas entradas ocultam a geometria anterior. O [contrato geométrico](docs/GEOMETRIA-DO-CIRCULO.md) documenta interseções, faces verticais, cortes obrigatórios, limitações e casos analíticos. O arquivo permanece v4; perfil e prévia ficam apenas na sessão. A preparação é independente da avaliação pelos métodos. Estas alterações serão distribuídas em uma próxima versão.
+Em **Geometria do círculo fixo**, informe a tolerância em metros e use **Preparar fatias**. A prévia mostra cortes, arco e tabela de áreas/comprimentos, com refinamento angular de até 3°. Alterações nas entradas ocultam a geometria anterior. O [contrato geométrico](docs/GEOMETRIA-DO-CIRCULO.md) documenta interseções, faces verticais, cortes obrigatórios, limitações e casos analíticos. O arquivo permanece v4; perfil e prévia ficam apenas na sessão. A preparação é independente da avaliação pelos métodos.
 
 Na inspeção, abra **Áreas por material** para consultar os totais e a composição de uma fatia. As parcelas preservam suas regiões de origem e o solo de fundo, incluindo materiais acima da base. A soma é conferida contra a área até o arco, sem ajustes para forçar o fechamento. Consulte o [contrato das subáreas](docs/AREAS-POR-MATERIAL.md).
 
@@ -121,6 +121,6 @@ Em **Análise → Conferir modelo**, filtre por seção/caso e severidade. Cada 
 
 A conferência é derivada dos dados aplicados e não altera o formato v4 ou cria resultados. Ausência de pendências não comprova admissibilidade das superfícies nem estabilidade. Testes cobrem dependências compartilhadas, isolamento, condições próprias, ida/volta do arquivo, navegação e rascunhos. O salvamento recusa projetos acima de 8 MB para evitar produzir um arquivo que o leitor rejeitaria; o modelo aberto permanece disponível para edição.
 
-## Distribuição desktop 0.1.0
+## Distribuição desktop 0.2.0
 
-O GeoStruct integra o catálogo assinado do Struct Launcher com NSIS para Windows e AppImage para Linux. Consulte [Desktop](docs/DESKTOP.md) para requisitos, limites de validação e cuidados com arquivos. Esta distribuição é de modelagem, sem motor de cálculo.
+O GeoStruct integra o catálogo assinado do Struct Launcher com NSIS para Windows e AppImage para Linux. Consulte [Desktop](docs/DESKTOP.md) para requisitos, limites de validação e cuidados com arquivos.

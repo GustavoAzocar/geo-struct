@@ -1,4 +1,4 @@
-# Guia de uso — GeoStruct 0.1
+# Guia de uso — GeoStruct 0.2.0
 
 ## Primeiro projeto
 

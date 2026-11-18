@@ -22,6 +22,10 @@ Condição de água explícita (não definida, seca ou piezométrica), peso espe
 
 Cadastro, duplicação e exclusão de casos por seção, com hipóteses, sentido de deslizamento e escolha dos métodos pretendidos. Condições próprias de água e seleção de faixas, além de herança explícita das condições atuais da seção. Círculo fixo por desenho/coordenadas ou cópia explícita do círculo de tentativa. Limites e passos informados para centros X/Z e raios, preservados ao alternar o modo. Prévia de entradas, conferência, relatório e formato `geostruct/4`, com leitura de v1/v2/v3. A geometria e os materiais são compartilhados, e a edição das faixas afeta os casos que as usam. A classificação e os cálculos consomem o caso aplicado. Ver [Casos de análise](CASOS-DE-ANALISE.md).
 
+## 0.2.0 — Análise circular de taludes
+
+A versão desktop reúne a preparação das fatias, Fellenius e Bishop Simplificado, busca circular e um projeto padrão de demonstração. O Launcher oferece os instaladores Windows e Linux pelo catálogo assinado. Consulte as [notas da versão](../.github/release-notes/v0.2.0.md).
+
 ## Base técnica
 
 ### Preparação geométrica do círculo fixo — implementada
@@ -81,7 +85,7 @@ Os testes de modelagem deste repositório não substituem os casos geotécnicos 
 4. **Conferência integrada e distribuição 0.1.0 — implementadas:** escopos por seção/caso, dependências compartilhadas, navegação, relatório, limite de arquivo simétrico e instaladores Windows/Linux disponíveis no Launcher. A homologação manual nativa completa continua pendente.
 5. **Contrato de transferência de entradas — implementado.** O recorte aprovado de D2 já sustenta o peso próprio. Concluir as regras restantes da especificação #30 e o catálogo #31 para os próximos cálculos: perfis numéricos, tratamento das faces verticais, água e comportamento de falhas.
 6. **Preparações, entrada mecânica, Fellenius e Bishop em círculo fixo — implementados no recorte documentado.**
-7. **Busca circular determinística — implementada no recorte documentado.** Próxima etapa: comparar casos de referência com superfícies conhecidas e malhas refinadas, revisar #30/#31 e preparar a apresentação dos resultados para a distribuição desktop.
+7. **Busca circular determinística — implementada no recorte documentado.** Próxima etapa: comparar casos de referência com superfícies conhecidas e malhas refinadas, revisar #30/#31 e preparar um relatório de resultados que preserve as hipóteses da análise.
 8. Especificar métodos rigorosos, superfícies não circulares e estabilidade com reforços. Especificar separadamente verificações/dimensionamento das contenções.
 
 A distribuição desktop exige revisão nativa, instaladores, notas, catálogo/Launcher e procedimento de atualização. Compilação de CI não publica uma versão e não dispensa essa revisão.

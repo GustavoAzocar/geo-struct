@@ -1,6 +1,6 @@
 [package]
 name = "geostruct"
-version = "0.1.0"
+version = "0.2.0"
 description = "Modelagem geotécnica 2D para taludes e contenções"
 authors = ["Ricardo Corsini"]
 license = "MIT"
