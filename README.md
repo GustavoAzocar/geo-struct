@@ -14,7 +14,7 @@ npm ci
 npm run dev
 ```
 
-Abra http://127.0.0.1:1420 e escolha **Abrir projeto padrão** para experimentar a análise. O comando também fica em **Arquivo → Projeto**. O talude demonstrativo tem duas camadas, linha piezométrica, sobrecarga de crista e casos para busca circular e círculo fixo. A busca abre selecionada, com perfil preenchido para Fellenius e Bishop Simplificado. Use **Iniciar busca circular** para avaliar os 27 círculos.
+Abra http://127.0.0.1:1420 e escolha **Abrir projeto padrão** para experimentar a análise. O comando também fica em **Arquivo → Projeto**. O talude demonstrativo tem duas camadas, linha piezométrica, sobrecarga de crista e casos para busca circular e círculo fixo. A busca abre selecionada, com perfil preenchido para Fellenius e Bishop Simplificado. Use **Análise → Calcular caso** para avaliar os 27 círculos.
 
 Para começar um modelo próprio, use **Novo projeto**. **Explorar um exemplo** abre o modelo de introdução à edição.
 
@@ -34,6 +34,7 @@ Para começar um modelo próprio, use **Novo projeto**. **Explorar um exemplo** 
 - Alertas de cobertura e posição da água, faixas fora do terreno e sobreposição de cargas ativas; círculo geométrico de tentativa.
 - Casos de análise vinculados à seção, com hipóteses, direção explícita, métodos pretendidos, água, seleção de faixas e perfil numérico próprios, preservados ao salvar e reabrir.
 - Círculo fixo por coordenadas/desenho e limites/passos da busca circular; prévia das entradas, duplicação e exclusão com histórico.
+- **Análise → Calcular caso** prepara o círculo fixo e executa os métodos selecionados, ou inicia a busca circular, com estado visível, progresso e cancelamento.
 - Validação geométrica, diagnósticos, desfazer/refazer, proteção de propriedades em edição e de alterações não salvas.
 - Projeto `.geo.json` no formato `geostruct/5`, com leitura/migração dos arquivos das versões 1 a 4; cópia local de recuperação; importação inválida preserva o projeto aberto.
 - Relatório de dados de entrada com impressão/PDF pelo navegador, HTML portátil e exportação SVG da vista atual.
@@ -88,6 +89,10 @@ O [contrato de água e cargas](docs/AGUA-E-CARGAS.md) descreve as condições, o
 O [contrato de casos de análise](docs/CASOS-DE-ANALISE.md) descreve a associação à seção, as condições próprias dos cenários e o formato v5. O perfil de cada caso guarda separadamente geometria, Fellenius, Bishop e busca, inclusive campos ainda pendentes. Os perfis ilustrativos do projeto padrão também são salvos. Os dois métodos podem ser executados em círculo fixo ou na busca circular.
 
 Selecione um caso e abra **Entradas para o núcleo**, nas propriedades, para conferir os dados aplicados e suas pendências. O [contrato de entradas](docs/ENTRADAS-DO-NUCLEO.md) reúne condições efetivas, materiais usados, unidades e origem em uma cópia imutável, com revisão que detecta alterações posteriores.
+
+**Análise → Calcular caso** usa o modo, os métodos e o perfil numérico aplicados. A Ribbon informa se o caso está pronto, pendente, calculando, cancelado ou concluído, além de falhas de execução. Pendências abrem **Conferir modelo**; rascunhos permanecem disponíveis para aplicar, corrigir ou descartar. No círculo fixo, geometria, pesos, pressões, cargas e mecânica são preparados uma vez e compartilhados pelos métodos. As inspeções e os comandos individuais continuam disponíveis nas propriedades. Concluir a execução pode produzir diagnósticos sem FS admissível.
+
+Resultados pertencem à sessão e exigem a mesma entrada e o mesmo perfil efetivo. Alterar um perfil de método retira os resultados de cálculo e a comparação, preservando preparações compatíveis para inspeção. O arquivo v5 conserva os dados e os perfis aplicados, sem resultados ou estado de execução.
 
 Em **Geometria do círculo fixo**, informe a tolerância em metros e use **Preparar fatias**. A prévia mostra cortes, arco e tabela de áreas/comprimentos, com refinamento angular de até 3°. Alterações nas entradas ocultam a geometria anterior. O [contrato geométrico](docs/GEOMETRIA-DO-CIRCULO.md) documenta interseções, faces verticais, cortes obrigatórios, limitações e casos analíticos. O perfil aplicado fica no caso e no arquivo v5; a prévia fica na sessão. A preparação é independente da avaliação pelos métodos.
 

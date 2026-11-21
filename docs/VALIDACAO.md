@@ -34,6 +34,14 @@ O domínio cobre criação com escolhas pendentes, condições herdadas e própr
 
 Os fluxos Chromium verificam criação, edição, rascunhos, desenho/cancelamento, cópia do círculo de tentativa, prévia de condições, busca sem geração de candidatos, arquivo e relatório, gerenciador na janela mínima, exclusão de faixa referenciada, operações de seção com casos, navegação por diagnóstico e recuperação v3. As verificações não validam interseções do círculo, admissibilidade física, malha de candidatos ou FS.
 
+### Perfil numérico e ação Calcular caso
+
+Os testes de domínio verificam os grupos persistidos no formato v5, migração com campos pendentes e independência dos perfis por caso, modo e método. A prontidão distingue rascunhos, dados físicos ausentes, condições ativas, superfície, perfil efetivo e limites da malha, conservando os diagnósticos existentes. Configurações inativas e materiais sem uso não recebem valores presumidos nem impedem a execução. A identidade inclui o perfil efetivo, mesmo quando a revisão da entrada física não muda.
+
+Os testes da orquestração verificam uma única preparação comum do círculo fixo, a mesma mecânica para os métodos selecionados, equivalência com os solvers existentes e preservação de falhas independentes. Cobrem diagnósticos sem FS e a conservação de geometria/pesos quando a pressão é bloqueada. Testes do executor usam timers controlados e um adaptador de Worker para verificar progresso, cancelamento sem resultado parcial, reinício, desmontagem, falhas de execução e rejeição de respostas de outra geração, caso ou perfil.
+
+Os fluxos Chromium exercitam **Análise → Calcular caso** por botão e teclado na janela mínima, círculo fixo e busca, métodos selecionados, comparação, navegação às pendências em **Conferir modelo**, rascunhos e correção de perfil inválido. Incluem progresso/cancelamento, mudança de contexto e preservação do arquivo sem resultados. As inspeções e ações individuais continuam cobertas pelos fluxos próprios de geometria, preparações e métodos. Esses testes verificam a coordenação da execução; a evidência de engenharia permanece nos casos independentes de cada recorte.
+
 ## Limites
 
 ### Fellenius em círculo fixo
@@ -102,4 +110,4 @@ A recuperação usa armazenamento local e pode ser bloqueada pelo navegador. O c
 
 Em **Análise → Conferir modelo**, filtre por seção/caso e severidade. Cada caso inclui a geometria e os materiais compartilhados, além das condições efetivas de água/cargas do cenário. Materiais sem uso aparecem em um escopo próprio. Clique numa pendência para abrir o cadastro correspondente; rascunhos continuam protegidos. O relatório de entradas inclui a mesma conferência por escopo. Pendências compartilhadas aparecem em cada caso afetado, portanto as contagens não são somáveis como ocorrências únicas.
 
-A conferência é derivada dos dados aplicados e não altera o formato v4 ou cria resultados. Ausência de pendências não comprova admissibilidade das superfícies nem estabilidade. Testes cobrem dependências compartilhadas, isolamento, condições próprias, ida/volta do arquivo, navegação e rascunhos. O salvamento recusa projetos acima de 8 MB para evitar produzir um arquivo que o leitor rejeitaria; o modelo aberto permanece disponível para edição.
+A conferência é derivada dos dados aplicados e não altera o formato v5 ou cria resultados. Ausência de pendências não comprova admissibilidade das superfícies nem estabilidade. Testes cobrem dependências compartilhadas, isolamento, condições próprias, ida/volta do arquivo, navegação e rascunhos. O salvamento recusa projetos acima de 8 MB para evitar produzir um arquivo que o leitor rejeitaria; o modelo aberto permanece disponível para edição.

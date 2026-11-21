@@ -320,6 +320,41 @@ button svg {
 .analysis-note strong {
   color: var(--accent);
 }
+.calculation-group {
+  flex-shrink: 0;
+}
+.calculate-case {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+.calculate-case svg {
+  color: var(--accent);
+}
+.case-calculation-status {
+  width: 260px;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 7px;
+  font-size: 10px;
+  line-height: 1.2;
+  color: var(--muted);
+}
+.case-calculation-status strong {
+  color: var(--text);
+  font-size: 11px;
+}
+.calculation-case,
+.calculation-message {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.case-calculation-status progress {
+  height: 5px;
+  width: 100%;
+}
 .workspace {
   display: grid;
   grid-template-columns: var(--left-panel) 5px minmax(260px, 1fr) 5px var(

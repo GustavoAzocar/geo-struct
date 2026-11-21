@@ -2,21 +2,24 @@
 
 React, TypeScript e Vite compõem a interface. Tauri 2 fornece a janela nativa para Linux/Windows. Os arquivos, a tipografia, os ícones e o processamento são locais. Não existe backend remoto, conta ou telemetria do produto.
 
-| Camada                           | Responsabilidade                                                                              |
-| -------------------------------- | --------------------------------------------------------------------------------------------- |
-| `src/domain/model.ts`            | Contrato `geostruct/5`, migração de v1 a v4, perfis numéricos por caso e validação estrutural |
-| `src/domain/materials.ts`        | Pendências, consulta de uso, criação/duplicação, atribuição e substituição de materiais       |
-| `src/domain/analysis.ts`         | Casos, condições resolvidas para prévia/conferência, referências e operações por seção        |
-| `src/domain/conditions.ts`       | Condições de água/cargas, seleção de dados ativos e operações imutáveis de sobrecarga         |
-| `src/domain/geometry.ts`         | Contornos, interpolação, sobreposição, cobertura e diagnósticos do editor                     |
-| `src/domain/editing.ts`          | Operações imutáveis de vértices/contornos, interfaces coincidentes, divisão e cópia           |
-| `src/domain/precision.ts`        | Captura, entrada absoluta/relativa/polar e medição, sem dependência de tela                   |
-| `src/domain/history.ts`          | Histórico imutável, limitado a 50 transações                                                  |
-| `src/components/ModelCanvas.tsx` | Vista SVG, coordenadas de tela, pan/zoom, captura e prévias de desenho                        |
-| `src/components/Inspector.tsx`   | Rascunhos de campos e aplicação transacional                                                  |
-| `src/App.tsx`                    | Projeto ativo, seleção, comandos, histórico e proteções de navegação                          |
-| `src/lib/files.ts`               | Adaptadores web/desktop, serialização, exportação e recuperação                               |
-| `src-tauri`                      | Identidade nativa, diálogos, permissões e empacotamento                                       |
+| Camada                            | Responsabilidade                                                                              |
+| --------------------------------- | --------------------------------------------------------------------------------------------- |
+| `src/domain/model.ts`             | Contrato `geostruct/5`, migração de v1 a v4, perfis numéricos por caso e validação estrutural |
+| `src/domain/materials.ts`         | Pendências, consulta de uso, criação/duplicação, atribuição e substituição de materiais       |
+| `src/domain/analysis.ts`          | Casos, condições resolvidas para prévia/conferência, referências e operações por seção        |
+| `src/domain/conditions.ts`        | Condições de água/cargas, seleção de dados ativos e operações imutáveis de sobrecarga         |
+| `src/domain/geometry.ts`          | Contornos, interpolação, sobreposição, cobertura e diagnósticos do editor                     |
+| `src/domain/editing.ts`           | Operações imutáveis de vértices/contornos, interfaces coincidentes, divisão e cópia           |
+| `src/domain/precision.ts`         | Captura, entrada absoluta/relativa/polar e medição, sem dependência de tela                   |
+| `src/domain/history.ts`           | Histórico imutável, limitado a 50 transações                                                  |
+| `src/components/ModelCanvas.tsx`  | Vista SVG, coordenadas de tela, pan/zoom, captura e prévias de desenho                        |
+| `src/components/Inspector.tsx`    | Rascunhos de campos e aplicação transacional                                                  |
+| `src/App.tsx`                     | Projeto ativo, seleção, comandos, histórico e proteções de navegação                          |
+| `src/lib/case-calculation.ts`     | Prontidão do caso aplicado e preparação comum do círculo fixo para os métodos selecionados    |
+| `src/lib/case-execution.ts`       | Execução de sessão, estados, cancelamento e proteção contra respostas antigas                 |
+| `src/lib/use-case-calculation.ts` | Estado de execução compartilhado entre Ribbon, propriedades e inspeções                       |
+| `src/lib/files.ts`                | Adaptadores web/desktop, serialização, exportação e recuperação                               |
+| `src-tauri`                       | Identidade nativa, diálogos, permissões e empacotamento                                       |
 
 O modelo usa coordenadas cartesianas X e Z, com Z positivo para cima. O campo JSON `y` armazena a coordenada vertical Z. Comprimentos em m, tensões em kPa e pesos específicos em kN/m³. Zoom e pan pertencem à vista, nunca alteram o modelo.
 
@@ -52,7 +55,7 @@ Os diálogos nativos ampliam o escopo apenas para caminhos selecionados pelo usu
 
 `src/core/circle-geometry.ts` e `src/core/fixed-circle.ts` preparam interseções e fatias de um círculo fixo. Consomem a entrada independente e um perfil geométrico explícito, sem importar o editor ou sua tolerância. O resultado imutável inclui revisão, interseções, cortes com origem, grandezas geométricas e diagnósticos. `FixedCirclePreview` apresenta os controles e tabela; `SliceOverlay` desenha as fatias na vista existente. A área usa o arco analítico, não o desenho SVG.
 
-O App mantém apenas uma prévia em memória e a apresenta quando sua revisão corresponde ao caso aplicado; rascunhos ocultam o desenho. Mudar o perfil remove a prévia e registra os parâmetros aplicados no caso e no histórico. Preparar geometria produz apenas a prévia de sessão. O referencial original é conservado; não há normalização motriz ou interpretação mecânica de faces verticais. Veja [Geometria do círculo](GEOMETRIA-DO-CIRCULO.md).
+O App mantém a prévia em memória e a apresenta quando sua revisão e perfil geométrico correspondem ao caso aplicado; rascunhos ocultam o desenho. Mudar o perfil geométrico remove a prévia e registra os parâmetros aplicados no caso e no histórico. Um perfil de método pode ser alterado sem refazer preparações compatíveis, mas exige nova avaliação do método. Preparar geometria produz apenas a prévia de sessão. O referencial original é conservado; não há normalização motriz ou interpretação mecânica de faces verticais. Veja [Geometria do círculo](GEOMETRIA-DO-CIRCULO.md).
 
 `src/core/material-areas.ts` decompõe as fatias por varredura vertical das regiões em coordenadas locais. Integra os intervalos de cada origem e os intervalos livres de fundo, preservando o arco analítico. Agrupa materiais por ID, mantém as parcelas por região/fundo e confere a soma contra a área geométrica, sem ajustar resíduos. Limites internos não alteram as fatias existentes. O contrato `geostruct-fixed-geometry/2` inclui essa composição e seu balanço; `MaterialAreaInspection` apresenta totais e a fatia selecionada. Falhas de atribuição, topologia, conservação ou capacidade retornam diagnóstico sem geometria parcial. Veja [Áreas por material](AREAS-POR-MATERIAL.md).
 
@@ -76,9 +79,19 @@ O App mantém apenas uma prévia em memória e a apresenta quando sua revisão c
 
 `src/core/search-grid.ts` prepara as coordenadas de cada eixo e verifica o tamanho da malha antes de enumerar círculos. `src/core/circular-search.ts` deriva uma entrada de círculo fixo para cada candidato, mantendo a origem do caso. Compartilha geometria e entrada mecânica entre os métodos. O resultado da busca conserva a revisão do caso, o perfil, a ordem da malha, os resultados por método e contagens por motivo.
 
-`CircularSearchPanel` inicia um Worker por execução. Recebe o progresso em contagens de candidatos e termina o Worker ao cancelar, editar o caso ou sair da seleção. Guarda dados compactos dos círculos concluídos. A inspeção reproduz apenas o círculo solicitado com a entrada e o perfil originais. O recálculo com abertura menor também ocorre em Worker. O desenho usa a geometria do círculo inspecionado, vinculada à revisão ativa.
+`CircularSearchPanel` compartilha a execução da busca com a ação **Análise → Calcular caso**. Recebe o progresso em contagens de candidatos e guarda dados compactos dos círculos concluídos. A inspeção usa seu próprio Worker para reproduzir apenas o círculo solicitado com a entrada e o perfil originais. O recálculo com abertura menor também ocorre em Worker. O desenho usa a geometria do círculo inspecionado, vinculada à revisão ativa.
 
 O arquivo v5 guarda os perfis numéricos aplicados por caso. Resultados, prévias, progresso e Workers pertencem à sessão. Modos mistos, faces verticais no arco analisado e água externa continuam condicionando a admissibilidade dos métodos. Consulte [Busca circular](BUSCA-CIRCULAR.md) para as regras locais e a distinção entre teste de software e aceite de engenharia.
+
+## Ação de cálculo do caso
+
+`getCaseCalculationReadiness` confere o caso aplicado antes de executar: rascunhos, referências e erros do modelo, direção/métodos, atribuições e γ/c/φ/modo dos materiais usados na seção, água e cargas ativas, superfície e perfil efetivo. Somente os grupos numéricos do modo e dos métodos selecionados precisam estar completos. Nulos permanecem pendentes; avisos de origem ou hipóteses não impedem a execução. A prontidão conserva os diagnósticos de entrada e não avalia a admissibilidade de um círculo ou resultado. Pendências do comando são encaminhadas à conferência existente, preservando os campos em edição.
+
+No círculo fixo, `calculateFixedCase` chama uma vez cada preparação de geometria, peso, pressão, carga e mecânica. Os métodos selecionados recebem a mesma mecânica, preservando resultados e diagnósticos independentes. Uma falha posterior mantém as preparações anteriores disponíveis. `FixedCirclePreview` e `FixedCircleMethods` recebem esses objetos nas inspeções existentes, sem repetir a cadeia ao apresentar o resultado. Os comandos individuais de preparação e cálculo continuam disponíveis.
+
+`createCaseExecution` expõe iniciar, cancelar, reiniciar o estado e encerrar os recursos. O círculo fixo começa em uma tarefa agendada para publicar o estado de execução antes do cálculo síncrono. A busca reutiliza `startSearchWorker`. Cada execução recebe uma geração e uma identidade que combina projeto, caso, revisão da entrada e serialização do perfil efetivo; a revisão de `CoreInput` não inclui o perfil numérico. Callbacks só podem publicar quando geração e identidade continuam atuais. Iniciar outra execução, cancelar, mudar o contexto ou desmontar o hook limpa timers/Workers; cancelar descarta o resultado parcial e conserva a contagem recebida. Desmontar não publica estado.
+
+O hook compartilha o estado entre Ribbon e propriedades e oculta resultados de outra identidade já no render. A Ribbon distingue pronto, pendente, calculando, cancelado e concluído, além de falhas de execução. Concluído permite consultar diagnósticos mesmo sem FS admissível. Preparações são reutilizadas somente com revisão e perfil geométrico compatíveis; mudar o perfil efetivo retira FS e comparação. A comparação mantém a exigência de dois resultados positivos admissíveis nas mesmas fatias e τD/τt iguais. Nenhum estado de execução ou resultado é serializado no projeto v5.
 
 ## Conferência integrada dos lançamentos
 

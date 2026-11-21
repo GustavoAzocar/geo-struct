@@ -33,6 +33,8 @@ import {
   Ruler,
   Settings2,
   PaintBucket,
+  Play,
+  Square,
   type LucideIcon,
 } from "lucide-react";
 import type { Tool } from "../domain/model";
@@ -46,6 +48,8 @@ export const tabs = [
 ] as const;
 export type Tab = (typeof tabs)[number];
 export type Action =
+  | "calculate-case"
+  | "cancel-calculation"
   | "new"
   | "open"
   | "open-default"
@@ -76,6 +80,26 @@ export type Action =
   | "properties"
   | "precision"
   | Tool;
+export type RibbonCalculation = {
+  status:
+    | "ready"
+    | "pending"
+    | "calculating"
+    | "cancelled"
+    | "completed"
+    | "failed";
+  caseName: string;
+  message: string;
+  progress?: { completed: number; total: number };
+};
+const calculationLabels: Record<RibbonCalculation["status"], string> = {
+  ready: "Pronto para calcular",
+  pending: "Cálculo pendente",
+  calculating: "Calculando",
+  cancelled: "Cálculo cancelado",
+  completed: "Cálculo concluído",
+  failed: "Falha no cálculo",
+};
 type Item = { action: Action; label: string; icon: LucideIcon; tip?: string };
 const groups: Record<Tab, { label: string; items: Item[] }[]> = {
   Arquivo: [
@@ -247,6 +271,7 @@ export function Ribbon({
   canUndo,
   canRedo,
   busy,
+  calculation,
 }: {
   tab: Tab;
   onTab: (t: Tab) => void;
@@ -258,6 +283,7 @@ export function Ribbon({
   canUndo: boolean;
   canRedo: boolean;
   busy: boolean;
+  calculation: RibbonCalculation;
 }) {
   return (
     <div className="ribbon">
@@ -293,6 +319,55 @@ export function Ribbon({
         role="tabpanel"
         aria-labelledby={`tab-${tabs.indexOf(tab)}`}
       >
+        {tab === "Análise" && (
+          <section className="ribbon-group calculation-group">
+            <div className="ribbon-tools">
+              <button
+                className="ribbon-tool calculate-case"
+                disabled={busy || calculation.status === "calculating"}
+                onClick={() => onAction("calculate-case")}
+              >
+                <Play size={22} strokeWidth={1.6} />
+                <span>Calcular caso</span>
+              </button>
+              {calculation.status === "calculating" && (
+                <button
+                  className="ribbon-tool"
+                  disabled={busy}
+                  onClick={() => onAction("cancel-calculation")}
+                >
+                  <Square size={22} strokeWidth={1.6} />
+                  <span>Cancelar cálculo</span>
+                </button>
+              )}
+              <div
+                role="status"
+                aria-label="Estado do cálculo do caso"
+                data-status={calculation.status}
+                className="case-calculation-status"
+              >
+                <strong>{calculationLabels[calculation.status]}</strong>
+                <span className="calculation-case" title={calculation.caseName}>
+                  {calculation.caseName}
+                </span>
+                <span
+                  className="calculation-message"
+                  title={calculation.message}
+                >
+                  {calculation.message}
+                </span>
+                {calculation.progress && (
+                  <progress
+                    aria-label="Progresso do cálculo do caso"
+                    value={calculation.progress.completed}
+                    max={calculation.progress.total}
+                  />
+                )}
+              </div>
+            </div>
+            <small>Execução do caso</small>
+          </section>
+        )}
         {groups[tab].map((g) => (
           <section className="ribbon-group" key={g.label}>
             <div className="ribbon-tools">
@@ -344,15 +419,6 @@ export function Ribbon({
             <small>{g.label}</small>
           </section>
         ))}
-        {tab === "Análise" && (
-          <div className="analysis-note">
-            <strong>Preparação dos casos</strong>
-            <span>
-              Nas propriedades do caso, prepare um círculo fixo ou execute a
-              busca circular.
-            </span>
-          </div>
-        )}
       </div>
     </div>
   );
