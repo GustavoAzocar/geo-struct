@@ -44,6 +44,7 @@ export const tabs = [
   "Materiais",
   "Água e cargas",
   "Análise",
+  "Resultados",
   "Exibir",
 ] as const;
 export type Tab = (typeof tabs)[number];
@@ -231,6 +232,20 @@ const groups: Record<Tab, { label: string; items: Item[] }[]> = {
       ],
     },
   ],
+  Resultados: [
+    {
+      label: "Consulta",
+      items: [
+        {
+          action: "properties",
+          label: "Propriedades do caso",
+          icon: Settings2,
+        },
+        { action: "fit", label: "Enquadrar resultado", icon: Maximize },
+        { action: "audit", label: "Conferir modelo", icon: ListChecks },
+      ],
+    },
+  ],
   Exibir: [
     {
       label: "Navegação",
@@ -319,7 +334,7 @@ export function Ribbon({
         role="tabpanel"
         aria-labelledby={`tab-${tabs.indexOf(tab)}`}
       >
-        {tab === "Análise" && (
+        {(tab === "Análise" || tab === "Resultados") && (
           <section className="ribbon-group calculation-group">
             <div className="ribbon-tools">
               <button

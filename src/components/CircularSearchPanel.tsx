@@ -94,7 +94,7 @@ export function CircularSearchPanel({
     }
     return values;
   });
-  const { state: run, reset: resetExecution } = execution;
+  const { state: run } = execution;
   const [inspection, setInspection] = useState<Inspection | null>(null);
   const [visibleNumber, setVisibleNumber] = useState<number | null>(null);
   const worker = useRef<(() => void) | null>(null);
@@ -108,18 +108,14 @@ export function CircularSearchPanel({
     setVisibleNumber(null);
     onPreview(null);
   }, [stopWorker, onPreview]);
-  const reset = useCallback(() => {
-    resetInspection();
-    resetExecution();
-  }, [resetInspection, resetExecution]);
   const executionIdentity =
     run.status === "completed" ? run.result : run.status;
   useEffect(() => {
     resetInspection();
   }, [executionIdentity, resetInspection]);
   useEffect(() => {
-    if (dirty || executionBlocked) reset();
-  }, [dirty, executionBlocked, reset]);
+    if (dirty || executionBlocked) resetInspection();
+  }, [dirty, executionBlocked, resetInspection]);
   useEffect(
     () => () => {
       stopWorker();
@@ -196,7 +192,7 @@ export function CircularSearchPanel({
           const next = { ...values, [key]: e.target.value };
           setValues(next);
           onProfileChange(next);
-          reset();
+          resetInspection();
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter") e.preventDefault();

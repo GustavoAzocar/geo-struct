@@ -233,8 +233,8 @@ test("clicar no comando pendente preserva o rascunho do caso e o perfil inválid
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(factor(page, "Bishop")).toHaveCount(0);
   await maximum.fill("100");
-  await expect(state(page)).toHaveAttribute("data-status", "ready");
-  await calculate(page).click();
+  // Restaurar o perfil original recupera o resultado guardado da mesma identidade.
+  await expect(state(page)).toHaveAttribute("data-status", "completed");
   await expectBothFactors(page);
 });
 
@@ -330,8 +330,7 @@ test("alterar perfil ou entrada compartilhada invalida o resultado e a conferên
     .fill("18");
   await page.getByRole("button", { name: "Aplicar", exact: true }).click();
   await selectCase(page, "Círculo central");
-  await expect(state(page)).toHaveAttribute("data-status", "ready");
-  await calculate(page).click();
+  // Restaurar a entrada original recupera o resultado guardado da mesma identidade.
   await expect(state(page)).toHaveAttribute("data-status", "completed");
   await expectBothFactors(page);
 });

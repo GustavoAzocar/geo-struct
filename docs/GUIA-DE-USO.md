@@ -45,8 +45,8 @@ Exemplos próprios em `examples/`, sem dados de projeto real:
 
 Na tela inicial ou em **Arquivo → Projeto**, escolha **Abrir projeto padrão**. A cópia é editável e já abre na aba **Análise**, no caso **Talude — busca circular**. Para trocar o projeto aberto, o aplicativo aplica a mesma proteção de rascunhos e alterações da abertura de arquivos.
 
-- **Talude — busca circular** tem 27 combinações de centro e raio. Clique em **Análise → Calcular caso** para executar Fellenius e Bishop Simplificado. Os valores iniciais podem ser conferidos ou editados em **Perfil de cálculo do caso**.
-- **Talude — círculo fixo** avalia um dos círculos da malha, com centro X = 32 m, Z = 32 m e raio de 25 m. Selecione o caso na árvore e use **Calcular caso** para preparar as fatias e executar os dois métodos. Abra as inspeções nas propriedades para consultar suas parcelas.
+- **Talude — busca circular** tem 27 combinações de centro e raio. Clique em **Análise → Calcular caso** para executar Fellenius e Bishop Simplificado e abra **Resultados** para consultar os mínimos da malha e selecionar um candidato. Os valores iniciais podem ser conferidos ou editados em **Perfil de cálculo do caso**.
+- **Talude — círculo fixo** avalia um dos círculos da malha, com centro X = 32 m, Z = 32 m e raio de 25 m. Selecione o caso na árvore e use **Calcular caso** para preparar as fatias e executar os dois métodos. Na aba **Resultados**, alterne o método e a fatia para consultar as parcelas da mesma superfície.
 
 As duas análises usam a mesma seção de dois solos com coesão nula, linha piezométrica prescrita e uma faixa de 20 kPa na crista. Os dados são didáticos. O arquivo v5 guarda os dados do modelo, dos casos e seus perfis numéricos; resultados ficam na sessão. Abra o comando de projeto padrão novamente para iniciar outra demonstração.
 
@@ -118,20 +118,43 @@ Selecione o caso na árvore para ver sua prévia: condições de água/cargas, c
 
 Selecione um caso na árvore e use **Análise → Calcular caso**. No círculo fixo, uma ação prepara geometria, pesos, pressões, sobrecargas e entrada mecânica, depois avalia somente os métodos selecionados nas mesmas fatias. Na busca, a ação usa os limites, passos e perfil aplicados e executa a malha em segundo plano. O botão **Iniciar busca circular** nas propriedades aciona a mesma execução.
 
-| Estado na Ribbon     | Significado                                                                                     |
-| -------------------- | ----------------------------------------------------------------------------------------------- |
-| Pronto para calcular | Entradas e perfil necessários estão preenchidos; a superfície ainda será avaliada.              |
-| Cálculo pendente     | Há rascunho, configuração incompleta ou erro de modelagem a corrigir.                           |
-| Calculando           | A execução está em andamento; a busca informa círculos avaliados.                               |
-| Cálculo cancelado    | A execução foi interrompida e o resultado parcial descartado.                                   |
-| Cálculo concluído    | Consulte resultados e diagnósticos nas propriedades, inclusive quando não houver FS admissível. |
-| Falha no cálculo     | A execução não pôde iniciar ou terminar; a mensagem informa a falha.                            |
+| Estado na Ribbon     | Significado                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------ |
+| Pronto para calcular | Entradas e perfil necessários estão preenchidos; a superfície ainda será avaliada.   |
+| Cálculo pendente     | Há rascunho, configuração incompleta ou erro de modelagem a corrigir.                |
+| Calculando           | A execução está em andamento; a busca informa círculos avaliados.                    |
+| Cálculo cancelado    | A execução foi interrompida e o resultado parcial descartado.                        |
+| Cálculo concluído    | Consulte a aba Resultados e as inspeções, inclusive quando não houver FS admissível. |
+| Falha no cálculo     | A execução não pôde iniciar ou terminar; a mensagem informa a falha.                 |
 
 Ao usar o comando com dados pendentes, **Conferir modelo** permite localizar o cadastro a corrigir. Sem caso selecionado, abre-se o gerenciador de casos. Um rascunho mantém seus campos e pede aplicação, correção ou descarte. Complete atribuições de materiais, γ/c/φ/modo resistente, direção, métodos, superfície, água e cargas ativas e o perfil necessário ao modo atual. Campos nulos permanecem pendentes; perfis de métodos não selecionados e configurações inativas são preservados. Avisos sobre origem ou hipóteses continuam disponíveis para conferência.
 
-Edite o perfil nas propriedades. Valores válidos são aplicados ao caso e entram no histórico; texto inválido permanece em edição e bloqueia **Calcular caso** e os métodos até ser corrigido ou descartado. **Cancelar cálculo** encerra a busca e permite repeti-la. Trocar caso, projeto, entradas ou perfil efetivo retira o resultado anterior.
+Edite o perfil nas propriedades. Valores válidos são aplicados ao caso e entram no histórico; texto inválido permanece em edição e bloqueia **Calcular caso** e os métodos até ser corrigido ou descartado. **Cancelar cálculo** encerra a busca e permite repeti-la. A consulta de um resultado exige o mesmo caso, a mesma entrada e o mesmo perfil efetivo que o produziram.
 
 As inspeções existentes recebem os resultados da ação central. Geometria, pesos, pressões, cargas e mecânica podem continuar disponíveis quando uma etapa posterior ou um método falha. Alterar somente um perfil de método retira FS e comparação, conservando preparações compatíveis para consulta. Para ΔFS, os dois métodos precisam de resultados positivos admissíveis nas mesmas fatias e de τD/τt iguais. **Preparar fatias**, **Calcular Fellenius** e **Calcular Bishop** continuam disponíveis para conferência por etapa. Conclusão da execução não representa aprovação de estabilidade.
+
+## Consultar a aba Resultados
+
+Após **Calcular caso**, abra **Resultados** na Ribbon. A árvore continua selecionando o caso, o desenho apresenta a superfície e o painel **Resultados do caso** reúne método, fator de segurança, validade e diagnósticos. A aba não altera a geometria nem aplica campos em edição; volte a **Análise** para editar o caso.
+
+1. Em **Método do resultado**, escolha Fellenius ou Bishop Simplificado entre os métodos executados. Trocar o método mantém o círculo e a numeração das fatias.
+2. Na busca, informe o número em **Superfície do resultado** e confirme com Enter ou ao sair do campo. **Superfície anterior**, **Próxima superfície** e **Ver superfícies avaliadas** também permitem navegar. A tabela de círculos mantém filtros, diagnósticos e paginação; selecione seu botão com Tab e Enter. O círculo escolhido é realçado no desenho; um candidato sem geometria preparada permanece disponível para consultar seu descarte.
+3. Escolha **Fatia do resultado** ou clique na fatia desenhada. **Selecionar fatia pela tabela** oferece botões navegáveis por Tab e Enter e paginação para listas extensas. A fatia selecionada fica realçada e suas parcelas pertencem ao candidato e ao método indicados no painel.
+4. Confira área, largura/base, α, W, Q, c/φ, pressão física u, pressão usada ue e resultantes U/Ue, além de normal e resistência quando avaliadas. As unidades aparecem em cada grandeza. “—” indica uma parcela indisponível ou não avaliada; zero continua sendo um valor calculado. **Inspeção completa** abre as tabelas existentes do método e das preparações da mesma superfície, incluindo a trajetória de Bishop.
+
+**Mesma superfície** compara Fellenius e Bishop naquele círculo e só apresenta ΔFS com dois resultados positivos admissíveis, mesma discretização e τD/τt iguais. **Mínimos da malha por método** conserva o menor FS positivo admissível de cada método e seus avisos de borda, empates e descartes. Escolher outro candidato não altera esses mínimos. Um mínimo pertence à malha avaliada; não demonstra um mínimo global fora dela.
+
+Sem convergência ou com rejeição, consulte os diagnósticos sem interpretar a última tentativa como solução. Resistência nula permanece distinta: Fellenius pode apresentar FS = 0, enquanto Bishop registra o estado sem FS numérico. Candidatos descartados continuam na tabela e não oferecem fatias que o preparo não produziu.
+
+| Disponibilidade no painel                   | Como continuar                                                              |
+| ------------------------------------------- | --------------------------------------------------------------------------- |
+| Resultados da entrada e do perfil aplicados | Consulte superfície, método, fatia e diagnósticos.                          |
+| Resultado desatualizado                     | Confira as alterações e recalcule; FS e desenho do resultado ficam ocultos. |
+| Nenhum resultado nesta sessão               | Selecione um caso e use **Calcular caso**.                                  |
+
+Os resultados concluídos são guardados por caso durante a sessão do projeto. Ao alternar para um caso ainda não calculado, o painel fica sem resultado; voltar ao caso anterior recupera seu resultado se as entradas e o perfil efetivo ainda correspondem. Alterar material, geometria, condições ou perfil relevante exige recálculo. Um rascunho também oculta o resultado; alternar entre **Análise** e **Resultados** preserva os campos, e **Descartar** permite recuperar o resultado quando os dados aplicados continuam iguais.
+
+Durante a busca, o painel acompanha o progresso. **Cancelar cálculo** descarta os resultados parciais. Iniciar outra execução substitui a anterior daquele caso; cancelar ou falhar não recupera seu cálculo anterior. Abrir outro projeto, reabrir o mesmo arquivo ou fechar o projeto inicia uma sessão sem os resultados guardados. O `.geo.json` v5 conserva entradas e perfis, sem resultados, progresso ou seleção de candidato/fatia.
 
 ## Arquivos e recuperação
 

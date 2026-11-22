@@ -1,6 +1,6 @@
-import openstruct from "./reference-catalog/openstruct.json";
-import stratified from "./reference-catalog/stratified-search.json";
-import homogeneousWaterData from "./reference-catalog/homogeneous-water.json";
+import openstruct from "./reference-catalog/openstruct.json" with { type: "json" };
+import stratified from "./reference-catalog/stratified-search.json" with { type: "json" };
+import homogeneousWaterData from "./reference-catalog/homogeneous-water.json" with { type: "json" };
 import { newProject, type Project } from "../../src/domain/model";
 import { addAnalysisCase } from "../../src/domain/analysis";
 import { prepareCoreInput } from "../../src/domain/core-input";

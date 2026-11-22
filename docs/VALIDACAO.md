@@ -55,6 +55,16 @@ Os testes da orquestração verificam uma única preparação comum do círculo 
 
 Os fluxos Chromium exercitam **Análise → Calcular caso** por botão e teclado na janela mínima, círculo fixo e busca, métodos selecionados, comparação, navegação às pendências em **Conferir modelo**, rascunhos e correção de perfil inválido. Incluem progresso/cancelamento, mudança de contexto e preservação do arquivo sem resultados. As inspeções e ações individuais continuam cobertas pelos fluxos próprios de geometria, preparações e métodos. Esses testes verificam a coordenação da execução; a evidência de engenharia permanece nos casos independentes de cada recorte.
 
+### Aba Resultados e seleção sincronizada
+
+Os testes do estado de resultados distinguem registros atuais, desatualizados e ausentes por projeto, caso, sessão e identidade efetiva. Cobrem retorno ao resultado de outro caso já calculado, rascunho e descarte, alteração de perfil/entrada, reabertura com os mesmos IDs e início de nova execução sem reaproveitar resultados parciais. A comparação exige resultados completos da mesma superfície e recusa revisão, círculo, discretização ou limiares diferentes, bem como resultados sem FS positivo admissível.
+
+O controlador de inspeção da busca usa um adaptador de Worker para conferir seleção de candidato, geração, referência do registro, cancelamento e desmontagem. As respostas atrasadas de outra seleção ou sessão não podem atualizar a superfície apresentada. A seleção de método e fatia é vinculada aos números originais da geometria preparada.
+
+Os fluxos Chromium cobrem a aba em 960 × 640, abertura e seleção por teclado, círculo fixo, 27 candidatos, mínimo do candidato 25 com avisos de borda e distinção entre comparação no mesmo círculo e mínimos por método. As parcelas exibidas usam valores congelados do catálogo STRAT: o candidato 14 corresponde ao círculo fixo e permite comparar peso e normal de uma mesma fatia nos dois métodos, incluindo sua inspeção completa. O SVG é conferido por dados/DOM para candidato, método e fatia realçada. Incluem cache por caso, rascunhos preservados entre abas, invalidação por entrada/perfil, não convergência, resistência nula com FS zero distinto de ausência de FS, rejeição, descarte geométrico, círculo fixo sem interseções conservando seu contorno diagnóstico e cancelamento com progresso sem resultado parcial. Os arquivos continuam sem resultados serializados.
+
+Essas verificações exercitam a apresentação e a identidade dos dados; não ampliam o alcance dos [casos de referência](CASOS-DE-REFERENCIA.md), alteram suas fontes ou substituem a revisão de engenharia dos recortes físicos.
+
 ## Limites
 
 ### Catálogo independente de preparação e métodos
