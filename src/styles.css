@@ -1690,6 +1690,15 @@ kbd {
   .result-report tr {
     break-inside: avoid;
   }
+  .result-report .report-table-wrap table {
+    table-layout: auto;
+    font-size: 7.5pt;
+  }
+  .result-report .report-table-wrap td {
+    padding: 3px;
+    white-space: nowrap;
+    overflow-wrap: normal;
+  }
   * {
     print-color-adjust: exact;
     -webkit-print-color-adjust: exact;

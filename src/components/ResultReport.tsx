@@ -388,7 +388,12 @@ export function ResultReport({
                         {fsNumber(ranking.minimum?.factorOfSafety ?? null)}
                       </td>
                       <td>
-                        {ranking.minimum?.boundaryAxes.join(", ") || "Nenhuma"}
+                        {ranking.minimum?.boundaryAxes
+                          .map(
+                            (axis) =>
+                              ({ x: "X", z: "Z", radius: "raio" })[axis],
+                          )
+                          .join(", ") || "Nenhuma"}
                       </td>
                       <td>
                         {ranking.eligible} / {ranking.zeroResistance} /{" "}

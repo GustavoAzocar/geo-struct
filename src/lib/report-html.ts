@@ -19,5 +19,6 @@ svg{width:100%;height:280px}h1,h2,h3{line-height:1.3}h2{margin-top:32px}section{
 pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px}dl{margin:12px 0}dt{font-weight:600}dd{margin:0 0 8px}
 .report-table-wrap{overflow-x:auto}.report-brand{font-size:11px;letter-spacing:1px}.hint{color:#56524b}.no-print{display:none}
 @media print{body{max-width:none;margin:0;padding:0;font-size:10pt}.report-table-wrap{overflow:visible}table{font-size:8pt;table-layout:fixed}th,td{padding:4px;overflow-wrap:anywhere}section{break-inside:auto}tr{break-inside:avoid}thead{display:table-header-group}details>summary{font-weight:600}@page{size:A4;margin:16mm}}
+@media print{.report-table-wrap table{table-layout:auto;font-size:7.5pt}.report-table-wrap td{padding:3px;white-space:nowrap;overflow-wrap:normal}}
 </style></head><body>${articleHtml}</body></html>`;
 }
