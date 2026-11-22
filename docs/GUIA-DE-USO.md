@@ -156,6 +156,12 @@ Os resultados concluídos são guardados por caso durante a sessão do projeto. 
 
 Durante a busca, o painel acompanha o progresso. **Cancelar cálculo** descarta os resultados parciais. Iniciar outra execução substitui a anterior daquele caso; cancelar ou falhar não recupera seu cálculo anterior. Abrir outro projeto, reabrir o mesmo arquivo ou fechar o projeto inicia uma sessão sem os resultados guardados. O `.geo.json` v5 conserva entradas e perfis, sem resultados, progresso ou seleção de candidato/fatia.
 
+## Exportar o memorial de resultados
+
+Na aba **Resultados**, selecione a superfície e o método e use **Memorial de resultados**. Escolha **Imprimir / PDF**, **Exportar HTML**, **Exportar candidatos CSV** (busca inteira) ou **Exportar fatias CSV** (todas as fatias da superfície e método selecionados). O memorial identifica caso, revisões, perfil e versões do motor, separa a comparação no mesmo círculo dos mínimos da malha e conserva os diagnósticos.
+
+Resultados desatualizados, em preparação ou cancelados não são exportados como atuais. O comando preserva o rascunho e explica a pendência; o **Relatório de entradas** continua disponível com os dados aplicados. CSV usa UTF-8 com BOM, ponto e vírgula e decimal vírgula, com unidades nos cabeçalhos. Campos vazios são diferentes de zero; parcelas de tentativa não convergente ficam identificadas como diagnóstico. Veja [saídas, estados e rastreabilidade](EXPORTACAO-DE-RESULTADOS.md).
+
 ## Arquivos e recuperação
 
 **Salvar** e Ctrl+S exportam `.geo.json`. No desktop, o primeiro salvamento pede destino e os seguintes atualizam o caminho selecionado. **Salvar como** escolhe um novo destino principal. No navegador, cada salvamento gera um download. Confira seu destino de downloads.

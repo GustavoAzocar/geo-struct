@@ -89,6 +89,7 @@ import { PanelResizer } from "./components/PanelResizer";
 import { Dialog } from "./components/Dialog";
 import { StartScreen } from "./components/StartScreen";
 import { Report } from "./components/Report";
+import { ResultReport } from "./components/ResultReport";
 import { Materials, MaterialAssignment } from "./components/Materials";
 import { prepareCoreInput } from "./domain/core-input";
 import { defaultProject } from "./domain/default-project";
@@ -171,6 +172,7 @@ export default function App() {
       | "new"
       | "help"
       | "report"
+      | "result-report"
       | "precision"
       | "materials"
       | "loads"
@@ -1050,6 +1052,12 @@ export default function App() {
       await removeSelected();
       return;
     }
+    // Consultas não descartam propriedades em edição. O memorial bloqueia
+    // resultados desatualizados e o relatório de entradas usa dados aplicados.
+    if (a === "report" || a === "result-report") {
+      setDialog(a);
+      return;
+    }
     if (!(await guardDraft())) return;
     if (a === "new-case") {
       try {
@@ -1078,10 +1086,6 @@ export default function App() {
     ) {
       setTool("select");
       setDialog(a);
-      return;
-    }
-    if (a === "report") {
-      setDialog("report");
       return;
     }
     if (a === "svg") {
@@ -1738,6 +1742,20 @@ export default function App() {
               </button>
             </div>
           </form>
+        </Dialog>
+      )}
+      {dialog === "result-report" && project && (
+        <Dialog
+          wide
+          title="Memorial de resultados"
+          description="Exportação do caso, superfície e método selecionados na aba Resultados."
+          onClose={() => setDialog(null)}
+        >
+          <ResultReport
+            results={results}
+            execution={calculation.state}
+            onError={notify}
+          />
         </Dialog>
       )}
       {dialog === "report" && project && (

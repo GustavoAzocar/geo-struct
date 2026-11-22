@@ -1535,6 +1535,7 @@ kbd {
 }
 .report-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 22px;
 }
@@ -1581,6 +1582,22 @@ kbd {
 }
 .project-report section {
   break-inside: avoid;
+}
+.result-report .report-metadata dd,
+.result-report code {
+  overflow-wrap: anywhere;
+}
+.result-report pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+}
+.report-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.result-report table {
+  font-size: 10px;
 }
 .fatal-error {
   max-width: 650px;
@@ -1653,6 +1670,24 @@ kbd {
     border-color: #aaa;
   }
   .project-report section {
+    break-inside: avoid;
+  }
+  .result-report section {
+    break-inside: auto;
+  }
+  .result-report .report-table-wrap {
+    overflow: visible;
+  }
+  .result-report table {
+    table-layout: fixed;
+    font-size: 8pt;
+  }
+  .result-report th,
+  .result-report td {
+    padding: 4px;
+    overflow-wrap: anywhere;
+  }
+  .result-report tr {
     break-inside: avoid;
   }
   * {

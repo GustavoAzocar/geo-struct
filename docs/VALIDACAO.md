@@ -135,6 +135,12 @@ Compilar um executável nativo não comprova sua interação com todos os ambien
 
 A recuperação usa armazenamento local e pode ser bloqueada pelo navegador. O caso deve produzir aviso sem substituir a responsabilidade de salvar arquivo. Arquivos com geometria inconsistente são abertos com diagnósticos, sem conferir aprovação de estabilidade.
 
+## Memorial e exportação CSV
+
+`tests/unit/result-export.test.ts` verifica o contrato de exportação contra o catálogo independente, identidades/revisões original e derivada, perfil e hashes SHA-256 nativos. Cobre cópia antes da operação assíncrona, imutabilidade, estados obsoletos, geometria rejeitada, FS zero de Fellenius, ausência de FS de Bishop não convergente e parcelas diagnósticas. Os testes de CSV incluem precisão, BOM/CRLF, colunas consistentes, aspas, quebras internas, fórmulas e números negativos; `report-html.test.ts` verifica o título escapado e a estrutura portátil.
+
+`tests/e2e/results-export.spec.ts` baixa HTML e CSV reais no Chromium, confronta números e unidades com a referência estratificada e usa um leitor CSV próprio de teste. Cobre círculo fixo na janela mínima, malha de 27 candidatos, seleção 14/Bishop, invalidação, preservação de rascunho e do relatório de entradas, resistência nula, não convergência, descarte, IDs interpretáveis como fórmulas, HTML escapado e troca de caso. Esses checks web não representam operação manual da impressão ou do salvamento nativo no WebView2/WebKitGTK.
+
 ## Conferência integrada dos lançamentos
 
 Em **Análise → Conferir modelo**, filtre por seção/caso e severidade. Cada caso inclui a geometria e os materiais compartilhados, além das condições efetivas de água/cargas do cenário. Materiais sem uso aparecem em um escopo próprio. Clique numa pendência para abrir o cadastro correspondente; rascunhos continuam protegidos. O relatório de entradas inclui a mesma conferência por escopo. Pendências compartilhadas aparecem em cada caso afetado, portanto as contagens não são somáveis como ocorrências únicas.

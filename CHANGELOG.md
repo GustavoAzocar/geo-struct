@@ -2,6 +2,12 @@
 
 ## Em desenvolvimento
 
+### Memorial e CSV de resultados
+
+- Memorial do caso, superfície e método selecionados na aba Resultados, com HTML portátil e impressão/PDF, perfil, revisões SHA-256 e contratos/formulações do motor.
+- CSV completo da malha e CSV das fatias da superfície selecionada, com unidades, precisão, IDs, estados e parcelas diagnósticas. Resistência nula, falta de convergência e descarte permanecem distintos.
+- Bloqueio de exportação de resultados obsoletos ou parciais; consulta preserva rascunhos e mantém o relatório independente de entradas. Nenhuma mudança nas equações ou no formato v5.
+
 ### Perfil de cálculo por caso
 
 - Formato `geostruct/5` com `numericalProfile` por caso. Geometria, Fellenius, Bishop e busca conservam suas configurações ao salvar, reabrir, alternar modos/métodos, duplicar e desfazer/refazer.

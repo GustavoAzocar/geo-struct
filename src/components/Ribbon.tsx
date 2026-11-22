@@ -75,6 +75,7 @@ export type Action =
   | "snap"
   | "theme"
   | "report"
+  | "result-report"
   | "svg"
   | "help"
   | "diagnostics"
@@ -243,6 +244,16 @@ const groups: Record<Tab, { label: string; items: Item[] }[]> = {
         },
         { action: "fit", label: "Enquadrar resultado", icon: Maximize },
         { action: "audit", label: "Conferir modelo", icon: ListChecks },
+      ],
+    },
+    {
+      label: "Documentação",
+      items: [
+        {
+          action: "result-report",
+          label: "Memorial de resultados",
+          icon: FileText,
+        },
       ],
     },
   ],

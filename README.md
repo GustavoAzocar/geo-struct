@@ -37,6 +37,7 @@ Para começar um modelo próprio, use **Novo projeto**. **Explorar um exemplo** 
 - Círculo fixo por coordenadas/desenho e limites/passos da busca circular; prévia das entradas, duplicação e exclusão com histórico.
 - **Análise → Calcular caso** prepara o círculo fixo e executa os métodos selecionados, ou inicia a busca circular, com estado visível, progresso e cancelamento.
 - Aba **Resultados** com superfície e fatia realçadas no desenho, parcelas do método selecionado, inspeções completas e distinção entre comparação no mesmo círculo e mínimos por método na malha.
+- Memorial de resultados em HTML/impressão PDF e CSV de candidatos/fatias, com identificação de caso, revisão, perfil, versões e estados. [Saídas e rastreabilidade](docs/EXPORTACAO-DE-RESULTADOS.md).
 - Validação geométrica, diagnósticos, desfazer/refazer, proteção de propriedades em edição e de alterações não salvas.
 - Projeto `.geo.json` no formato `geostruct/5`, com leitura/migração dos arquivos das versões 1 a 4; cópia local de recuperação; importação inválida preserva o projeto aberto.
 - Relatório de dados de entrada com impressão/PDF pelo navegador, HTML portátil e exportação SVG da vista atual.
